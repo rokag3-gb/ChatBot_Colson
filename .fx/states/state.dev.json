@@ -1,0 +1,36 @@
+{
+    "solution": {
+        "teamsAppTenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
+        "subscriptionId": "1f713097-c8f7-458d-8f33-53e3524e10f0",
+        "subscriptionName": "Microsoft Azure 스폰서쉽 - Gold",
+        "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
+        "needCreateResourceGroup": false,
+        "resourceGroupName": "RG-SDTeam2022-Dev",
+        "location": "koreacentral",
+        "resourceNameSuffix": "739801",
+        "provisionSucceeded": true
+    },
+    "fx-resource-appstudio": {
+        "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
+        "teamsAppId": "1274b05a-ecac-4847-bb78-7600ff6c8f6b",
+        "teamsAppUpdatedAt": 1657671893293
+    },
+    "fx-resource-identity": {
+        "identityName": "cloudmtbotdev2eccee",
+        "identityResourceId": "/subscriptions/1f713097-c8f7-458d-8f33-53e3524e10f0/resourceGroups/RG-SDTeam2022-Dev/providers/Microsoft.ManagedIdentity/userAssignedIdentities/cloudmtbotdev2eccee",
+        "identityClientId": "329269e0-2593-434a-98f9-04a5fcf1f182"
+    },
+    "fx-resource-bot": {
+        "botId": "67ab75c8-d53a-44bd-9597-53d7dfb99da2",
+        "botPassword": "",
+        "objectId": "afff5c80-62fa-4b86-9e2e-f6b39dcbd2c0",
+        "skuName": "B1",
+        "siteName": "cloudmtbotdev2ecceebot",
+        "validDomain": "cloudmtbotdev2ecceebot.azurewebsites.net",
+        "appServicePlanName": "cloudmtbotdev2ecceebot",
+        "resourceId": "/subscriptions/1f713097-c8f7-458d-8f33-53e3524e10f0/resourceGroups/RG-SDTeam2022-Dev/providers/Microsoft.Web/sites/cloudmtbotdev2ecceebot",
+        "siteEndpoint": "https://cloudmtbotdev2ecceebot.azurewebsites.net"
+    },
+    "fx-resource-cicd": {},
+    "fx-resource-api-connector": {}
+}

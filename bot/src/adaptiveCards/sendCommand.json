@@ -1,0 +1,36 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "${title}",
+      "size": "small",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "${body}",
+      "isSubtle": true,
+      "wrap": true
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "스케줄 조회",
+      "data": {
+        "messageType": "getSchedule"
+      }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "스케줄 입력",
+      "data": {
+        "messageType": "insertSchedule"
+      }
+    }
+  ]
+}

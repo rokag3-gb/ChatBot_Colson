@@ -1,0 +1,61 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "${title}",
+      "size": "Large",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "${body}",
+      "isSubtle": true,
+      "wrap": true
+    },
+    {
+      "type": "Input.Date",
+      "label": "날짜",
+      "isRequired": true,
+      "id": "WorkDate",
+      "placeholder": "Enter a date",
+      "min": "2017-10-12",
+      "max": "2017-10-12",
+      "value": "2017-10-12"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "WorkCodeAM",
+      "label": "오전 업무 스케줄",
+      "style": "compact",
+      "placeholder": "스케줄을 선택해 주세요.",
+      "errorMessage": "스케줄을 선택해 주세요.",
+      "isRequired": true,
+      "choices": [
+      ]
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "WorkCodePM",
+      "label": "오후 업무 스케줄",
+      "style": "compact",
+      "placeholder": "스케줄을 선택해 주세요.",
+      "errorMessage": "스케줄을 선택해 주세요.",
+      "isRequired": true,
+      "choices": [
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "OK",
+      "data": {
+        "messageType": "workplace"
+      }
+    }
+  ]
+}

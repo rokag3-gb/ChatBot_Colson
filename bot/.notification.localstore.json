@@ -1,0 +1,21 @@
+{
+  "_6d5ac8ee-3862-4452-93e7-a836c2d9742b_a:1_q3FHSiXUajlzYc3fhssaK8HWgV_IVG_G-4eajJUkXNhknkbvPZ1YH_jMJabshcVVN9ledfgcR3lCVv8o3FmjOTEjj31dfGo0e4NN73yv7AY_zYERs5m28YykgbCGVx5": {
+    "activityId": "f:10c9c41d-22a1-1972-d12c-11cec498774a",
+    "user": {
+      "id": "29:1LnRJK0IwwvSZmRGrpOvIeHFilkpqp51wiSb1v6s36lj5ngm4AD8hUiVFYY-ptncI9U5LgN9P9uP18vLq7dl6NA",
+      "aadObjectId": "2cdbeed5-9768-47f4-840d-5ac8e7cb2a6d"
+    },
+    "bot": {
+      "id": "28:8a82caa4-b7cd-49e3-aaa6-06368d73cbad",
+      "name": "Colson-local-debug"
+    },
+    "conversation": {
+      "conversationType": "personal",
+      "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
+      "id": "a:1_q3FHSiXUajlzYc3fhssaK8HWgV_IVG_G-4eajJUkXNhknkbvPZ1YH_jMJabshcVVN9ledfgcR3lCVv8o3FmjOTEjj31dfGo0e4NN73yv7AY_zYERs5m28YykgbCGVx5"
+    },
+    "channelId": "msteams",
+    "locale": "ko-KR",
+    "serviceUrl": "https://smba.trafficmanager.net/apac/"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.4",
+    "type": "AdaptiveCard",
+    "body": [
+      {
+        "type": "Input.ChoiceSet",
+        "id": "username",
+        "style": "compact",
+        "label": "대상자를 선택해주세요.",
+        "value": "",
+        "isMultiSelect": false,
+        "choices": [
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "Action.Submit",
+        "title": "조회하기",
+        "data": {
+          "messageType": "schedule"
+        }
+      }
+    ]
+  }
+  
