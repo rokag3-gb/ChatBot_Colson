@@ -51,13 +51,16 @@ async (req, res) => {
   if(req.body.text !== undefined && req.body.text !== null && req.body.text != '') {
     const text = req.body.text.trim().split(" ");
   
-    if (text[0] === '스케줄') {
+    if (text[0] === '근무지등록') {
+      await sendMessage(req.body.from.id, `근무지 등록을 선택하셨습니다.`);
+      sendWorkplace(req.body.from.id, findWorkplace, text[1]);
+    } else if (text[0] + text[1] === '근무지등록') {
+      await sendMessage(req.body.from.id, `근무지 등록을 선택하셨습니다.`);
+      sendWorkplace(req.body.from.id, findWorkplace, text[2]);
+    } else if (text[0] === '근무지') {
       getWorkSchedule(req.body.from.id, text[1], text[2]);
-    } else if (text[0]+text[1] === '명령모아보기') {
+    } else if (text[0] === '홈' || text[0].toLowerCase() === 'home') {
       sendCommand(req.body.from.id);
-    } else if (text[0] === '스케줄입력') {
-      await sendMessage(req.body.from.id, `스케줄 입력을 선택하셨습니다.`);
-      sendWorkplace(req.body.from.id, findWorkplace);
     } else {
       sorryMessage(req.body.from.id);
     }
@@ -66,8 +69,8 @@ async (req, res) => {
     if (req.body.value.messageType === "getSchedule") {  
       sendUserList(req.body.from.id);
     } else if (req.body.value.messageType === "insertSchedule") {  
-      await sendMessage(req.body.from.id, `스케줄 입력을 선택하셨습니다.`);
-      sendWorkplace(req.body.from.id, findWorkplace);
+      await sendMessage(req.body.from.id, `근무지 등록을 선택하셨습니다.`);
+      sendWorkplace(req.body.from.id, findWorkplace, null);
     } else if (req.body.value.messageType === "schedule") {  
       if(req.body.value.username !== undefined) {
         getWorkSchedule(req.body.from.id, req.body.value.username, req.body.value.date);
@@ -75,7 +78,7 @@ async (req, res) => {
         sendMessage(req.body.from.id, `조회하실 분의 이름을 선택하고 다시 조회해주세요.`);
       }
     } else if (req.body.value.messageType === "workplace") {  
-      insertWorkplace(req.body.from.id, req.body.value);
+      insertWorkplace(req.body.from.id, req.body.value, req.body.scheduleUserId);
     } else {
       sorryMessage(req.body.from.id);
     }
@@ -92,12 +95,12 @@ async (req, res) => {
   await bot.requestHandler(req, res);
 });
 
-//휴가자 제외한 전직원에게 스케줄 입력 카드 전송
+//휴가자 제외한 전직원에게 근무지 입력 카드 전송
 cron.schedule('00 00 09 * * *', async () => {  
-  sendWorkplace(null, findWorkplace);
+  sendWorkplace(null, findWorkplace, null);
 });
 
-//스케줄 입력 안한 사람들에게 카드 전송
+//근무지 입력 안한 사람들에게 카드 전송
 cron.schedule('00 00 10 * * *', async () => {  
-  sendWorkplace(null, notFoundWorkplace);
+  sendWorkplace(null, notFoundWorkplace, null);
 });

@@ -17,6 +17,18 @@
       "wrap": true
     },
     {
+      "type": "Input.ChoiceSet",
+      "id": "name",
+      "label": "이름",
+      "style": "compact",
+      "placeholder": "근무지를 등록할 분을 선택해 주세요.",
+      "errorMessage": "근무지를 등록할 분을 선택해 주세요.",
+      "isRequired": false,
+      "isVisible": false,
+      "choices": [
+      ]
+    },
+    {
       "type": "Input.Date",
       "label": "날짜",
       "isRequired": true,
@@ -29,10 +41,10 @@
     {
       "type": "Input.ChoiceSet",
       "id": "WorkCodeAM",
-      "label": "오전 업무 스케줄",
+      "label": "오전 업무 근무지",
       "style": "compact",
-      "placeholder": "스케줄을 선택해 주세요.",
-      "errorMessage": "스케줄을 선택해 주세요.",
+      "placeholder": "근무지을 선택해 주세요.",
+      "errorMessage": "근무지을 선택해 주세요.",
       "isRequired": true,
       "choices": [
       ]
@@ -40,10 +52,10 @@
     {
       "type": "Input.ChoiceSet",
       "id": "WorkCodePM",
-      "label": "오후 업무 스케줄",
+      "label": "오후 업무 근무지",
       "style": "compact",
-      "placeholder": "스케줄을 선택해 주세요.",
-      "errorMessage": "스케줄을 선택해 주세요.",
+      "placeholder": "근무지을 선택해 주세요.",
+      "errorMessage": "근무지을 선택해 주세요.",
       "isRequired": true,
       "choices": [
       ]

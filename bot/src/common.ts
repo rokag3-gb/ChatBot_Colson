@@ -43,7 +43,7 @@ const checkWeekday = () => {
 }
 
 export const sendUserList = async (userID) => {
-  await sendMessage(userID, `스케줄 조회를 선택하셨습니다.`);
+  await sendMessage(userID, `근무지 조회를 선택하셨습니다.`);
   const ScheduleUserList = scheduleUserList;
   ScheduleUserList.body[0].choices.length = 0;
 
@@ -129,7 +129,7 @@ export const getWorkSchedule = async (id, name, date) => {
           return console.log('query error :',err)
       }
       if(result.rowsAffected[0] === 0){
-        sendMessage(id, `${name} 님의 스케줄을 찾을 수 없습니다.`);
+        sendMessage(id, `${name} 님의 근무지을 찾을 수 없습니다.`);
       }
     });
 
@@ -269,7 +269,7 @@ export const insertLog = async (userId, body) => {
   });
 }
 
-export const sendWorkplace = async (userId, func) => {
+export const sendWorkplace = async (userId, func, username) => {
   if((userId === undefined || userId === null) && checkWeekday()) {
     return;
   }
@@ -356,30 +356,31 @@ const sendWorkplaceCard = async (userID, choiceList, WorkCodeAM, WorkCodePM) => 
   const day2 = getToday(14);
 
   const customTemplate = workplaceTemplate;
-  customTemplate.body[2].min = day1;
-  customTemplate.body[2].max = day2;
-  customTemplate.body[2].value = day1;
 
-  customTemplate.body[3].choices = choiceList;
-  if(WorkCodeAM !== undefined && WorkCodeAM !== null) {
-    customTemplate.body[3].value = WorkCodeAM;
-  }
+  customTemplate.body[3].min = day1;
+  customTemplate.body[3].max = day2;
+  customTemplate.body[3].value = day1;
 
   customTemplate.body[4].choices = choiceList;
+  if(WorkCodeAM !== undefined && WorkCodeAM !== null) {
+    customTemplate.body[4].value = WorkCodeAM;
+  }
+
+  customTemplate.body[5].choices = choiceList;
   if(WorkCodePM !== undefined && WorkCodePM !== null) {
-    customTemplate.body[4].value = WorkCodePM;
+    customTemplate.body[5].value = WorkCodePM;
   }
   
   user.sendAdaptiveCard(
     AdaptiveCards.declare<CardData>(customTemplate).render({
-      title: '업무 스케줄 입력',
-      body: '업무 스케줄을 입력합니다.',
+      title: '근무지 등록',
+      body: '근무지를 등록합니다.',
       date: ``,
     })
   );
 }
 
-export const insertWorkplace = async (userId, body) => {
+export const insertWorkplace = async (userId, body, scheduleUserId) => {
   const request = new sql.Request();
   request.stream = true;
 
@@ -414,5 +415,5 @@ VALUES
       }
   });
 
-  await sendMessage(userId,  `${user.account.name}님의 ${body.WorkDate} 일자 업무 스케줄이 입력되었습니다.`);
+  await sendMessage(userId, `${user.account.name}님의 ${body.WorkDate} 일자 업무 근무지이 입력되었습니다.`);
 }
