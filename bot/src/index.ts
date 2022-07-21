@@ -8,10 +8,10 @@ import { sendMessage,
          getUserList,
          userRegister,
          insertLog,
-         sendWorkplace,
          insertWorkplace,
          findWorkplace,
          notFoundWorkplace,
+         getWorkCode,
          userMap } from "./common"
 import { connected } from "./mssql"
 
@@ -53,10 +53,10 @@ async (req, res) => {
   
     if (text[0] === '근무지등록') {
       await sendMessage(req.body.from.id, `근무지 등록을 선택하셨습니다.`);
-      sendWorkplace(req.body.from.id, findWorkplace, text[1]);
+      getWorkCode(req.body.from.id, null, text[1]);
     } else if (text[0] + text[1] === '근무지등록') {
       await sendMessage(req.body.from.id, `근무지 등록을 선택하셨습니다.`);
-      sendWorkplace(req.body.from.id, findWorkplace, text[2]);
+      getWorkCode(req.body.from.id, null, text[2]);
     } else if (text[0] === '근무지') {
       getWorkSchedule(req.body.from.id, text[1], text[2]);
     } else if (text[0] === '홈' || text[0].toLowerCase() === 'home') {
@@ -70,7 +70,7 @@ async (req, res) => {
       sendUserList(req.body.from.id);
     } else if (req.body.value.messageType === "insertSchedule") {  
       await sendMessage(req.body.from.id, `근무지 등록을 선택하셨습니다.`);
-      sendWorkplace(req.body.from.id, findWorkplace, null);
+      getWorkCode(req.body.from.id, null, null);
     } else if (req.body.value.messageType === "schedule") {  
       if(req.body.value.username !== undefined) {
         getWorkSchedule(req.body.from.id, req.body.value.username, req.body.value.date);
@@ -78,7 +78,7 @@ async (req, res) => {
         sendMessage(req.body.from.id, `조회하실 분의 이름을 선택하고 다시 조회해주세요.`);
       }
     } else if (req.body.value.messageType === "workplace") {  
-      insertWorkplace(req.body.from.id, req.body.value, req.body.scheduleUserId);
+      insertWorkplace(req.body);
     } else {
       sorryMessage(req.body.from.id);
     }
@@ -96,11 +96,11 @@ async (req, res) => {
 });
 
 //휴가자 제외한 전직원에게 근무지 입력 카드 전송
-cron.schedule('00 00 09 * * *', async () => {  
-  sendWorkplace(null, findWorkplace, null);
+cron.schedule('00 00 09 * * *', async () => {
+  getWorkCode(null, findWorkplace, null);
 });
 
 //근무지 입력 안한 사람들에게 카드 전송
 cron.schedule('00 00 10 * * *', async () => {  
-  sendWorkplace(null, notFoundWorkplace, null);
+  getWorkCode(null, notFoundWorkplace, null);
 });

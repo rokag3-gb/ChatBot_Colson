@@ -18,13 +18,13 @@
     },
     {
       "type": "Input.ChoiceSet",
-      "id": "name",
+      "id": "UPN",
       "label": "이름",
       "style": "compact",
       "placeholder": "근무지를 등록할 분을 선택해 주세요.",
       "errorMessage": "근무지를 등록할 분을 선택해 주세요.",
-      "isRequired": false,
-      "isVisible": false,
+      "isRequired": true,
+      "isVisible": true,
       "choices": [
       ]
     },
