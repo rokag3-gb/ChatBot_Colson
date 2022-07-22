@@ -1,0 +1,23 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "메시지가 도착했습니다.",
+      "weight": "Bolder",
+      "wrap": true
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "열기",
+      "data": {
+        "messageType": "openSecretMessage",
+        "messageId": 0
+      }
+    }
+  ]
+}

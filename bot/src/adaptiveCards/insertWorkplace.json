@@ -5,14 +5,14 @@
   "body": [
     {
       "type": "TextBlock",
-      "text": "${title}",
+      "text": "근무지 등록",
       "size": "Large",
       "weight": "Bolder",
       "wrap": true
     },
     {
       "type": "TextBlock",
-      "text": "${body}",
+      "text": "${body} 님의 근무지를 등록합니다.",
       "isSubtle": true,
       "wrap": true
     },
@@ -24,7 +24,7 @@
       "placeholder": "근무지를 등록할 분을 선택해 주세요.",
       "errorMessage": "근무지를 등록할 분을 선택해 주세요.",
       "isRequired": true,
-      "isVisible": true,
+      "isVisible": false,
       "choices": [
       ]
     },
@@ -43,8 +43,8 @@
       "id": "WorkCodeAM",
       "label": "오전 업무 근무지",
       "style": "compact",
-      "placeholder": "근무지을 선택해 주세요.",
-      "errorMessage": "근무지을 선택해 주세요.",
+      "placeholder": "근무지를 선택해 주세요.",
+      "errorMessage": "근무지를 선택해 주세요.",
       "isRequired": true,
       "choices": [
       ]
@@ -54,8 +54,8 @@
       "id": "WorkCodePM",
       "label": "오후 업무 근무지",
       "style": "compact",
-      "placeholder": "근무지을 선택해 주세요.",
-      "errorMessage": "근무지을 선택해 주세요.",
+      "placeholder": "근무지를 선택해 주세요.",
+      "errorMessage": "근무지를 선택해 주세요.",
       "isRequired": true,
       "choices": [
       ]

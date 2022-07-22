@@ -12,6 +12,9 @@ import { sendMessage,
          findWorkplace,
          notFoundWorkplace,
          getWorkCode,
+         viewSecretMessage,
+         sendSecretMessage,
+         openSecretMessage,
          userMap } from "./common"
 import { connected } from "./mssql"
 
@@ -61,6 +64,8 @@ async (req, res) => {
       getWorkSchedule(req.body.from.id, text[1], text[2]);
     } else if (text[0] === '홈' || text[0].toLowerCase() === 'home' || text[0] === 'ㅎ') {
       sendCommand(req.body.from.id);
+    } else if (text[0] === '메시지' || text[0] === '메세지') {
+      viewSecretMessage(req.body, text[1]);
     } else {
       sorryMessage(req.body.from.id);
     }
@@ -76,8 +81,14 @@ async (req, res) => {
       } else {
         sendMessage(req.body.from.id, `조회하실 분의 이름을 선택하고 다시 조회해주세요.`);
       }
+    } else if (req.body.value.messageType === "viewSecretMessage") {  
+      viewSecretMessage(req.body, null);
+    } else if (req.body.value.messageType === "sendSecretMessage") {  
+      sendSecretMessage(req.body);
     } else if (req.body.value.messageType === "workplace") {  
       insertWorkplace(req.body);
+    } else if (req.body.value.messageType === "openSecretMessage") {  
+      openSecretMessage(req.body);
     } else {
       sorryMessage(req.body.from.id);
     }

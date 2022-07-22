@@ -2,9 +2,11 @@ import { bot } from "./internal/initialize";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { CardData } from "./model/cardModels";
 import sendCommandTemplate from "./adaptiveCards/sendCommand.json";
-import sendMessageTemplate from "./adaptiveCards/sendMessage.json";
+import secretMessageTemplate from "./adaptiveCards/secretMessage.json";
 import scheduleUserList from "./adaptiveCards/scheduleUserList.json";
 import workplaceTemplate from "./adaptiveCards/insertWorkplace.json";
+import sendSecretMessageTemplate from "./adaptiveCards/sendSecretMessage.json";
+import openMessageTemplate from "./adaptiveCards/openMessage.json";
 import { sql } from "./mssql"
 
 export const userMap = new Object();
@@ -69,17 +71,6 @@ export const sendMessage = async (userID, body) => {
   await user.sendMessage(body);
 }
 
-export const sendCardMessage = async (userID, title, body) => {
-  const user = userMap[userID];
-  user.sendAdaptiveCard(
-    AdaptiveCards.declare<CardData>(sendMessageTemplate).render({
-      title: title,
-      body: body,
-      date: ``,
-    })
-  );
-}
-
 export const sendCommand = async (userID) => {
   const user = userMap[userID];
   user.sendAdaptiveCard(
@@ -111,7 +102,7 @@ export const getWorkSchedule = async (id, name, date) => {
           return console.log('query error :',err)
       }
       if(result.rowsAffected[0] === 0){
-        sendMessage(id, `${name} 님의 근무지을 찾을 수 없습니다.`);
+        sendMessage(id, `${name} 님의 근무지를 찾을 수 없습니다.`);
       }
     });
 
@@ -173,7 +164,7 @@ export const userRegister = async (userId) => {
 export const sorryMessage = async (id) => {
   await sendMessage(id,  `죄송합니다.
 
-처리할 수 없는 메세지입니다.`);
+처리할 수 없는 메시지입니다.`);
 }
 
 export const getUserList = async (userId) => {
@@ -340,41 +331,40 @@ const sendWorkplaceCard = async (userID, choiceList, WorkCodeAM, WorkCodePM, use
   const muser = userMap[userID];
   const day1 = getToday(null);
   const day2 = getToday(14);
-
-  const customTemplate = workplaceTemplate;
   
+  workplaceTemplate.body[2].choices.length = 0;
   if(user === undefined || user === null) {
-    customTemplate.body[2].value = muser.account.userPrincipalName;
-    customTemplate.body[2].choices.push({
+    workplaceTemplate.body[2].value = muser.account.userPrincipalName;
+    workplaceTemplate.body[2].choices.push({
       "title": muser.account.name,
       "value": muser.account.userPrincipalName
     });
   } else {
-    customTemplate.body[2].value = user.UPN;
-    customTemplate.body[2].choices.push({
+    workplaceTemplate.body[2].value = user.UPN;
+    workplaceTemplate.body[2].choices.push({
       "title": user.Name,
       "value": user.UPN
     });
   }
 
-  customTemplate.body[3].min = day1;
-  customTemplate.body[3].max = day2;
-  customTemplate.body[3].value = day1;
+  workplaceTemplate.body[3].min = day1;
+  workplaceTemplate.body[3].max = day2;
+  workplaceTemplate.body[3].value = day1;
 
-  customTemplate.body[4].choices = choiceList;
+  workplaceTemplate.body[4].choices = choiceList;
   if(WorkCodeAM !== undefined && WorkCodeAM !== null) {
-    customTemplate.body[4].value = WorkCodeAM;
+    workplaceTemplate.body[4].value = WorkCodeAM;
   }
 
-  customTemplate.body[5].choices = choiceList;
+  workplaceTemplate.body[5].choices = choiceList;
   if(WorkCodePM !== undefined && WorkCodePM !== null) {
-    customTemplate.body[5].value = WorkCodePM;
+    workplaceTemplate.body[5].value = WorkCodePM;
   }
   
   muser.sendAdaptiveCard(
-    AdaptiveCards.declare<CardData>(customTemplate).render({
+    AdaptiveCards.declare<CardData>(workplaceTemplate).render({
       title: '근무지 등록',
-      body: '근무지를 등록합니다.',
+      body: workplaceTemplate.body[2].choices[0].title,
       date: ``,
     })
   );
@@ -405,5 +395,119 @@ export const insertWorkplace = async (body) => {
       }
   });
 
-  await user.sendMessage(`${userInfo.Name}님의 ${body.value.WorkDate} 일자 업무 근무지이 입력되었습니다.`);
+  await user.sendMessage(`${userInfo.Name}님의 ${body.value.WorkDate} 일자 업무 근무지가 입력되었습니다.`);
+}
+
+export const checkSecretMessage = async (body, receiverName) => {
+  sendSecretMessageTemplate.body[2].choices.length = 0;
+
+  for (const user of Object.entries(userMap)) {
+    sendSecretMessageTemplate.body[2].choices.push({
+      "title": user[1].account.name,
+      "value": user[1].account.id
+    });
+
+    if(receiverName === user[1].account.name) {
+      sendSecretMessageTemplate.body[2].value = user[1].account.id;
+    }
+  }
+
+  const user = userMap[body.from.id];
+  user.sendAdaptiveCard(
+    AdaptiveCards.declare<CardData>(sendSecretMessageTemplate).render({
+      title: '',
+      body: '',
+      date: ``,
+    })
+  );
+}
+
+export const viewSecretMessage = async (body, receiverName) => {
+  sendSecretMessageTemplate.body[2].choices.length = 0;
+
+  for (const user of Object.entries(userMap)) {
+    sendSecretMessageTemplate.body[2].choices.push({
+      "title": user[1].account.name,
+      "value": user[1].account.id
+    });
+
+    if(receiverName === user[1].account.name) {
+      sendSecretMessageTemplate.body[2].value = user[1].account.id;
+    }
+  }
+
+  const user = userMap[body.from.id];
+  user.sendAdaptiveCard(
+    AdaptiveCards.declare(sendSecretMessageTemplate).render()
+  );
+}
+
+export const sendSecretMessage = async (body) => {
+  const user = userMap[body.from.id];
+  const receiver = userMap[body.value.receiver];
+
+  const request = new sql.Request();
+  request.input('AppId', sql.VarChar, process.env.BOT_ID);
+  request.input('Sender', sql.VarChar, user.account.userPrincipalName);
+  request.input('SenderNick', sql.VarChar, body.value.senderNick);
+  request.input('Receiver', sql.VarChar, receiver.account.userPrincipalName);
+  request.input('Contents', sql.VarChar, body.value.message);
+
+  const query = `[IAM].[bot].[Usp_Set_Send_Message] @AppId, @Sender, @SenderNick, @Receiver, @Contents`;
+
+  request.query(query, (err, result) => {
+    if(err){
+        return console.log('query error :',err)
+    }
+  });
+
+  request.on('row', (row) => {
+    console.log('row.ID ' + row.ID);
+    if(row.ID === -1) {
+      user.sendMessage('오늘 이미 3번의 메세지를 전송하셨습니다.');
+      return;
+    }
+    user.sendMessage('메세지가 전송되었습니다.');
+
+    openMessageTemplate.actions[0].data.messageId = row.ID;    
+    receiver.sendAdaptiveCard(
+      AdaptiveCards.declare(openMessageTemplate).render()
+    );
+  });
+}
+
+export const openSecretMessage = async (body) => {
+  const request = new sql.Request();
+  console.log('openSecretMessage 01' + JSON.stringify(body))
+  request.input('MsgId', sql.BigInt, body.value.messageId);
+  request.input('AppId', sql.VarChar, process.env.BOT_ID);
+
+  const query = `[IAM].[bot].[Usp_Get_Send_Message] @MsgId`;
+
+  console.log('openSecretMessage 02')
+  request.query(query, (err, result) => {
+    if(err){
+        return console.log('query error :',err)
+    }
+  });
+
+  request.on('row', (row) => {
+    const user = userMap[body.from.id];
+    user.sendAdaptiveCard(
+      AdaptiveCards.declare<CardData>(secretMessageTemplate).render({
+        title: `${row.SenderNick} 님이 보낸 메시지 입니다.`,
+        body: row.Contents,
+        date: ``,
+      })
+    );
+
+    const receiver = userMap[row.Sender];
+    if(receiver === undefined || receiver === null) {
+      return;
+    }
+    
+    if(row.IsOpen === 0) {
+      receiver.sendMessage(`${user.account.name} 님이 메세지를 열어보았습니다.`);
+    }
+  });
 }

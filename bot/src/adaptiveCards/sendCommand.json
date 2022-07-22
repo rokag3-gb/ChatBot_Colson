@@ -27,9 +27,16 @@
     },
     {
       "type": "Action.Submit",
-      "title": "근무지 입력",
+      "title": "근무지 등록",
       "data": {
         "messageType": "insertSchedule"
+      }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "메시지 전달",
+      "data": {
+        "messageType": "viewSecretMessage"
       }
     }
   ]
