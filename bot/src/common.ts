@@ -97,6 +97,11 @@ export const getWorkSchedule = async (id, name, date) => {
       date = 7;
     }
 
+    const tmp = date * 1;
+    if(tmp > 30) {
+      date = 30;
+    }
+
     let message = '';
     const request = new sql.Request();
     request.input('Username', sql.VarChar, name);

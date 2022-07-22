@@ -59,7 +59,7 @@ async (req, res) => {
       getWorkCode(req.body.from.id, null, text[2]);
     } else if (text[0] === '근무지') {
       getWorkSchedule(req.body.from.id, text[1], text[2]);
-    } else if (text[0] === '홈' || text[0].toLowerCase() === 'home') {
+    } else if (text[0] === '홈' || text[0].toLowerCase() === 'home' || text[0] === 'ㅎ') {
       sendCommand(req.body.from.id);
     } else {
       sorryMessage(req.body.from.id);
