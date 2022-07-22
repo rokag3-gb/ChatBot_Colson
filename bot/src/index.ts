@@ -64,7 +64,6 @@ async (req, res) => {
     } else {
       sorryMessage(req.body.from.id);
     }
-
   } else if (req.body.value !== undefined && req.body.value !== null) {
     if (req.body.value.messageType === "getSchedule") {  
       sendUserList(req.body.from.id);
@@ -87,6 +86,7 @@ async (req, res) => {
     if(req.body.action === 'add') {
       sendMessage(req.body.from.id, `반갑습니다. 콜슨 앱이 설치되었습니다.`);
     } else if (req.body.action === 'remove') {
+      //앱 삭제 동작 발생 시
     }
   } else {
     await sorryMessage(req.body.from.id);

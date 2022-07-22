@@ -101,30 +101,7 @@ export const getWorkSchedule = async (id, name, date) => {
     const request = new sql.Request();
     request.input('Username', sql.VarChar, name);
     request.input('date', sql.Int, date);
-    request.query(`SELECT 
-    FORMAT(WC.WorkDate, 'yyyy-MM-dd') as date,
-      WC.WorkCodeAM as am,
-      WC.WorkCodePM as pm,
-        CASE WHEN(DATEPART(WEEKDAY, WC.WorkDate) = '1') THEN '일'
-          WHEN(DATEPART(WEEKDAY, WC.WorkDate) = '2') THEN '월'
-          WHEN(DATEPART(WEEKDAY, WC.WorkDate) = '3') THEN '화'
-          WHEN(DATEPART(WEEKDAY, WC.WorkDate) = '4') THEN '수'
-          WHEN(DATEPART(WEEKDAY, WC.WorkDate) = '5') THEN '목'
-          WHEN(DATEPART(WEEKDAY, WC.WorkDate) = '6') THEN '금'
-          WHEN(DATEPART(WEEKDAY, WC.WorkDate) = '7') THEN '토' END as week
-        FROM 
-      (SELECT UPN, WorkDate, C1.Name AS WorkCodeAM, C2.Name WorkCodePM
-      FROM IAM.bot.Workplace W
-      JOIN Sale.dbo.Code C1
-      ON W.WorkCodeAM = C1.Code
-      JOIN Sale.dbo.Code C2
-      ON W.WorkCodePM = C2.Code) WC
-      JOIN IAM.dbo.USER_ENTITY U
-      ON WC.UPN = U.EMAIL
-      WHERE U.FullNameKR = @Username
-      AND WC.WorkDate >= GETDATE() - 1 
-      AND WC.WorkDate < GETDATE() + @date
-      ORDER BY WC.WorkDate`, (err, result) => {
+    request.query(`[IAM].[bot].[Usp_Get_Workplace] @Username, @date`, (err, result) => {
       if(err){
           return console.log('query error :',err)
       }
@@ -135,10 +112,10 @@ export const getWorkSchedule = async (id, name, date) => {
 
     request.on('row', (row) => {
       message += `<tr>
-        <td align="center">${row.date}</td>
-        <td align="center">${row.week}</td>
-        <td align="center">${row.am}</td>
-        <td align="center">${row.pm}</td>
+        <td align="center">${row.Date}</td>
+        <td align="center">${row.WeekName}</td>
+        <td align="center">${row.WorkAM}</td>
+        <td align="center">${row.WorkPM}</td>
       </tr>`
     })
     .on('done', async () => { 
@@ -170,23 +147,10 @@ export const userRegister = async (userId) => {
         const request = new sql.Request();
         request.stream = true;
         request.input('botId', sql.VarChar, process.env.BOT_ID);
-      
         request.input('userId', sql.VarChar, member.account.id);
         request.input('upn', sql.VarChar, member.account.userPrincipalName);
 
-        request.query(`IF EXISTS (SELECT 1 FROM IAM.bot.App_User WHERE AppId = @botId AND UPN = @upn)
-          BEGIN
-            UPDATE IAM.bot.App_User 
-            SET AppUserId=@userId, SaveDate=GETDATE()
-            WHERE UPN = @upn AND AppId = @botId;
-          END
-          ELSE
-          BEGIN
-            INSERT INTO IAM.bot.App_User
-            (AppId, UPN, AppUserId)
-            VALUES
-            (@botId, @upn, @userId)
-          END`
+        request.query(`[IAM].[bot].[Usp_Set_App_User] @botId, @upn, @userId`
           , (err) => {
             if(err){
                 return console.log('query error :',err)
@@ -336,15 +300,7 @@ export const findWorkplace = async (choiceList) => {
   const request = new sql.Request();
   request.input('botId', sql.VarChar, process.env.BOT_ID);
   request.input('date', sql.VarChar, getToday(null));
-  let query = `SELECT AU.AppUserId, W.UPN, W.WorkCodeAM, W.WorkCodePM FROM
-    (select AppId, UPN, AppUserId
-    FROM IAM.bot.App_User
-    WHERE AppId = @botId) AU
-    LEFT OUTER JOIN 
-    (SELECT * FROM IAM.bot.Workplace
-    WHERE WorkDate = @date) W
-    ON AU.UPN = W.UPN 
-    WHERE  NOT(W.WorkCodeAM = 'WRK-OFF' AND W.WorkCodePM = 'WRK-OFF') `;
+  const query = `[IAM].[bot].[Usp_Get_Users_Workplace_All] @date, @botId`;
 
   request.query(query, (err, result) => {
     if(err){
@@ -362,15 +318,7 @@ export const notFoundWorkplace = async (choiceList) => {
   const request = new sql.Request();
   request.input('botId', sql.VarChar, process.env.BOT_ID);
   request.input('date', sql.VarChar, getToday(null));
-  let query = `SELECT AppUserId FROM
-	(select AppId, UPN, AppUserId
-	FROM IAM.bot.App_User
-	WHERE AppId = @botId) AU
-	LEFT OUTER JOIN 
-	(SELECT * FROM IAM.bot.Workplace
-	WHERE WorkDate = @date) W
-	ON AU.UPN = W.UPN
-	WHERE W.WorkCodeAM IS NULL AND W.WorkCodePM IS NULL `;
+  const query = `[IAM].[bot].[Usp_Get_Users_Workplace_Resend] @date, @botId`;
 
   request.query(query, (err, result) => {
     if(err){
