@@ -7,3 +7,8 @@ export interface CardData {
   body: string;
   date: string;
 }
+
+export interface BirthCardData {
+  title: string;
+  body: string;
+}

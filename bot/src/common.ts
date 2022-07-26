@@ -1,12 +1,14 @@
 import { bot } from "./internal/initialize";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
-import { CardData } from "./model/cardModels";
+import { CardData, BirthCardData } from "./model/cardModels";
 import sendCommandTemplate from "./adaptiveCards/sendCommand.json";
 import secretMessageTemplate from "./adaptiveCards/secretMessage.json";
 import scheduleUserList from "./adaptiveCards/scheduleUserList.json";
 import workplaceTemplate from "./adaptiveCards/insertWorkplace.json";
 import sendSecretMessageTemplate from "./adaptiveCards/sendSecretMessage.json";
 import openMessageTemplate from "./adaptiveCards/openMessage.json";
+import openBirthMessageTemplate from "./adaptiveCards/openBirthMessage.json";
+import sendBirthMessageTemplate from "./adaptiveCards/sendBirthMessage.json";
 import { sql } from "./mssql"
 
 export const userMap = new Object();
@@ -34,6 +36,11 @@ const getTodayTime = () => {
   
   return d.getFullYear() + "-" + ("00" + (d.getMonth() + 1)).slice(-2) + "-" + ("00" + d.getDate()).slice(-2) + " " + 
         ("00" + d.getHours()).slice(-2) + ":" + ("00" + d.getMinutes()).slice(-2) + ":" + ("00" + d.getSeconds()).slice(-2);
+}
+
+const makeBirthString = (date) => {
+  const d = new Date(date);
+  return ("00" + (d.getMonth() + 1)).slice(-2) + "월 " + ("00" + d.getDate()).slice(-2) + "일"
 }
 
 const checkWeekday = () => {
@@ -75,7 +82,7 @@ export const sendCommand = async (userID) => {
   const user = userMap[userID];
   user.sendAdaptiveCard(
     AdaptiveCards.declare<CardData>(sendCommandTemplate).render({
-      title: `명령 모아보기`,
+      title: `홈`,
       body: `명령을 선택해주세요.`,
       date: ``,
     })
@@ -138,7 +145,6 @@ export const userRegister = async (userId) => {
   for (const target of installations) {
     const members = await target.members();
     for(const member of members) {
-      userMap[member.account.id] = member;
       if(member.account.id.indexOf(userId) >= 0 || userId === null) {
         const request = new sql.Request();
         request.stream = true;
@@ -152,6 +158,8 @@ export const userRegister = async (userId) => {
                 return console.log('query error :',err)
             }
         });
+        
+        userMap[member.account.id] = member;
       }
     }
   }
@@ -159,7 +167,6 @@ export const userRegister = async (userId) => {
   await wait(500);
   console.log('userRegister complete');
 }
-
 
 export const sorryMessage = async (id) => {
   await sendMessage(id,  `죄송합니다.
@@ -508,6 +515,162 @@ export const openSecretMessage = async (body) => {
     
     if(row.IsOpen === 0) {
       receiver.sendMessage(`${user.account.name} 님이 메세지를 열어보았습니다.`);
+    }
+  });
+}
+
+export const sendBirthdayCard = async () => {
+  console.log('sendBirthdayCard 01 ');
+  const userList = <[]>await getBirthdayUser();
+  if(userList.length === 0) {
+    return;
+  }
+  console.log('sendBirthdayCard 02 ');
+
+  for(const u of userList) {
+    console.log('sendBirthdayCard 03 ');
+    const user = userMap[(<any>u).AppUserId];
+    const userInfo = allUserList[(<any>u).UPN];
+    if(user === undefined || user === null || userInfo === undefined || userInfo === null) {
+      continue;
+    }
+    console.log('sendBirthdayCard 04 ' + JSON.stringify(userInfo));
+    console.log('sendBirthdayCard 04-2 ' + userInfo.BirthDate);
+    
+    openBirthMessageTemplate.actions[0].data.messageId = <number>await setSendBirth(userInfo.UPN, userInfo.BirthDate);
+    
+    console.log('row.birthId2 !!!!!!!!!!!!!!!!!!   ==== ' + openBirthMessageTemplate.actions[0].data.messageId);
+    console.log('sendBirthdayCard 05 ');
+    openBirthMessageTemplate.actions[0].data.birthDate = userInfo.BirthDate
+    console.log('sendBirthdayCard 06 ');
+    openBirthMessageTemplate.actions[0].data.username = userInfo.Name;
+    console.log('sendBirthdayCard 07 ');
+
+    user.sendAdaptiveCard(
+      AdaptiveCards.declare(openBirthMessageTemplate).render()
+    );
+  }
+}
+
+const getBirthdayLink = () => {
+  return new Promise((resolve, reject) => {
+    try {
+      const request = new sql.Request();
+      const query = `[IAM].[bot].[Usp_Get_Birth_Link]`;
+    
+      request.query(query, (err, result) => {
+        if(err){
+            return console.log('query error :',err)
+        }
+      });
+    
+      const list = [];
+      request.on('row', (row) => {    
+        list.push(row);
+      }).on('done', () => { 
+        resolve(list);
+      });
+    } catch(e) {
+      reject(e);
+    }
+  });
+}
+
+const getBirthdayUser = () => {
+  return new Promise((resolve, reject) => {
+    try {
+      const request = new sql.Request();
+      request.input('botId', sql.VarChar, process.env.BOT_ID);
+      const query = `[IAM].[bot].[Usp_Get_Users_Birthday_Upcoming] @botId`;
+    
+      request.query(query, (err, result) => {
+        if(err){
+            return console.log('query error :',err)
+        }
+      });
+    
+      const list = [];
+      request.on('row', (row) => {    
+        list.push(row);
+      }).on('done', () => { 
+        resolve(list);
+      });
+    } catch(e) {
+      reject(e);
+    }
+  });
+}
+
+const setSendBirth = (receiver, birthDate) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const request = new sql.Request();
+      request.input('appId', sql.VarChar, process.env.BOT_ID);
+      request.input('receiver', sql.VarChar, receiver);
+      request.input('birthDate', sql.VarChar, birthDate);
+
+      console.log('setSendBirth 01 ' + receiver);
+      console.log('setSendBirth 02 ' + birthDate);
+    
+      request.query(`[IAM].[bot].[Usp_Set_Send_Birth] @appId, @receiver, @birthDate`
+        , (err) => {
+          if(err){
+            reject(err);
+          }
+      });
+    
+      request.on('row', (row) => {
+        console.log('row.birthId !!!!!!!!!!!!!!!!!!   ==== ' + row.birthId);
+        resolve(row.birthId);
+      });
+    } catch(e) {
+      reject(e);
+    }
+  });
+}
+
+export const openBirthMessage = async (body) => {
+  const birthDate = makeBirthString(body.value.birthDate);
+  const user = userMap[body.from.id];
+
+  const link = <[any]>await getBirthdayLink();
+
+  for(const row of link) {
+    sendBirthMessageTemplate.actions.push({
+      type: "Action.OpenUrl",
+      title: row.LinkName,
+      url: row.Link,
+    });
+  }
+
+  await setOpenBirth(body.value.messageId);
+  
+  user.sendAdaptiveCard(
+    AdaptiveCards.declare<BirthCardData>(sendBirthMessageTemplate).render({
+      title: `${birthDate}은 ${body.value.username} 님의 생일입니다.`,
+      body: `생일축하해요~~~`
+    })
+  );
+}
+
+const setOpenBirth = (birthId) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const request = new sql.Request();
+      request.input('birthId', sql.BigInt, birthId);
+    
+      request.query(`[IAM].[bot].[Usp_Set_Open_Birth] @birthId`
+        , (err) => {
+          if(err){
+            reject(err);
+          }
+      });
+    
+      request.on('done', () => {
+        resolve(true);
+      });
+    } catch(e) {
+      reject(e);
     }
   });
 }

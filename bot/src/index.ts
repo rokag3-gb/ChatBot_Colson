@@ -15,6 +15,8 @@ import { sendMessage,
          viewSecretMessage,
          sendSecretMessage,
          openSecretMessage,
+         sendBirthdayCard,
+         openBirthMessage,
          userMap } from "./common"
 import { connected } from "./mssql"
 
@@ -66,6 +68,8 @@ async (req, res) => {
       sendCommand(req.body.from.id);
     } else if (text[0] === '메시지' || text[0] === '메세지') {
       viewSecretMessage(req.body, text[1]);
+    } else if (text[0] === 'test') {
+      sendBirthdayCard();
     } else {
       sorryMessage(req.body.from.id);
     }
@@ -89,6 +93,8 @@ async (req, res) => {
       insertWorkplace(req.body);
     } else if (req.body.value.messageType === "openSecretMessage") {  
       openSecretMessage(req.body);
+    } else if (req.body.value.messageType === "openBirthMessage") {  
+      openBirthMessage(req.body);
     } else {
       sorryMessage(req.body.from.id);
     }
@@ -114,4 +120,9 @@ cron.schedule('00 00 09 * * *', async () => {
 //근무지 입력 안한 사람들에게 카드 전송
 cron.schedule('00 00 10 * * *', async () => {  
   getWorkCode(null, notFoundWorkplace, null);
+});
+
+//생일자에게 카드 전송
+cron.schedule('00 00 10 * * *', async () => {  
+  sendBirthdayCard();
 });
