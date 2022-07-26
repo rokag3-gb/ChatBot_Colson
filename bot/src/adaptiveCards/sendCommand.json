@@ -22,14 +22,14 @@
       "type": "Action.Submit",
       "title": "근무지 조회",
       "data": {
-        "messageType": "getSchedule"
+        "messageType": "getworkplace"
       }
     },
     {
       "type": "Action.Submit",
       "title": "근무지 등록",
       "data": {
-        "messageType": "insertSchedule"
+        "messageType": "insertworkplace"
       }
     },
     {

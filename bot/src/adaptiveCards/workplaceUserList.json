@@ -19,7 +19,7 @@
         "type": "Action.Submit",
         "title": "조회하기",
         "data": {
-          "messageType": "schedule"
+          "messageType": "getWorkplace"
         }
       }
     ]

@@ -2,22 +2,22 @@ import * as restify from "restify";
 import { bot } from "./internal/initialize";
 import { sendMessage, 
          sendCommand, 
-         sendUserList, 
-         getWorkSchedule, 
          sorryMessage,
          getUserList,
          userRegister,
          insertLog,
-         insertWorkplace,
-         findWorkplace,
-         notFoundWorkplace,
-         getWorkCode,
-         viewSecretMessage,
-         sendSecretMessage,
-         openSecretMessage,
-         sendBirthdayCard,
-         openBirthMessage,
-         userMap } from "./common"
+         userMap } from "./common";
+import { setWorkplace, 
+         viewWorkplaceUser,
+         insertWorkplace, 
+         getWorkplace } from "./workplace";
+import { viewSecretMessage,
+  sendSecretMessage,
+  openSecretMessage, } from "./secretMessage";
+  
+import { sendBirthdayCard,
+  openBirthMessage } from "./birthMessage";
+
 import { connected } from "./mssql"
 
 const cron = require('node-cron');
@@ -58,30 +58,28 @@ async (req, res) => {
   
     if (text[0] === '근무지등록') {
       await sendMessage(req.body.from.id, `근무지 등록을 선택하셨습니다.`);
-      getWorkCode(req.body.from.id, null, text[1]);
+      setWorkplace(req.body.from.id, text[1], 'work');
     } else if (text[0] + text[1] === '근무지등록') {
       await sendMessage(req.body.from.id, `근무지 등록을 선택하셨습니다.`);
-      getWorkCode(req.body.from.id, null, text[2]);
+      setWorkplace(req.body.from.id, text[2], 'work');
     } else if (text[0] === '근무지') {
-      getWorkSchedule(req.body.from.id, text[1], text[2]);
+      getWorkplace(req.body.from.id, text[1], text[2]);
     } else if (text[0] === '홈' || text[0].toLowerCase() === 'home' || text[0] === 'ㅎ') {
       sendCommand(req.body.from.id);
     } else if (text[0] === '메시지' || text[0] === '메세지') {
       viewSecretMessage(req.body, text[1]);
-    } else if (text[0] === 'test') {
-      sendBirthdayCard();
     } else {
       sorryMessage(req.body.from.id);
     }
   } else if (req.body.value !== undefined && req.body.value !== null) {
-    if (req.body.value.messageType === "getSchedule") {  
-      sendUserList(req.body.from.id);
-    } else if (req.body.value.messageType === "insertSchedule") {  
+    if (req.body.value.messageType === "getworkplace") {  
+      viewWorkplaceUser(req.body.from.id);
+    } else if (req.body.value.messageType === "insertworkplace") {  
       await sendMessage(req.body.from.id, `근무지 등록을 선택하셨습니다.`);
-      getWorkCode(req.body.from.id, null, null);
-    } else if (req.body.value.messageType === "schedule") {  
+      setWorkplace(req.body.from.id, null, 'work');
+    } else if (req.body.value.messageType === "getWorkplace") {  
       if(req.body.value.username !== undefined) {
-        getWorkSchedule(req.body.from.id, req.body.value.username, req.body.value.date);
+        getWorkplace(req.body.from.id, req.body.value.username, req.body.value.date);
       } else {
         sendMessage(req.body.from.id, `조회하실 분의 이름을 선택하고 다시 조회해주세요.`);
       }
@@ -89,7 +87,7 @@ async (req, res) => {
       viewSecretMessage(req.body, null);
     } else if (req.body.value.messageType === "sendSecretMessage") {  
       sendSecretMessage(req.body);
-    } else if (req.body.value.messageType === "workplace") {  
+    } else if (req.body.value.messageType === "insertWorkplace") {  
       insertWorkplace(req.body);
     } else if (req.body.value.messageType === "openSecretMessage") {  
       openSecretMessage(req.body);
@@ -114,12 +112,12 @@ async (req, res) => {
 
 //휴가자 제외한 전직원에게 근무지 입력 카드 전송
 cron.schedule('00 00 09 * * *', async () => {
-  getWorkCode(null, findWorkplace, null);
+  setWorkplace(null, null, 'send');
 });
 
 //근무지 입력 안한 사람들에게 카드 전송
 cron.schedule('00 00 10 * * *', async () => {  
-  getWorkCode(null, notFoundWorkplace, null);
+  setWorkplace(null, null, 'resend');
 });
 
 //생일자에게 카드 전송
