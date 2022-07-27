@@ -7,10 +7,10 @@ import { sendMessage,
          userRegister,
          insertLog,
          userMap } from "./common";
-import { setWorkplace, 
-         viewWorkplaceUser,
-         insertWorkplace, 
-         getWorkplace } from "./workplace";
+import { getWorkplaceForm,
+         getWorkplace, 
+         setWorkplaceForm,
+         setWorkplace } from "./workplace";
 import { viewSecretMessage,
   sendSecretMessage,
   openSecretMessage, } from "./secretMessage";
@@ -57,11 +57,9 @@ async (req, res) => {
     const text = req.body.text.trim().split(" ");
   
     if (text[0] === '근무지등록') {
-      await sendMessage(req.body.from.id, `근무지 등록을 선택하셨습니다.`);
-      setWorkplace(req.body.from.id, text[1], 'work');
+      setWorkplaceForm(req.body.from.id, text[1], 'work');
     } else if (text[0] + text[1] === '근무지등록') {
-      await sendMessage(req.body.from.id, `근무지 등록을 선택하셨습니다.`);
-      setWorkplace(req.body.from.id, text[2], 'work');
+      setWorkplaceForm(req.body.from.id, text[2], 'work');
     } else if (text[0] === '근무지') {
       getWorkplace(req.body.from.id, text[1], text[2]);
     } else if (text[0] === '홈' || text[0].toLowerCase() === 'home' || text[0] === 'ㅎ') {
@@ -72,23 +70,18 @@ async (req, res) => {
       sorryMessage(req.body.from.id);
     }
   } else if (req.body.value !== undefined && req.body.value !== null) {
-    if (req.body.value.messageType === "getworkplace") {  
-      viewWorkplaceUser(req.body.from.id);
-    } else if (req.body.value.messageType === "insertworkplace") {  
-      await sendMessage(req.body.from.id, `근무지 등록을 선택하셨습니다.`);
-      setWorkplace(req.body.from.id, null, 'work');
+    if (req.body.value.messageType === "getWorkplaceForm") {  
+      getWorkplaceForm(req.body.from.id);
     } else if (req.body.value.messageType === "getWorkplace") {  
-      if(req.body.value.username !== undefined) {
-        getWorkplace(req.body.from.id, req.body.value.username, req.body.value.date);
-      } else {
-        sendMessage(req.body.from.id, `조회하실 분의 이름을 선택하고 다시 조회해주세요.`);
-      }
+      getWorkplace(req.body.from.id, req.body.value.username, req.body.value.date);
+    } else if (req.body.value.messageType === "setWorkplaceForm") {  
+      setWorkplaceForm(req.body.from.id, null, 'work');
+    } else if (req.body.value.messageType === "setWorkplace") {  
+      setWorkplace(req.body);
     } else if (req.body.value.messageType === "viewSecretMessage") {  
       viewSecretMessage(req.body, null);
     } else if (req.body.value.messageType === "sendSecretMessage") {  
       sendSecretMessage(req.body);
-    } else if (req.body.value.messageType === "insertWorkplace") {  
-      insertWorkplace(req.body);
     } else if (req.body.value.messageType === "openSecretMessage") {  
       openSecretMessage(req.body);
     } else if (req.body.value.messageType === "openBirthMessage") {  
@@ -101,7 +94,7 @@ async (req, res) => {
     if(req.body.action === 'add') {
       sendMessage(req.body.from.id, `반갑습니다. 콜슨 앱이 설치되었습니다.`);
     } else if (req.body.action === 'remove') {
-      //앱 삭제 동작 발생 시
+      delete userMap[req.body.from.id];
     }
   } else {
     await sorryMessage(req.body.from.id);
@@ -112,12 +105,12 @@ async (req, res) => {
 
 //휴가자 제외한 전직원에게 근무지 입력 카드 전송
 cron.schedule('00 00 09 * * *', async () => {
-  setWorkplace(null, null, 'send');
+  setWorkplaceForm(null, null, 'send');
 });
 
 //근무지 입력 안한 사람들에게 카드 전송
 cron.schedule('00 00 10 * * *', async () => {  
-  setWorkplace(null, null, 'resend');
+  setWorkplaceForm(null, null, 'resend');
 });
 
 //생일자에게 카드 전송

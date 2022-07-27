@@ -10,9 +10,12 @@ import { sendMessage,
          userMap,
          allUserList } from "./common";
     
-export const setWorkplace = async (userId, username, type) => {
+export const setWorkplaceForm = async (userId, username, type) => {
   if((userId === undefined || userId === null) && checkWeekday()) {
     return;
+  }
+  if(userId !== undefined && userId !== null) {
+    await sendMessage(userId, `근무지 등록을 선택하셨습니다.`);
   }
 
   const choiceList = await getWorkCode();
@@ -25,7 +28,7 @@ export const setWorkplace = async (userId, username, type) => {
   }
 }
 
-export const viewWorkplaceUser = async (userId) => {
+export const getWorkplaceForm = async (userId) => {
   await sendMessage(userId, `근무지 조회를 선택하셨습니다.`);
   const workplaceUserList = workplaceUserListTemplate;
   workplaceUserList.body[0].choices.length = 0;
@@ -181,7 +184,7 @@ export const sendWorkplaceCard = async (userID, choiceList, WorkCodeAM, WorkCode
   );
 }
 
-export const insertWorkplace = async (body) => {
+export const setWorkplace = async (body) => {
   const request = new sql.Request();
   request.stream = true;
 
@@ -210,6 +213,10 @@ export const insertWorkplace = async (body) => {
 }
 
 export const getWorkplace = async (id, name, date) => {
+  if(name === undefined || name === null) {
+    sendMessage(id, `조회하실 분의 이름을 선택하고 다시 조회해주세요.`);
+    return;
+  }
   await sendMessage(id, `'${name}' 님을 선택하셨습니다.`);
   if(date === undefined || date === null) {
     date = 7;
