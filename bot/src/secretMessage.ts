@@ -23,11 +23,7 @@ export const checkSecretMessage = async (body, receiverName) => {
 
   const user = userMap[body.from.id];
   user.sendAdaptiveCard(
-    AdaptiveCards.declare<CardData>(sendSecretMessageTemplate).render({
-      title: '',
-      body: '',
-      date: ``,
-    })
+    AdaptiveCards.declare(sendSecretMessageTemplate).render()
   );
 }
          
@@ -106,10 +102,10 @@ export const openSecretMessage = async (body) => {
       })
     );
 
-    const receiver = userMap[row.AppUserId];
+    const sender = userMap[row.AppUserId];
     //어이없네 bit 타입을 insert 할때는 0, 1로 안보내면 에러나더니 select 할때는 true, false 로 받아야 처리가 가능하다
-    if(row.IsOpen === false && receiver !== undefined && receiver !== null) {
-      receiver.sendMessage(`${user.account.name} 님이 메세지를 열어보았습니다.`);
+    if(row.IsOpen === false && sender !== undefined && sender !== null) {
+      sender.sendMessage(`${user.account.name} 님이 메세지를 열어보았습니다.`);
     }
   });
 }

@@ -1,5 +1,5 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
-import { BirthCardData } from "./model/cardModels";
+import { BirthCardData, BirthOpenData } from "./model/cardModels";
 import openBirthMessageTemplate from "./adaptiveCards/openBirthMessage.json";
 import sendBirthMessageTemplate from "./adaptiveCards/sendBirthMessage.json";
 
@@ -19,12 +19,13 @@ export const sendBirthdayCard = async () => {
     if(user === undefined || user === null || userInfo === undefined || userInfo === null) {
       continue;
     }    
-    openBirthMessageTemplate.actions[0].data.messageId = <number>await setSendBirth(userInfo.UPN, userInfo.BirthDate);
-    openBirthMessageTemplate.actions[0].data.birthDate = userInfo.BirthDate
-    openBirthMessageTemplate.actions[0].data.username = userInfo.Name;
-
+    const msgId = await setSendBirth(userInfo.UPN, userInfo.BirthDate);
     user.sendAdaptiveCard(
-      AdaptiveCards.declare(openBirthMessageTemplate).render()
+      AdaptiveCards.declare<BirthOpenData>(openBirthMessageTemplate).render({
+        messageId: <any>msgId,
+        birthDate: userInfo.BirthDate,
+        username: userInfo.Name
+      })
     );
   }
 }
@@ -109,6 +110,7 @@ export const openBirthMessage = async (body) => {
 
   const link = <[any]>await getBirthdayLink();
 
+  sendBirthMessageTemplate.actions.length = 0;
   for(const row of link) {
     sendBirthMessageTemplate.actions.push({
       type: "Action.OpenUrl",
@@ -117,6 +119,7 @@ export const openBirthMessage = async (body) => {
     });
   }
 
+  console.log('body.value.messageId ' + body.value.messageId);
   await setOpenBirth(body.value.messageId);
   
   user.sendAdaptiveCard(

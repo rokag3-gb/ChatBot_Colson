@@ -16,9 +16,9 @@
       "title": "열기",
       "data": {
         "messageType": "openBirthMessage",
-        "messageId": 0,
-        "birthDate": "",
-        "username": ""
+        "messageId": "${messageId}",
+        "birthDate": "${birthDate}",
+        "username": "${username}"
       }
     }
   ]

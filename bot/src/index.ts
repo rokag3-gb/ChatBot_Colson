@@ -66,6 +66,8 @@ async (req, res) => {
       sendCommand(req.body.from.id);
     } else if (text[0] === '메시지' || text[0] === '메세지') {
       viewSecretMessage(req.body, text[1]);
+    } else if (text[0] === 'birthTest') {
+      sendBirthdayCard();
     } else {
       sorryMessage(req.body.from.id);
     }
@@ -114,6 +116,6 @@ cron.schedule('00 00 10 * * *', async () => {
 });
 
 //생일자에게 카드 전송
-cron.schedule('00 00 10 * * *', async () => {  
+cron.schedule('00 30 10 * * *', async () => {  
   sendBirthdayCard();
 });

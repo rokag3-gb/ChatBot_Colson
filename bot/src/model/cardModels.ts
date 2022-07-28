@@ -12,3 +12,10 @@ export interface BirthCardData {
   title: string;
   body: string;
 }
+
+
+export interface BirthOpenData {
+  messageId: BigInteger;
+  birthDate: string;
+  username: string;
+}
