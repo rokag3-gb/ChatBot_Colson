@@ -115,6 +115,14 @@ cron.schedule('00 00 10 * * *', async () => {
   setWorkplaceForm(null, null, 'resend');
 });
 
+cron.schedule('00 30 13 * * *', async () => {
+  setWorkplaceForm(null, null, 'resend');
+});
+
+cron.schedule('00 30 14 * * *', async () => {  
+  setWorkplaceForm(null, null, 'resend');
+});
+
 //생일자에게 카드 전송
 cron.schedule('00 30 10 * * *', async () => {  
   sendBirthdayCard();

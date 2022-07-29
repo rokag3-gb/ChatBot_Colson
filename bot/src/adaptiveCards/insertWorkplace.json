@@ -41,7 +41,7 @@
     {
       "type": "Input.ChoiceSet",
       "id": "WorkCodeAM",
-      "label": "오전 업무 근무지",
+      "label": "오전 근무지",
       "style": "compact",
       "placeholder": "근무지를 선택해 주세요.",
       "errorMessage": "근무지를 선택해 주세요.",
@@ -52,11 +52,10 @@
     {
       "type": "Input.ChoiceSet",
       "id": "WorkCodePM",
-      "label": "오후 업무 근무지",
+      "label": "오후 근무지",
       "style": "compact",
       "placeholder": "근무지를 선택해 주세요.",
       "errorMessage": "근무지를 선택해 주세요.",
-      "isRequired": true,
       "choices": [
       ]
     }
