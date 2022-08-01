@@ -46,11 +46,7 @@ export const sendMessage = async (userID, body) => {
 export const sendCommand = async (userID) => {
   const user = userMap[userID];
   user.sendAdaptiveCard(
-    AdaptiveCards.declare<CardData>(sendCommandTemplate).render({
-      title: `홈`,
-      body: `명령을 선택해주세요.`,
-      date: ``,
-    })
+    AdaptiveCards.declare(sendCommandTemplate).render()
   );
 }
 

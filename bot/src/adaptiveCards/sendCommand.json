@@ -5,14 +5,14 @@
   "body": [
     {
       "type": "TextBlock",
-      "text": "${title}",
+      "text": "홈",
       "size": "small",
       "weight": "Bolder",
       "wrap": true
     },
     {
       "type": "TextBlock",
-      "text": "${body}",
+      "text": "명령을 선택해주세요.",
       "isSubtle": true,
       "wrap": true
     }
