@@ -1,6 +1,5 @@
 import { bot } from "./internal/initialize";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
-import { CardData } from "./model/cardModels";
 import sendCommandTemplate from "./adaptiveCards/sendCommand.json";
 import { sql } from "./mssql"
 

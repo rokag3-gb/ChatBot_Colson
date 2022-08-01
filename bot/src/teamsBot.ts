@@ -1,5 +1,6 @@
-import { MessageFactory, ActivityTypes } from "botbuilder";
 import { TeamsActivityHandler,
+  MessageFactory, 
+  ActivityTypes,
   CardFactory,
   TurnContext,
   AdaptiveCardInvokeValue,
@@ -25,7 +26,7 @@ export class TeamsBot extends TeamsActivityHandler {
     super();
 
     this.onMessage(async (context, next) => {
-      const message = MessageFactory.text('message');
+      const message = MessageFactory.text('');
       message.type = ActivityTypes.Typing;
       await context.sendActivity(message);
 
@@ -89,7 +90,7 @@ export class TeamsBot extends TeamsActivityHandler {
     
     console.log('invokeValue ' + JSON.stringify(invokeValue));
 
-    const message = MessageFactory.text('message');
+    const message = MessageFactory.text('');
     message.type = ActivityTypes.Typing;
     await context.sendActivity(message);
 
