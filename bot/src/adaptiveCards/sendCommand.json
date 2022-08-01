@@ -19,25 +19,22 @@
   ],
   "actions": [
     {
-      "type": "Action.Submit",
+      "type": "Action.Execute",
       "title": "근무지 조회",
-      "data": {
-        "messageType": "getWorkplaceForm"
-      }
+      "verb": "getWorkplaceForm",
+      "fallback": "Action.Submit"
     },
     {
-      "type": "Action.Submit",
+      "type": "Action.Execute",
       "title": "근무지 등록",
-      "data": {
-        "messageType": "setWorkplaceForm"
-      }
+      "verb": "setWorkplaceForm",
+      "fallback": "Action.Submit"
     },
     {
-      "type": "Action.Submit",
+      "type": "Action.Execute",
       "title": "메시지 전달",
-      "data": {
-        "messageType": "viewSecretMessage"
-      }
+      "verb": "viewSecretMessage",
+      "fallback": "Action.Submit"
     }
   ]
 }

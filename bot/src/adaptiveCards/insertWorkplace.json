@@ -62,11 +62,10 @@
   ],
   "actions": [
     {
-      "type": "Action.Submit",
+      "type": "Action.Execute",
       "title": "OK",
-      "data": {
-        "messageType": "setWorkplace"
-      }
+      "verb": "setWorkplace",
+      "fallback": "Action.Submit"
     }
   ]
 }

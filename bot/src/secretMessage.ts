@@ -27,7 +27,7 @@ export const checkSecretMessage = async (body, receiverName) => {
   );
 }
          
-export const viewSecretMessage = async (body, receiverName) => {
+export const viewSecretMessage = async (id, receiverName) => {
   sendSecretMessageTemplate.body[2].choices.length = 0;
 
   for (const user of Object.entries(userMap)) {
@@ -41,22 +41,22 @@ export const viewSecretMessage = async (body, receiverName) => {
     }
   }
 
-  const user = userMap[body.from.id];
+  const user = userMap[id];
   user.sendAdaptiveCard(
     AdaptiveCards.declare(sendSecretMessageTemplate).render()
   );
 }
 
-export const sendSecretMessage = async (body) => {
-  const user = userMap[body.from.id];
-  const receiver = userMap[body.value.receiver];
+export const sendSecretMessage = async (id, receiverId, senderNick, message) => {
+  const user = userMap[id];
+  const receiver = userMap[receiverId];
 
   const request = new sql.Request();
   request.input('AppId', sql.VarChar, process.env.BOT_ID);
   request.input('Sender', sql.VarChar, user.account.userPrincipalName);
-  request.input('SenderNick', sql.VarChar, body.value.senderNick);
+  request.input('SenderNick', sql.VarChar, senderNick);
   request.input('Receiver', sql.VarChar, receiver.account.userPrincipalName);
-  request.input('Contents', sql.VarChar, body.value.message);
+  request.input('Contents', sql.VarChar, message);
 
   const query = `[IAM].[bot].[Usp_Set_Send_Message] @AppId, @Sender, @SenderNick, @Receiver, @Contents`;
 
@@ -68,7 +68,7 @@ export const sendSecretMessage = async (body) => {
 
   request.on('row', (row) => {
     if(row.ID === -1) {
-      user.sendMessage('오늘 이미 3번의 메세지를 전송하셨습니다.');
+      user.sendMessage(row.ERROR);
       return;
     }
     user.sendMessage('메세지가 전송되었습니다.');
@@ -80,9 +80,9 @@ export const sendSecretMessage = async (body) => {
   });
 }
 
-export const openSecretMessage = async (body) => {
+export const openSecretMessage = async (id, messageId) => {
   const request = new sql.Request();
-  request.input('MsgId', sql.BigInt, body.value.messageId);
+  request.input('MsgId', sql.BigInt, messageId);
 
   const query = `[IAM].[bot].[Usp_Get_Send_Message] @MsgId`;
 
@@ -93,7 +93,7 @@ export const openSecretMessage = async (body) => {
   });
 
   request.on('row', (row) => {
-    const user = userMap[body.from.id];
+    const user = userMap[id];
     user.sendAdaptiveCard(
       AdaptiveCards.declare<CardData>(viewSecretMessageTemplate).render({
         title: `${row.SenderNick} 님이 보낸 메시지 입니다.`,

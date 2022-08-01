@@ -103,10 +103,10 @@ const setSendBirth = (receiver, birthDate) => {
   });
 }
 
-export const openBirthMessage = async (body) => {
-  const d = new Date(body.value.birthDate);
-  const birthDate = ("00" + (d.getMonth() + 1)).slice(-2) + "월 " + ("00" + d.getDate()).slice(-2) + "일"
-  const user = userMap[body.from.id];
+export const openBirthMessage = async (id, messageId, username, birthDate) => {
+  const d = new Date(birthDate);
+  const birthDateKr = ("00" + (d.getMonth() + 1)).slice(-2) + "월 " + ("00" + d.getDate()).slice(-2) + "일"
+  const user = userMap[id];
 
   const link = <[any]>await getBirthdayLink();
 
@@ -119,12 +119,11 @@ export const openBirthMessage = async (body) => {
     });
   }
 
-  console.log('body.value.messageId ' + body.value.messageId);
-  await setOpenBirth(body.value.messageId);
+  await setOpenBirth(messageId);
   
   user.sendAdaptiveCard(
     AdaptiveCards.declare<BirthCardData>(sendBirthMessageTemplate).render({
-      title: `${birthDate}은 ${body.value.username} 님의 생일입니다.`,
+      title: `${birthDateKr}은 ${username} 님의 생일입니다.`,
       body: `생일축하해요~~~`
     })
   );

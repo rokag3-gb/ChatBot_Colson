@@ -179,22 +179,22 @@ export const sendWorkplaceCard = async (userID, choiceList, WorkCodeAM, WorkCode
   );
 }
 
-export const setWorkplace = async (body) => {
+export const setWorkplace = async (id, upn, workDate, workCodeAM, workCodePM) => {
   const request = new sql.Request();
   request.stream = true;
 
-  const user = userMap[body.from.id];
-  const userInfo = allUserList[body.value.UPN];
+  const user = userMap[id];
+  const userInfo = allUserList[upn];
 
   if(user === undefined || user === null || userInfo === undefined || userInfo === null) {
-    await sendMessage(body.from.id, `잘못된 정보가 전달되었습니다.`);
+    await sendMessage(id, `잘못된 정보가 전달되었습니다.`);
     return;
   }
 
-  request.input("WorkDate", sql.VarChar, body.value.WorkDate) ;
-  request.input('UPN', sql.VarChar, body.value.UPN);
-  request.input('WorkCodeAM', sql.VarChar, body.value.WorkCodeAM);
-  request.input('WorkCodePM', sql.VarChar, body.value.WorkCodePM);
+  request.input("WorkDate", sql.VarChar, workDate) ;
+  request.input('UPN', sql.VarChar, upn);
+  request.input('WorkCodeAM', sql.VarChar, workCodeAM);
+  request.input('WorkCodePM', sql.VarChar, workCodePM);
   request.input('SaverUPN', sql.VarChar, user.account.userPrincipalName);
 
   request.query(`[IAM].[bot].[Usp_Set_Workplace] @WorkDate, @UPN, @WorkCodeAM, @WorkCodePM, @SaverUPN`
@@ -204,7 +204,7 @@ export const setWorkplace = async (body) => {
       }
   });
 
-  await user.sendMessage(`${userInfo.Name}님의 ${body.value.WorkDate} 일자 업무 근무지가 입력되었습니다.`);
+  await user.sendMessage(`${userInfo.Name}님의 ${workDate} 일자 업무 근무지가 입력되었습니다.`);
 }
 
 export const getWorkplace = async (id, name, date) => {

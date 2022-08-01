@@ -1,26 +1,45 @@
 import * as restify from "restify";
 import { bot } from "./internal/initialize";
-import { sendMessage, 
-         sendCommand, 
-         sorryMessage,
-         getUserList,
+import { getUserList,
          userRegister,
          insertLog,
          userMap } from "./common";
-import { getWorkplaceForm,
-         getWorkplace, 
-         setWorkplaceForm,
-         setWorkplace } from "./workplace";
-import { viewSecretMessage,
-  sendSecretMessage,
-  openSecretMessage, } from "./secretMessage";
+import { setWorkplaceForm } from "./workplace";
   
-import { sendBirthdayCard,
-  openBirthMessage } from "./birthMessage";
+import { sendBirthdayCard } from "./birthMessage";
 
 import { connected } from "./mssql"
 
+import { TeamsBot } from "./teamsBot";
+
 const cron = require('node-cron');
+
+import { BotFrameworkAdapter, TurnContext } from "botbuilder";
+
+const adapter = new BotFrameworkAdapter({
+  appId: process.env.BOT_ID,
+  appPassword: process.env.BOT_PASSWORD,
+});
+
+const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
+  console.error(`\n [onTurnError] unhandled error: ${error}`);
+
+  // Send a trace activity, which will be displayed in Bot Framework Emulator
+  await context.sendTraceActivity(
+    "OnTurnError Trace",
+    `${error}`,
+    "https://www.botframework.com/schemas/error",
+    "TurnError"
+  );
+
+  await context.sendActivity(`The bot encountered unhandled error:\n ${error.message}`);
+  await context.sendActivity("To continue to run this bot, please fix the bot source code.");
+};
+
+adapter.onTurnError = onTurnErrorHandler;
+
+// Create the bot that will handle incoming messages.
+const teamsBot = new TeamsBot();
 
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
@@ -53,60 +72,9 @@ async (req, res) => {
     }
   }
 
-  if(req.body.text !== undefined && req.body.text !== null && req.body.text != '') {
-    const text = req.body.text.trim().split(" ");
-  
-    if (text[0] === '근무지등록') {
-      setWorkplaceForm(req.body.from.id, text[1], 'work');
-    } else if (text[0] + text[1] === '근무지등록') {
-      setWorkplaceForm(req.body.from.id, text[2], 'work');
-    } else if (text[0] === '근무지') {
-      getWorkplace(req.body.from.id, text[1], text[2]);
-    } else if (text[0] === '홈' || text[0].toLowerCase() === 'home' || text[0] === 'ㅎ') {
-      sendCommand(req.body.from.id);
-    } else if (text[0] === '메시지' || text[0] === '메세지') {
-      viewSecretMessage(req.body, text[1]);
-    } else if (text[0] === 'birthTest') {
-      sendBirthdayCard();
-    } else if (text[0] === 'workplaceTestSend') {
-      setWorkplaceForm(null, null, 'send');
-    } else if (text[0] === 'workplaceTestResend') {
-      setWorkplaceForm(null, null, 'resend');
-    } else {
-      sorryMessage(req.body.from.id);
-    }
-  } else if (req.body.value !== undefined && req.body.value !== null) {
-    if (req.body.value.messageType === "getWorkplaceForm") {  
-      getWorkplaceForm(req.body.from.id);
-    } else if (req.body.value.messageType === "getWorkplace") {  
-      getWorkplace(req.body.from.id, req.body.value.username, req.body.value.date);
-    } else if (req.body.value.messageType === "setWorkplaceForm") {  
-      setWorkplaceForm(req.body.from.id, null, 'work');
-    } else if (req.body.value.messageType === "setWorkplace") {  
-      setWorkplace(req.body);
-    } else if (req.body.value.messageType === "viewSecretMessage") {  
-      viewSecretMessage(req.body, null);
-    } else if (req.body.value.messageType === "sendSecretMessage") {  
-      sendSecretMessage(req.body);
-    } else if (req.body.value.messageType === "openSecretMessage") {  
-      openSecretMessage(req.body);
-    } else if (req.body.value.messageType === "openBirthMessage") {  
-      openBirthMessage(req.body);
-    } else {
-      sorryMessage(req.body.from.id);
-    }
-
-  } else if(req.body.action !== undefined && req.body.action !== null) {
-    if(req.body.action === 'add') {
-      sendMessage(req.body.from.id, `반갑습니다. 콜슨 앱이 설치되었습니다.`);
-    } else if (req.body.action === 'remove') {
-      delete userMap[req.body.from.id];
-    }
-  } else {
-    await sorryMessage(req.body.from.id);
-    await sendMessage(req.body.from.id, JSON.stringify(req.body));
-  }
-  await bot.requestHandler(req, res);
+  await adapter.processActivity(req, res, async (context) => {
+    await teamsBot.run(context);
+  });
 });
 
 //휴가자 제외한 전직원에게 근무지 입력 카드 전송

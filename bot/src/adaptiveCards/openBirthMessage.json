@@ -12,10 +12,11 @@
   ],
   "actions": [
     {
-      "type": "Action.Submit",
-      "title": "열기",
+      "type": "Action.Execute",
+      "title": "OK",
+      "verb": "openBirthMessage",
+      "fallback": "Action.Submit",
       "data": {
-        "messageType": "openBirthMessage",
         "messageId": "${messageId}",
         "birthDate": "${birthDate}",
         "username": "${username}"
