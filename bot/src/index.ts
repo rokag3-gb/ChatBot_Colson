@@ -68,6 +68,10 @@ async (req, res) => {
       viewSecretMessage(req.body, text[1]);
     } else if (text[0] === 'birthTest') {
       sendBirthdayCard();
+    } else if (text[0] === 'workplaceTestSend') {
+      setWorkplaceForm(null, null, 'send');
+    } else if (text[0] === 'workplaceTestResend') {
+      setWorkplaceForm(null, null, 'resend');
     } else {
       sorryMessage(req.body.from.id);
     }

@@ -137,7 +137,7 @@ const userWorkplaceResend = async (choiceList) => {
   });
 
   request.on('row', (row) => {    
-    sendWorkplaceCard(row.AppUserId, choiceList, null, null, null);
+    sendWorkplaceCard(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null);
   });
 }
 
@@ -166,14 +166,9 @@ export const sendWorkplaceCard = async (userID, choiceList, WorkCodeAM, WorkCode
   workplaceTemplate.body[3].value = day1;
 
   workplaceTemplate.body[4].choices = choiceList;
-  if(WorkCodeAM !== undefined && WorkCodeAM !== null) {
-    workplaceTemplate.body[4].value = WorkCodeAM;
-  }
-
+  workplaceTemplate.body[4].value = WorkCodeAM;
   workplaceTemplate.body[5].choices = choiceList;
-  if(WorkCodePM !== undefined && WorkCodePM !== null) {
-    workplaceTemplate.body[5].value = WorkCodePM;
-  }
+  workplaceTemplate.body[5].value = WorkCodePM;
   
   muser.sendAdaptiveCard(
     AdaptiveCards.declare<CardData>(workplaceTemplate).render({
