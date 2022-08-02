@@ -11,6 +11,8 @@ export const viewSecretMessage = async (id, receiverName) => {
   sendSecretMessageTemplate.body[4].choices.length = 0;
 
   for (const user of Object.entries(userMap)) {
+    if(id === user[1].account.id)
+      continue;
     sendSecretMessageTemplate.body[4].choices.push({
       "title": user[1].account.name,
       "value": user[1].account.id
@@ -51,7 +53,9 @@ export const sendSecretMessage = async (id, receiverId, senderNick, message) => 
       user.sendMessage(row.ERROR);
       return;
     }
-    user.sendMessage(`${receiver.account.name} 님에게 메시지가 전송되었습니다.`);
+    user.sendMessage(`${receiver.account.name} 님에게 메시지가 전송되었습니다.
+    
+    (일일 남은 횟수 : ${row.SendCount})`);
 
     openSecretMessageTemplate.actions[0].data.messageId = row.ID;    
     receiver.sendAdaptiveCard(
