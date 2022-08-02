@@ -75,12 +75,6 @@ export const userRegister = async (userId) => {
   console.log('userRegister complete');
 }
 
-export const sorryMessage = async (id) => {
-  await sendMessage(id,  `죄송합니다.
-
-처리할 수 없는 메시지입니다.`);
-}
-
 export const getUserList = async (userId) => {
   return new Promise((resolve, reject) => {
     try {
@@ -151,4 +145,22 @@ export const getUserForName = async (username) => {
   }
 
   return null;
+}
+
+export const sorryMessage = async (id) => {
+  await sendMessage(id,  `죄송합니다.
+
+처리할 수 없는 메시지입니다.`);
+}
+
+export const viewCommandList = async(id) => {
+  await sendMessage(id,  `홈, home, ㅎ => 홈 페이지 표시
+  
+  근무지 홍길동 => 홍길동 사원의 14일간의 근무지를 조회
+  
+  근무지 홍길동 10 => 홍길동 사원의 10일간의 근무지를 조회
+  
+  근무지 등록 => 근무지 등록 페이지를 표시
+  
+  메시지 홍길동 => 홍길동 사원에게 비밀 메세지를 보냅니다.`);
 }

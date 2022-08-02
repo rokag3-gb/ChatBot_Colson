@@ -30,22 +30,21 @@ export const setWorkplaceForm = async (userId, username, type) => {
 
 export const getWorkplaceForm = async (userId) => {
   await sendMessage(userId, `근무지 조회를 선택하셨습니다.`);
-  const workplaceUserList = workplaceUserListTemplate;
-  workplaceUserList.body[0].choices.length = 0;
+  workplaceUserListTemplate.body[1].choices.length = 0;
 
   for (const user of Object.entries(allUserList)) {
-    workplaceUserList.body[0].choices.push({
+    workplaceUserListTemplate.body[1].choices.push({
       "title": user[1].Name,
       "value": user[1].Name
     })
   }
 
-  if(workplaceUserList.body[0].choices.length !== 0) {
-    workplaceUserList.body[0].value = workplaceUserList.body[0].choices[0].value;
+  if(workplaceUserListTemplate.body[1].choices.length !== 0) {
+    workplaceUserListTemplate.body[1].value = workplaceUserListTemplate.body[1].choices[0].value;
   }
   const user = userMap[userId];
   user.sendAdaptiveCard(
-    AdaptiveCards.declare<CardData[]>(workplaceUserList).render([])
+    AdaptiveCards.declare<CardData[]>(workplaceUserListTemplate).render([])
   );
 }
 
@@ -161,10 +160,7 @@ export const sendWorkplaceCard = async (userID, choiceList, WorkCodeAM, WorkCode
     });
   }
 
-  workplaceTemplate.body[3].min = day1;
-  workplaceTemplate.body[3].max = day2;
   workplaceTemplate.body[3].value = day1;
-
   workplaceTemplate.body[4].choices = choiceList;
   workplaceTemplate.body[4].value = WorkCodeAM;
   workplaceTemplate.body[5].choices = choiceList;

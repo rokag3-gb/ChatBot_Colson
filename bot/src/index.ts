@@ -32,8 +32,8 @@ const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
     "TurnError"
   );
 
-  await context.sendActivity(`The bot encountered unhandled error:\n ${error.message}`);
-  await context.sendActivity("To continue to run this bot, please fix the bot source code.");
+  console.log(`The bot encountered unhandled error:\n ${error.message}`);
+  await context.sendActivity("죄송해요. 서버에서 에러가 났어요. 다시 시도해주세요.");
 };
 
 adapter.onTurnError = onTurnErrorHandler;

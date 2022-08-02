@@ -4,6 +4,13 @@
     "type": "AdaptiveCard",
     "body": [
       {
+        "type": "TextBlock",
+        "text": "근무지 조회",
+        "size": "Large",
+        "weight": "Bolder",
+        "wrap": true
+      },
+      {
         "type": "Input.ChoiceSet",
         "id": "username",
         "style": "compact",

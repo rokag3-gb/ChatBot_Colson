@@ -34,8 +34,6 @@
       "isRequired": true,
       "id": "WorkDate",
       "placeholder": "Enter a date",
-      "min": "2017-10-12",
-      "max": "2017-10-12",
       "value": "2017-10-12"
     },
     {
@@ -63,7 +61,7 @@
   "actions": [
     {
       "type": "Action.Execute",
-      "title": "OK",
+      "title": "등록",
       "verb": "setWorkplace",
       "fallback": "Action.Submit"
     }

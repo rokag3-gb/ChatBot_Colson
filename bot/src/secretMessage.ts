@@ -5,39 +5,19 @@ import openSecretMessageTemplate from "./adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "./adaptiveCards/sendSecretMessage.json";
 
 import { sql } from "./mssql"
-import { userMap } from "./common";         
-
-export const checkSecretMessage = async (body, receiverName) => {
-  sendSecretMessageTemplate.body[2].choices.length = 0;
-
-  for (const user of Object.entries(userMap)) {
-    sendSecretMessageTemplate.body[2].choices.push({
-      "title": user[1].account.name,
-      "value": user[1].account.id
-    });
-
-    if(receiverName === user[1].account.name) {
-      sendSecretMessageTemplate.body[2].value = user[1].account.id;
-    }
-  }
-
-  const user = userMap[body.from.id];
-  user.sendAdaptiveCard(
-    AdaptiveCards.declare(sendSecretMessageTemplate).render()
-  );
-}
+import { userMap } from "./common";
          
 export const viewSecretMessage = async (id, receiverName) => {
-  sendSecretMessageTemplate.body[2].choices.length = 0;
+  sendSecretMessageTemplate.body[4].choices.length = 0;
 
   for (const user of Object.entries(userMap)) {
-    sendSecretMessageTemplate.body[2].choices.push({
+    sendSecretMessageTemplate.body[4].choices.push({
       "title": user[1].account.name,
       "value": user[1].account.id
     });
 
     if(receiverName === user[1].account.name) {
-      sendSecretMessageTemplate.body[2].value = user[1].account.id;
+      sendSecretMessageTemplate.body[4].value = user[1].account.id;
     }
   }
 
@@ -71,7 +51,7 @@ export const sendSecretMessage = async (id, receiverId, senderNick, message) => 
       user.sendMessage(row.ERROR);
       return;
     }
-    user.sendMessage('메세지가 전송되었습니다.');
+    user.sendMessage(`${receiver.account.name} 님에게 메시지가 전송되었습니다.`);
 
     openSecretMessageTemplate.actions[0].data.messageId = row.ID;    
     receiver.sendAdaptiveCard(
@@ -105,7 +85,7 @@ export const openSecretMessage = async (id, messageId) => {
     const sender = userMap[row.AppUserId];
     //어이없네 bit 타입을 insert 할때는 0, 1로 안보내면 에러나더니 select 할때는 true, false 로 받아야 처리가 가능하다
     if(row.IsOpen === false && sender !== undefined && sender !== null) {
-      sender.sendMessage(`${user.account.name} 님이 메세지를 열어보았습니다.`);
+      sender.sendMessage(`${user.account.name} 님이 메시지를 열어보았습니다.`);
     }
   });
 }

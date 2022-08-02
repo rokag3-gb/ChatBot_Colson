@@ -9,6 +9,7 @@ import { TeamsActivityHandler,
 import sendCommandTemplate from "./adaptiveCards/sendCommand.json";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { sendMessage, 
+  viewCommandList,
   sendCommand, 
   sorryMessage } from "./common";
 import { getWorkplaceForm,
@@ -110,6 +111,8 @@ export class TeamsBot extends TeamsActivityHandler {
       openSecretMessage(context.activity.from.id, invokeValue.action.data.messageId);
     } else if (invokeValue.action.verb === "openBirthMessage") {  
       openBirthMessage(context.activity.from.id, invokeValue.action.data.messageId, invokeValue.action.data.username, invokeValue.action.data.birthDate);
+    } else if (invokeValue.action.verb === "viewCommandList") {  
+      viewCommandList(context.activity.from.id);
     } else {
       sorryMessage(context.activity.from.id);
     }
