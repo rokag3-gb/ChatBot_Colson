@@ -12,8 +12,8 @@ export const viewSecretMessage = async (id, receiverName) => {
   sendSecretMessageTemplate.body[4].choices.length = 0;
 
   for (const user of Object.entries(userMap)) {
-//    if(id === user[1].account.id)
-//      continue;
+    if(id === user[1].account.id)
+      continue;
     sendSecretMessageTemplate.body[4].choices.push({
       "title": user[1].account.name,
       "value": user[1].account.id
