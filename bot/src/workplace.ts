@@ -61,11 +61,11 @@ const getWorkCode = () => {
         }
       });
     
-      request.on('row', (row) => {    
+      request.on('error', (err) => {
+        console.log('Database Error : ' + err);
+      }).on('row', (row) => {    
         choiceList.push({"title" : row.Name, "value" : row.Code});
-      });
-    
-      request.on('done', () => {
+      }).on('done', () => {
         resolve(choiceList);
       });
     } catch(e) {
@@ -99,7 +99,9 @@ const userWorkplace = async (userId, username, choiceList) => {
     }
   });
 
-  request.on('row', (row) => {    
+  request.on('error', (err) => {
+    console.log('Database Error : ' + err);
+  }).on('row', (row) => {    
     sendWorkplaceCard(userId, choiceList, row.WorkCodeAM, row.WorkCodePM, user);
   });
 }
@@ -117,7 +119,9 @@ export const userWorkplaceSend = async (choiceList) => {
     }
   });
 
-  request.on('row', (row) => {    
+  request.on('error', (err) => {
+    console.log('Database Error : ' + err);
+  }).on('row', (row) => {    
     sendWorkplaceCard(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null);
   });
 }
@@ -135,7 +139,9 @@ const userWorkplaceResend = async (choiceList) => {
     }
   });
 
-  request.on('row', (row) => {    
+  request.on('error', (err) => {
+    console.log('Database Error : ' + err);
+  }).on('row', (row) => {    
     sendWorkplaceCard(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null);
   });
 }
@@ -200,6 +206,10 @@ export const setWorkplace = async (id, upn, workDate, workCodeAM, workCodePM) =>
       }
   });
 
+  request.on('error', (err) => {
+    console.log('Database Error : ' + err);
+  });
+
   await user.sendMessage(`${userInfo.Name}님의 ${workDate} 일자 업무 근무지가 입력되었습니다.`);
 }
 
@@ -231,7 +241,10 @@ export const getWorkplace = async (id, name, date) => {
     }
   });
 
-  request.on('row', (row) => {
+  request.on('error', (err) => {
+    console.log('Database Error : ' + err);
+    return;
+  }).on('row', (row) => {
     message += `<tr>
       <td align="center">${row.Date}</td>
       <td align="center">${row.WeekName}</td>

@@ -3,6 +3,7 @@ import { CardData } from "./model/cardModels";
 import viewSecretMessageTemplate from "./adaptiveCards/viewSecretMessage.json";
 import openSecretMessageTemplate from "./adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "./adaptiveCards/sendSecretMessage.json";
+import { CardFactory } from "botbuilder";
 
 import { sql } from "./mssql"
 import { userMap } from "./common";
@@ -48,7 +49,9 @@ export const sendSecretMessage = async (id, receiverId, senderNick, message) => 
     }
   });
 
-  request.on('row', (row) => {
+  request.on('error', (err) => {
+    console.log('Database Error : ' + err);
+  }).on('row', (row) => {
     if(row.ID === -1) {
       user.sendMessage(row.ERROR);
       return;
@@ -76,7 +79,9 @@ export const openSecretMessage = async (id, messageId) => {
     }
   });
 
-  request.on('row', (row) => {
+  request.on('error', (err) => {
+    console.log('Database Error : ' + err);
+  }).on('row', async (row) => {
     const user = userMap[id];
     user.sendAdaptiveCard(
       AdaptiveCards.declare<CardData>(viewSecretMessageTemplate).render({

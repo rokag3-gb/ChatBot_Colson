@@ -67,6 +67,11 @@ export const userRegister = async (userId) => {
                 return console.log('query error :',err)
             }
         });        
+
+        request.on('error', (err) => {
+          console.log('Database Error : ' + err);
+        });
+        
         userMap[member.account.id] = member;
       }
     }
@@ -87,7 +92,9 @@ export const getUserList = async (userId) => {
         }
       });
     
-      request.on('row', (row) => {
+      request.on('error', (err) => {
+        console.log('Database Error : ' + err);
+      }).on('row', (row) => {
         allUserList[row.UPN] = ({
           UPN: row.UPN,
           Name: row.DisplayName,
@@ -131,6 +138,10 @@ export const insertLog = async (userId, body) => {
     if(err) {
         return console.log('query error :',err)
     }
+  });
+
+  request.on('error', (err) => {
+    console.log('Database Error : ' + err);
   });
 }
 

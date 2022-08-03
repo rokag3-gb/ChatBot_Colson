@@ -43,7 +43,9 @@ const getBirthdayLink = () => {
       });
     
       const list = [];
-      request.on('row', (row) => {    
+      request.on('error', (err) => {
+        console.log('Database Error : ' + err);
+      }).on('row', (row) => {    
         list.push(row);
       }).on('done', () => { 
         resolve(list);
@@ -68,7 +70,9 @@ const getBirthdayUser = () => {
       });
     
       const list = [];
-      request.on('row', (row) => {    
+      request.on('error', (err) => {
+        console.log('Database Error : ' + err);
+      }).on('row', (row) => {    
         list.push(row);
       }).on('done', () => { 
         resolve(list);
@@ -94,7 +98,9 @@ const setSendBirth = (receiver, birthDate) => {
           }
       });
     
-      request.on('row', (row) => {
+      request.on('error', (err) => {
+        console.log('Database Error : ' + err);
+      }).on('row', (row) => {
         resolve(row.birthId);
       });
     } catch(e) {
@@ -142,7 +148,9 @@ const setOpenBirth = (birthId) => {
           }
       });
     
-      request.on('done', () => {
+      request.on('error', (err) => {
+        console.log('Database Error : ' + err);
+      }).on('done', () => {
         resolve(true);
       });
     } catch(e) {
