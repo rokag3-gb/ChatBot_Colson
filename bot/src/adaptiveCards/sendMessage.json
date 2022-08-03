@@ -11,7 +11,8 @@
     },
     {
       "type": "TextBlock",
-      "text": "${body}"
+      "text": "${body}",
+      "wrap": true
     }
 ]
 }

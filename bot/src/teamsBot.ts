@@ -3,8 +3,6 @@ import { TeamsActivityHandler,
   ActivityTypes,
   CardFactory,
   TurnContext,
-  AdaptiveCardInvokeValue,
-  AdaptiveCardInvokeResponse,
 } from "botbuilder";
 import sendCommandTemplate from "./adaptiveCards/sendCommand.json";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
@@ -18,9 +16,13 @@ import { getWorkplaceForm,
   setWorkplace } from "./workplace";
 import { viewSecretMessage,
 sendSecretMessage,
-openSecretMessage, } from "./secretMessage";
+openSecretMessage,
+sendMessageReaction } from "./secretMessage";
 import { sendBirthdayCard,
 openBirthMessage } from "./birthMessage";
+
+import { CardData } from "./model/cardModels";
+import viewSecretMessageTemplate from "./adaptiveCards/viewSecretMessage.json";
 
 export class TeamsBot extends TeamsActivityHandler {
   constructor() {
@@ -39,45 +41,48 @@ export class TeamsBot extends TeamsActivityHandler {
         }
         const text = txt.split(" ");
         if (text[0] === '근무지등록') {
-          setWorkplaceForm(context.activity.from.id, text[1], 'work');
+          await setWorkplaceForm(context.activity.from.id, text[1], 'work');
         } else if (text[0] + text[1] === '근무지등록') {
-          setWorkplaceForm(context.activity.from.id, text[2], 'work');
+          await setWorkplaceForm(context.activity.from.id, text[2], 'work');
         } else if (text[0] === '근무지') {
-          getWorkplace(context.activity.from.id, text[1], text[2]);
+          await getWorkplace(context.activity.from.id, text[1], text[2]);
         } else if (text[0] === '홈' || text[0].toLowerCase() === 'home' || text[0] === 'ㅎ') {
-          sendCommand(context.activity.from.id);
+          await sendCommand(context.activity.from.id);
         } else if (text[0] === '메시지' || text[0] === '메세지') {
-          viewSecretMessage(context.activity.from.id, text[1]);
+          await viewSecretMessage(context.activity.from.id, text[1]);
         } else if (text[0] === 'birthTest') {
-          sendBirthdayCard();
+          await sendBirthdayCard();
         } else if (text[0] === 'workplaceTestSend') {
-          setWorkplaceForm(null, null, 'send');
+          await setWorkplaceForm(null, null, 'send');
         } else if (text[0] === 'workplaceTestResend') {
-          setWorkplaceForm(null, null, 'resend');
+          await setWorkplaceForm(null, null, 'resend');
         } else {
-          sorryMessage(context.activity.from.id);
+          await sorryMessage(context.activity.from.id);
         }
       } else if(context.activity.value) {
+
+        
+
         if (context.activity.value.messageType === "getWorkplaceForm") {
-          getWorkplaceForm(context.activity.from.id);
+          await getWorkplaceForm(context.activity.from.id);
         } else if (context.activity.value.messageType === "getWorkplace") {  
-          getWorkplace(context.activity.from.id, context.activity.value.username, null);
+          await getWorkplace(context.activity.from.id, context.activity.value.username, null);
         } else if (context.activity.value.messageType === "setWorkplace") {  
-          setWorkplace(context.activity.from.id, context.activity.value.UPN, context.activity.value.WorkDate, context.activity.value.WorkCodeAM, context.activity.value.WorkCodePM);
+          await setWorkplace(context.activity.from.id, context.activity.value.UPN, context.activity.value.WorkDate, context.activity.value.WorkCodeAM, context.activity.value.WorkCodePM);
         } else if (context.activity.value.messageType === "setWorkplaceForm") {
-          setWorkplaceForm(context.activity.from.id, null, 'work');
+          await setWorkplaceForm(context.activity.from.id, null, 'work');
         } else if (context.activity.value.messageType === "viewSecretMessage") {
-          viewSecretMessage(context.activity.from.id, null);
+          await viewSecretMessage(context.activity.from.id, null);
         } else if (context.activity.value.messageType === "sendSecretMessage") {  
-          sendSecretMessage(context.activity.from.id, context.activity.value.receiver, context.activity.value.senderNick, context.activity.value.message);
+          await sendSecretMessage(context.activity.from.id, context.activity.value.receiver, context.activity.value.senderNick, context.activity.value.message);
         } else if (context.activity.value.messageType === "openSecretMessage") {  
-          openSecretMessage(context.activity.from.id, context.activity.value.messageId, context);
+          await openSecretMessage(context.activity.from.id, context.activity.value.messageId, context);
         } else if (context.activity.value.messageType === "openBirthMessage") {  
-          openBirthMessage(context.activity.from.id, context.activity.value.messageId, context.activity.value.username, context.activity.value.birthDate);
+          await openBirthMessage(context.activity.from.id, context.activity.value.messageId, context.activity.value.username, context.activity.value.birthDate);
         } else if (context.activity.value.messageType === "viewCommandList") {  
-          viewCommandList(context.activity.from.id);
+          await viewCommandList(context.activity.from.id);
         } else {
-          sorryMessage(context.activity.from.id);
+          await sorryMessage(context.activity.from.id);
         }
       }
 
@@ -85,11 +90,7 @@ export class TeamsBot extends TeamsActivityHandler {
     });
 
     this.onReactionsAdded(async (context, next) => {
-      console.log('receive id ' + context.activity.id);
-      const card = AdaptiveCards.declareWithoutData(sendCommandTemplate).render();
-      const test = await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
-      console.log('send id ' + test.id);
-      
+      await sendMessageReaction(context.activity.from.id, context.activity.id, context.activity.reactionsAdded[0].type);      
       await next();
     });
 

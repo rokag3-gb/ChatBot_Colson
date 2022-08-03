@@ -6,14 +6,14 @@ import sendSecretMessageTemplate from "./adaptiveCards/sendSecretMessage.json";
 import { CardFactory } from "botbuilder";
 
 import { sql } from "./mssql"
-import { userMap } from "./common";
+import { userMap, sendMessage } from "./common";
          
 export const viewSecretMessage = async (id, receiverName) => {
   sendSecretMessageTemplate.body[4].choices.length = 0;
 
   for (const user of Object.entries(userMap)) {
-    if(id === user[1].account.id)
-      continue;
+//    if(id === user[1].account.id)
+//      continue;
     sendSecretMessageTemplate.body[4].choices.push({
       "title": user[1].account.name,
       "value": user[1].account.id
@@ -37,9 +37,9 @@ export const sendSecretMessage = async (id, receiverId, senderNick, message) => 
   const request = new sql.Request();
   request.input('AppId', sql.VarChar, process.env.BOT_ID);
   request.input('Sender', sql.VarChar, user.account.userPrincipalName);
-  request.input('SenderNick', sql.VarChar, senderNick);
+  request.input('SenderNick', sql.NVarChar, senderNick);
   request.input('Receiver', sql.VarChar, receiver.account.userPrincipalName);
-  request.input('Contents', sql.VarChar, message);
+  request.input('Contents', sql.NVarChar, message);
 
   const query = `[IAM].[bot].[Usp_Set_Send_Message] @AppId, @Sender, @SenderNick, @Receiver, @Contents`;
 
@@ -67,15 +67,80 @@ export const sendSecretMessage = async (id, receiverId, senderNick, message) => 
   });
 }
 
-export const openSecretMessage = async (id, messageId) => {
-  const request = new sql.Request();
-  request.input('MsgId', sql.BigInt, messageId);
+export const openSecretMessage = async (id, messageId, context) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const request = new sql.Request();
+      request.input('MsgId', sql.BigInt, messageId);
+      const query = `[IAM].[bot].[Usp_Get_Send_Message] @MsgId`;
+    
+      request.query(query, (err, result) => {
+        if(err){
+            return console.log('query error :',err)
+        }
+      });
+    
+      request.on('error', (err) => {
+        console.log('Database Error : ' + err);
+      }).on('row', async (row) => {   
+        if(row.IsOpen === true) {
+          await sendMessage(id, "이미 열어본 메세지입니다.");
+          resolve(true);
+        }
+        const card = AdaptiveCards.declare<CardData>(viewSecretMessageTemplate).render({
+          title: `${row.SenderNick} 님이 보낸 메시지 입니다.`,
+          body: row.Contents,
+          date: ``,
+        });
+        const openedChatId = await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
+        await openMessage(messageId, openedChatId.id);
+    
+        const user = userMap[id];
+        const sender = userMap[row.AppUserId];
 
-  const query = `[IAM].[bot].[Usp_Get_Send_Message] @MsgId`;
+        //어이없네 bit 타입을 insert 할때는 0, 1로 안보내면 에러나더니 select 할때는 true, false 로 받아야 처리가 가능하다
+        if(sender !== undefined && sender !== null) {
+          sender.sendMessage(`${user.account.name} 님이 메시지를 열어보았습니다.`);
+        }
+
+        resolve(true);
+      });
+    } catch(e) {
+      reject(e);
+    }
+  });
+}
+
+const openMessage = async (messageId, openedChatId) => {
+  const request = new sql.Request();
+  
+  request.input('MsgId', sql.BigInt, messageId);
+  request.input('OpenedChatId', sql.VarChar, openedChatId);
+
+  const query = `[IAM].[bot].[Usp_Set_Send_Message_Open] @MsgId, @OpenedChatId`;
 
   request.query(query, (err, result) => {
     if(err){
-        return console.log('query error :',err)
+      return console.log('query error :',err)
+    }
+  });
+
+  request.on('error', (err) => {
+    console.log('Database Error : ' + err);
+  });
+}
+
+export const sendMessageReaction = async (id, activityId, type) => {
+  const request = new sql.Request();
+  
+  request.input('AppId', sql.VarChar, process.env.BOT_ID);
+  request.input('OpenedChatId', sql.VarChar, activityId);
+
+  const query = `[IAM].[bot].[Usp_Get_Send_Message_Chat_Id] @OpenedChatId, @AppId`;
+
+  request.query(query, (err, result) => {
+    if(err){
+      return console.log('query error :',err)
     }
   });
 
@@ -83,18 +148,27 @@ export const openSecretMessage = async (id, messageId) => {
     console.log('Database Error : ' + err);
   }).on('row', async (row) => {
     const user = userMap[id];
-    user.sendAdaptiveCard(
-      AdaptiveCards.declare<CardData>(viewSecretMessageTemplate).render({
-        title: `${row.SenderNick} 님이 보낸 메시지 입니다.`,
-        body: row.Contents,
-        date: ``,
-      })
-    );
-
     const sender = userMap[row.AppUserId];
-    //어이없네 bit 타입을 insert 할때는 0, 1로 안보내면 에러나더니 select 할때는 true, false 로 받아야 처리가 가능하다
-    if(row.IsOpen === false && sender !== undefined && sender !== null) {
-      sender.sendMessage(`${user.account.name} 님이 메시지를 열어보았습니다.`);
+    if(!sender || !user) {
+      return;
     }
+
+    let icon = '';
+    if(type === 'like') {
+      icon = '좋아요';
+    } else if(type === 'heart') {
+      icon = '하트';
+    } else if(type === 'laugh') {
+      icon = '웃겨요';
+    } else if(type === 'surprised') {
+      icon = '놀랐어요';
+    } else if(type === 'sad') {
+      icon = '슬퍼요';
+    } else if(type === 'angry') {
+      icon = '화나요';
+    }
+
+    await sender.sendMessage(`${user.account.name} 님이 비밀 메시지에 '${icon}' 감정표현을 하였습니다.`);
+    await user.sendMessage(`${row.SenderNick} 님에게 '${icon}' 감정표현이 전달되었습니다.`)
   });
 }
