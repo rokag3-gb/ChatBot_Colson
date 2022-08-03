@@ -60,9 +60,6 @@ export class TeamsBot extends TeamsActivityHandler {
           await sorryMessage(context.activity.from.id);
         }
       } else if(context.activity.value) {
-
-        
-
         if (context.activity.value.messageType === "getWorkplaceForm") {
           await getWorkplaceForm(context.activity.from.id);
         } else if (context.activity.value.messageType === "getWorkplace") {  
