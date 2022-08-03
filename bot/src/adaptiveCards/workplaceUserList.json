@@ -23,10 +23,11 @@
     ],
     "actions": [
       {
-        "type": "Action.Execute",
+        "type": "Action.Submit",
         "title": "조회하기",
-        "verb": "getWorkplace",
-        "fallback": "Action.Submit"
+        "data": {
+          "messageType": "getWorkplace"
+        }
       }
     ]
   }

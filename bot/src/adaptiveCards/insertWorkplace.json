@@ -60,10 +60,11 @@
   ],
   "actions": [
     {
-      "type": "Action.Execute",
+      "type": "Action.Submit",
       "title": "등록",
-      "verb": "setWorkplace",
-      "fallback": "Action.Submit"
+      "data": {
+        "messageType": "setWorkplace"
+      }
     }
   ]
 }
