@@ -50,11 +50,11 @@ export class TeamsBot extends TeamsActivityHandler {
           await sendCommand(context.activity.from.id);
         } else if (text[0] === '메시지' || text[0] === '메세지') {
           await viewSecretMessage(context.activity.from.id, text[1]);
-        } else if (text[0] === 'birthTest') {
+        } else if (text[0] === 'birthtest') {
           await sendBirthdayCard();
-        } else if (text[0] === 'workplaceTestSend') {
+        } else if (text[0] === 'workplacetestsend') {
           await setWorkplaceForm(null, null, 'send');
-        } else if (text[0] === 'workplaceTestResend') {
+        } else if (text[0] === 'workplacetestresend') {
           await setWorkplaceForm(null, null, 'resend');
         } else {
           await sorryMessage(context.activity.from.id);
@@ -95,7 +95,7 @@ export class TeamsBot extends TeamsActivityHandler {
       const membersAdded = context.activity.membersAdded;
       for (let cnt = 0; cnt < membersAdded.length; cnt++) {
         if (membersAdded[cnt].id) {
-          sendMessage(membersAdded[cnt].id, `반갑습니다. 콜슨 앱이 설치되었습니다.`);
+          await sendMessage(membersAdded[cnt].id, `반갑습니다. 콜슨 앱이 설치되었습니다.`);
           const card = AdaptiveCards.declareWithoutData(sendCommandTemplate).render();
           await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
           break;

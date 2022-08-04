@@ -1,0 +1,119 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+    "type": "AdaptiveCard",
+    "body": [
+      {
+        "type": "TextBlock",
+        "text": "근무지 조회",
+        "size": "Large",
+        "weight": "Bolder",
+        "wrap": true
+      },
+      {
+        "type": "TextBlock",
+        "text": "근무지",
+        "wrap": true
+      },
+      {
+        "type": "ColumnSet",
+        "bleed": true,
+        "columns": [
+          {
+            "type": "Column",
+            "width": "80px",
+            "spacing": "none",
+            "bleed": true,
+            "items": [
+              {
+                "type": "Container",
+                "bleed": true,
+                "style": "good",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "weight": "bolder",
+                    "horizontalAlignment": "center",
+                    "text": "날짜",
+                    "size": "small"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "separator": true,
+            "width": "60px",
+            "spacing": "none",
+            "bleed": true,
+            "items": [
+              {
+                "type": "Container",
+                "bleed": true,
+                "style": "good",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "weight": "bolder",
+                    "horizontalAlignment": "center",
+                    "text": "요일",
+                    "size": "small"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "separator": true,
+            "width": "stretch",
+            "spacing": "none",
+            "bleed": true,
+            "items": [
+              {
+                "type": "Container",
+                "bleed": true,
+                "style": "good",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "weight": "bolder",
+                    "horizontalAlignment": "center",
+                    "text": "오전",
+                    "size": "small"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "separator": true,
+            "width": "stretch",
+            "spacing": "none",
+            "bleed": true,
+            "items": [
+              {
+                "type": "Container",
+                "bleed": true,
+                "style": "good",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "weight": "bolder",
+                    "horizontalAlignment": "center",
+                    "text": "오후",
+                    "size": "small"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "actions": [
+    ]
+  }
+  

@@ -1,6 +1,7 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { CardData } from "./model/cardModels";
 import workplaceTemplate from "./adaptiveCards/insertWorkplace.json";
+import workplaceMessage from "./adaptiveCards/workplaceMessage.json";
 import workplaceUserListTemplate from "./adaptiveCards/workplaceUserList.json";
 import { sql } from "./mssql"
 import { sendMessage, 
@@ -149,7 +150,6 @@ const userWorkplaceResend = async (choiceList) => {
 export const sendWorkplaceCard = async (userID, choiceList, WorkCodeAM, WorkCodePM, user) => {
   const muser = userMap[userID];
   const day1 = getToday(null);
-  const day2 = getToday(14);
   
   workplaceTemplate.body[2].choices.length = 0;
   if(user === undefined || user === null) {
@@ -228,7 +228,6 @@ export const getWorkplace = async (id, name, date) => {
     date = 30;
   }
 
-  let message = '';
   const request = new sql.Request();
   request.input('Username', sql.VarChar, name);
   request.input('date', sql.Int, date);
@@ -241,32 +240,70 @@ export const getWorkplace = async (id, name, date) => {
     }
   });
 
+  workplaceMessage.body[1].text = `${name} 님의 근무지를 조회하였습니다.`;
+  workplaceMessage.body[2].columns[0].items.length = 1;
+  workplaceMessage.body[2].columns[1].items.length = 1;
+  workplaceMessage.body[2].columns[2].items.length = 1;
+  workplaceMessage.body[2].columns[3].items.length = 1;
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
     return;
   }).on('row', (row) => {
-    message += `<tr>
-      <td align="center">${row.Date}</td>
-      <td align="center">${row.WeekName}</td>
-      <td align="center">${row.WorkAM}</td>
-      <td align="center">${row.WorkPM}</td>
-    </tr>`
+    workplaceMessage.body[2].columns[0].items.push(<any>{
+      "type": "Container",
+      "bleed": true,
+      "items": [
+        {
+          "type": "TextBlock",
+          "wrap": true,
+          "text": row.Date
+        }
+      ]
+    });
+    
+    workplaceMessage.body[2].columns[1].items.push(<any>{
+      "type": "Container",
+      "bleed": true,
+      "items": [
+        {
+          "type": "TextBlock",
+          "horizontalAlignment": "center",
+          "wrap": true,
+          "text": row.WeekName
+        }
+      ]
+    });
+    
+    workplaceMessage.body[2].columns[2].items.push(<any>{
+      "type": "Container",
+      "bleed": true,
+      "items": [
+        {
+          "type": "TextBlock",
+          "horizontalAlignment": "center",
+          "wrap": true,
+          "text": row.WorkAM?row.WorkAM:"."
+        }
+      ]
+    });
+    
+    workplaceMessage.body[2].columns[3].items.push(<any>{
+      "type": "Container",
+      "bleed": true,
+      "items": [
+        {
+          "type": "TextBlock",
+          "horizontalAlignment": "center",
+          "wrap": true,
+          "text": row.WorkPM?row.WorkPM:"."
+        }
+      ]
+    });
   })
   .on('done', async () => { 
-    if(message.length >= 1) {
-      message = `<h1> ${name} 님의 일정을 조회하였습니다. </h1>
-      <div style="width: 500px;">
-      <table>
-      <thead>
-      <tr>
-        <th style="background-color:#FF5; color:black;">날짜</th>
-        <th style="background-color:#FF5; color:black;">요일</th>
-        <th style="background-color:#FF5; color:black;">오전</th>
-        <th style="background-color:#FF5; color:black;">오후</th>
-      </tr></thead><tbody>` + message + '</tbody></table></div>';
-      const user = userMap[id];
-      user.sendMessage(message);
-    }
+    const user = userMap[id];    
+    user.sendAdaptiveCard(AdaptiveCards.declare(workplaceMessage).render());
   });
+  
 }
       
