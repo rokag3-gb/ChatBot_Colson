@@ -25,7 +25,7 @@ export const viewSecretMessage = async (id, receiverName) => {
   }
 
   const user = userMap[id];
-  user.sendAdaptiveCard(
+  await user.sendAdaptiveCard(
     AdaptiveCards.declare(sendSecretMessageTemplate).render()
   );
 }
@@ -51,7 +51,7 @@ export const sendSecretMessage = async (id, receiverId, senderNick, message) => 
 
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
-  }).on('row', (row) => {
+  }).on('row', async (row) => {
     if(row.ID === -1) {
       user.sendMessage(row.ERROR);
       return;
@@ -60,9 +60,9 @@ export const sendSecretMessage = async (id, receiverId, senderNick, message) => 
     
     (일일 남은 횟수 : ${row.SendCount})`);
 
-    openSecretMessageTemplate.actions[0].data.messageId = row.ID;    
-    receiver.sendAdaptiveCard(
-      AdaptiveCards.declare(openSecretMessageTemplate).render()
+    const tmpTemplate = JSON.parse(JSON.stringify(openSecretMessageTemplate));
+    tmpTemplate.actions[0].data.messageId = row.ID;    
+    await receiver.sendAdaptiveCard(AdaptiveCards.declare(tmpTemplate).render()
     );
   });
 }

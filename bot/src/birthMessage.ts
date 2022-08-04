@@ -20,7 +20,7 @@ export const sendBirthdayCard = async () => {
       continue;
     }    
     const msgId = await setSendBirth(userInfo.UPN, userInfo.BirthDate);
-    user.sendAdaptiveCard(
+    await user.sendAdaptiveCard(
       AdaptiveCards.declare<BirthOpenData>(openBirthMessageTemplate).render({
         messageId: <any>msgId,
         birthDate: userInfo.BirthDate,
@@ -61,7 +61,7 @@ const getBirthdayUser = () => {
     try {
       const request = new sql.Request();
       request.input('appId', sql.VarChar, process.env.BOT_ID);
-      const query = `[IAM].[bot].[Usp_Get_Users_Birthday_Upcoming] @appId`;
+      const query = `EXEC [IAM].[bot].[Usp_Get_Users_Birthday_Upcoming] @appId`;
     
       request.query(query, (err, result) => {
         if(err){
@@ -115,10 +115,10 @@ export const openBirthMessage = async (id, messageId, username, birthDate) => {
   const user = userMap[id];
 
   const link = <[any]>await getBirthdayLink();
+  const tmpTemplate = JSON.parse(JSON.stringify(sendBirthMessageTemplate));
 
-  sendBirthMessageTemplate.actions.length = 0;
   for(const row of link) {
-    sendBirthMessageTemplate.actions.push({
+    tmpTemplate.actions.push({
       type: "Action.OpenUrl",
       title: row.LinkName,
       url: row.Link,
@@ -127,8 +127,8 @@ export const openBirthMessage = async (id, messageId, username, birthDate) => {
 
   await setOpenBirth(messageId);
   
-  user.sendAdaptiveCard(
-    AdaptiveCards.declare<BirthCardData>(sendBirthMessageTemplate).render({
+  await user.sendAdaptiveCard(
+    AdaptiveCards.declare<BirthCardData>(tmpTemplate).render({
       title: `${birthDateKr}은 ${username} 님의 생일입니다.`,
       body: `생일축하해요~~~`
     })

@@ -31,22 +31,30 @@ export const setWorkplaceForm = async (userId, username, type) => {
 
 export const getWorkplaceForm = async (userId) => {
   await sendMessage(userId, `근무지 조회를 선택하셨습니다.`);
-  workplaceUserListTemplate.body[1].choices.length = 0;
+  const tmpTemplate = JSON.parse(JSON.stringify(workplaceUserListTemplate));
+  const request = new sql.Request();
 
-  for (const user of Object.entries(allUserList)) {
-    workplaceUserListTemplate.body[1].choices.push({
-      "title": user[1].Name,
-      "value": user[1].Name
-    })
-  }
+  request.input('appId', sql.VarChar, process.env.BOT_ID);
+  request.query(`EXEC [IAM].[bot].[Usp_Get_Users] @appId`, (err, result) => {
+    if(err){
+        return console.log('query error :',err)
+    }
+  });
 
-  if(workplaceUserListTemplate.body[1].choices.length !== 0) {
-    workplaceUserListTemplate.body[1].value = workplaceUserListTemplate.body[1].choices[0].value;
-  }
-  const user = userMap[userId];
-  user.sendAdaptiveCard(
-    AdaptiveCards.declare<CardData[]>(workplaceUserListTemplate).render([])
-  );
+  request.on('error', (err) => {
+    console.log('Database Error : ' + err);
+  }).on('row', (row) => {
+    tmpTemplate.body[1].choices.push({
+      "title": row.DisplayName,
+      "value": row.DisplayName
+    });    
+  }).on('done', async () => {
+    if(tmpTemplate.body[1].choices.length !== 0) {
+      tmpTemplate.body[1].value = tmpTemplate.body[1].choices[0].value;
+    }
+    const user = userMap[userId];
+    await user.sendAdaptiveCard(AdaptiveCards.declare(tmpTemplate).render());
+  });
 }
 
 const getWorkCode = () => {
@@ -150,32 +158,32 @@ const userWorkplaceResend = async (choiceList) => {
 export const sendWorkplaceCard = async (userID, choiceList, WorkCodeAM, WorkCodePM, user) => {
   const muser = userMap[userID];
   const day1 = getToday(null);
-  
-  workplaceTemplate.body[2].choices.length = 0;
+  const tmpTemplate = JSON.parse(JSON.stringify(workplaceTemplate));
+
   if(user === undefined || user === null) {
-    workplaceTemplate.body[2].value = muser.account.userPrincipalName;
-    workplaceTemplate.body[2].choices.push({
+    tmpTemplate.body[2].value = muser.account.userPrincipalName;
+    tmpTemplate.body[2].choices.push({
       "title": muser.account.name,
       "value": muser.account.userPrincipalName
     });
   } else {
-    workplaceTemplate.body[2].value = user.UPN;
-    workplaceTemplate.body[2].choices.push({
+    tmpTemplate.body[2].value = user.UPN;
+    tmpTemplate.body[2].choices.push({
       "title": user.Name,
       "value": user.UPN
     });
   }
 
-  workplaceTemplate.body[3].value = day1;
-  workplaceTemplate.body[4].choices = choiceList;
-  workplaceTemplate.body[4].value = WorkCodeAM;
-  workplaceTemplate.body[5].choices = choiceList;
-  workplaceTemplate.body[5].value = WorkCodePM;
+  tmpTemplate.body[3].value = day1;
+  tmpTemplate.body[4].choices = choiceList;
+  tmpTemplate.body[4].value = WorkCodeAM;
+  tmpTemplate.body[5].choices = choiceList;
+  tmpTemplate.body[5].value = WorkCodePM;
   
-  muser.sendAdaptiveCard(
-    AdaptiveCards.declare<CardData>(workplaceTemplate).render({
+  await muser.sendAdaptiveCard(
+    AdaptiveCards.declare<CardData>(tmpTemplate).render({
       title: '근무지 등록',
-      body: workplaceTemplate.body[2].choices[0].title,
+      body: tmpTemplate.body[2].choices[0].title,
       date: ``,
     })
   );
@@ -222,6 +230,7 @@ export const getWorkplace = async (id, name, date) => {
   if(date === undefined || date === null) {
     date = 7;
   }
+  const tmpTemplate = JSON.parse(JSON.stringify(workplaceMessage));
 
   const tmp = date * 1;
   if(tmp > 30) {
@@ -240,16 +249,12 @@ export const getWorkplace = async (id, name, date) => {
     }
   });
 
-  workplaceMessage.body[1].text = `${name} 님의 근무지를 조회하였습니다.`;
-  workplaceMessage.body[2].columns[0].items.length = 1;
-  workplaceMessage.body[2].columns[1].items.length = 1;
-  workplaceMessage.body[2].columns[2].items.length = 1;
-  workplaceMessage.body[2].columns[3].items.length = 1;
+  tmpTemplate.body[1].text = `${name} 님의 근무지를 조회하였습니다.`;
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
     return;
   }).on('row', (row) => {
-    workplaceMessage.body[2].columns[0].items.push(<any>{
+    tmpTemplate.body[2].columns[0].items.push(<any>{
       "type": "Container",
       "bleed": true,
       "items": [
@@ -261,7 +266,7 @@ export const getWorkplace = async (id, name, date) => {
       ]
     });
     
-    workplaceMessage.body[2].columns[1].items.push(<any>{
+    tmpTemplate.body[2].columns[1].items.push(<any>{
       "type": "Container",
       "bleed": true,
       "items": [
@@ -274,7 +279,7 @@ export const getWorkplace = async (id, name, date) => {
       ]
     });
     
-    workplaceMessage.body[2].columns[2].items.push(<any>{
+    tmpTemplate.body[2].columns[2].items.push(<any>{
       "type": "Container",
       "bleed": true,
       "items": [
@@ -287,7 +292,7 @@ export const getWorkplace = async (id, name, date) => {
       ]
     });
     
-    workplaceMessage.body[2].columns[3].items.push(<any>{
+    tmpTemplate.body[2].columns[3].items.push(<any>{
       "type": "Container",
       "bleed": true,
       "items": [
@@ -302,7 +307,7 @@ export const getWorkplace = async (id, name, date) => {
   })
   .on('done', async () => { 
     const user = userMap[id];    
-    user.sendAdaptiveCard(AdaptiveCards.declare(workplaceMessage).render());
+    await user.sendAdaptiveCard(AdaptiveCards.declare(tmpTemplate).render());
   });
   
 }

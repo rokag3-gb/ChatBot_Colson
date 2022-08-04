@@ -44,7 +44,7 @@ export const sendMessage = async (userID, body) => {
 
 export const sendCommand = async (userID) => {
   const user = userMap[userID];
-  user.sendAdaptiveCard(
+  await user.sendAdaptiveCard(
     AdaptiveCards.declare(sendCommandTemplate).render()
   );
 }
@@ -76,7 +76,6 @@ export const userRegister = async (userId) => {
       }
     }
   }
-
   console.log('userRegister complete');
 }
 
