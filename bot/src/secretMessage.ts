@@ -9,24 +9,24 @@ import { sql } from "./mssql"
 import { userMap, sendMessage } from "./common";
          
 export const viewSecretMessage = async (id, receiverName) => {
-  sendSecretMessageTemplate.body[4].choices.length = 0;
+  const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
 
   for (const user of Object.entries(userMap)) {
     if(id === user[1].account.id)
       continue;
-    sendSecretMessageTemplate.body[4].choices.push({
+    tmpTemplate.body[4].choices.push({
       "title": user[1].account.name,
       "value": user[1].account.id
     });
 
     if(receiverName === user[1].account.name) {
-      sendSecretMessageTemplate.body[4].value = user[1].account.id;
+      tmpTemplate.body[4].value = user[1].account.id;
     }
   }
 
   const user = userMap[id];
   await user.sendAdaptiveCard(
-    AdaptiveCards.declare(sendSecretMessageTemplate).render()
+    AdaptiveCards.declare(tmpTemplate).render()
   );
 }
 
@@ -99,7 +99,7 @@ export const openSecretMessage = async (id, messageId, context) => {
         const sender = userMap[row.AppUserId];
 
         //어이없네 bit 타입을 insert 할때는 0, 1로 안보내면 에러나더니 select 할때는 true, false 로 받아야 처리가 가능하다
-        if(sender !== undefined && sender !== null) {
+        if(sender) {
           sender.sendMessage(`${user.account.name} 님이 메시지를 열어보았습니다.`);
         }
 

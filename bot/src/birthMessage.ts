@@ -4,8 +4,7 @@ import openBirthMessageTemplate from "./adaptiveCards/openBirthMessage.json";
 import sendBirthMessageTemplate from "./adaptiveCards/sendBirthMessage.json";
 
 import { sql } from "./mssql"
-import { userMap,
-         allUserList } from "./common";
+import { userMap } from "./common";
 
 export const sendBirthdayCard = async () => {
   const userList = <[]>await getBirthdayUser();
@@ -13,18 +12,17 @@ export const sendBirthdayCard = async () => {
     return;
   }
 
-  for(const u of userList) {
-    const user = userMap[(<any>u).AppUserId];
-    const userInfo = allUserList[(<any>u).UPN];
-    if(user === undefined || user === null || userInfo === undefined || userInfo === null) {
+  for(const userInfo of <any[]>userList) {
+    const userObject = userMap[userInfo.AppUserId];
+    if(!userObject) {
       continue;
     }    
-    const msgId = await setSendBirth(userInfo.UPN, userInfo.BirthDate);
-    await user.sendAdaptiveCard(
+    const msgId = await <any>setSendBirth(userInfo.UPN, userInfo.BirthDate);
+    await userObject.sendAdaptiveCard(
       AdaptiveCards.declare<BirthOpenData>(openBirthMessageTemplate).render({
-        messageId: <any>msgId,
-        birthDate: userInfo.BirthDate,
-        username: userInfo.Name
+        messageId: msgId,
+        birthDate: userInfo.birthDate,
+        username: userInfo.DisplayName
       })
     );
   }

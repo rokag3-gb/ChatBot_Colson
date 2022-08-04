@@ -7,15 +7,13 @@ import { sql } from "./mssql"
 import { sendMessage, 
          getToday,
          checkWeekday,
-         getUserForName,
-         userMap,
-         allUserList } from "./common";
+         userMap } from "./common";
     
 export const setWorkplaceForm = async (userId, username, type) => {
-  if((userId === undefined || userId === null) && checkWeekday()) {
+  if(!userId && checkWeekday()) {
     return;
   }
-  if(userId !== undefined && userId !== null) {
+  if(userId) {
     await sendMessage(userId, `근무지 등록을 선택하셨습니다.`);
   }
 
@@ -62,9 +60,7 @@ const getWorkCode = () => {
     try {
       const request = new sql.Request();
       const choiceList = [];
-      request.query(`SELECT Code, Name from Sale.dbo.Code
-      WHERE KindCode = 'WRK' 
-      ORDER BY sort ASC`, (err, result) => {
+      request.query(`EXEC [IAM].[bot].[Usp_Get_Work_Code]`, (err, result) => {
         if(err){
             return console.log('query error :',err)
         }
@@ -86,18 +82,24 @@ const getWorkCode = () => {
 //특정 유저의 근무지 등록을 위한 함수
 const userWorkplace = async (userId, username, choiceList) => {
   const request = new sql.Request();
-  const user = await getUserForName(username);
+  const fromUser = userMap[userId];
+  let user = null;
 
-  if(username !== undefined && username !== null) {
-    if(user === undefined || user === null) {
+  if(username) {
+    for (const u of Object.entries(userMap)) {
+      if(u[1].account.name === username) {
+        user = u[1];
+        break;
+      }
+    }
+    if(!user) {
       await sendMessage(userId, `'${username}' 님을 찾을 수 없습니다.`);
       return
     }
     await sendMessage(userId,  `'${username}' 님의 근무지를 등록합니다.`);
-    request.input('UPN', sql.VarChar, user.UPN);
+    request.input('UPN', sql.VarChar, user.account.userPrincipalName);
   } else {
-    const muser = userMap[userId];
-    request.input('UPN', sql.VarChar, muser.account.userPrincipalName);
+    request.input('UPN', sql.VarChar, fromUser.account.userPrincipalName);
   }
 
   let query = `EXEC [IAM].[bot].[Usp_Get_Users_Workplace] @date, @UPN`;
@@ -111,7 +113,7 @@ const userWorkplace = async (userId, username, choiceList) => {
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
   }).on('row', (row) => {    
-    sendWorkplaceCard(userId, choiceList, row.WorkCodeAM, row.WorkCodePM, user);
+    sendWorkplaceCard(fromUser, choiceList, row.WorkCodeAM, row.WorkCodePM, user);
   });
 }
 
@@ -155,22 +157,21 @@ const userWorkplaceResend = async (choiceList) => {
   });
 }
 
-export const sendWorkplaceCard = async (userID, choiceList, WorkCodeAM, WorkCodePM, user) => {
-  const muser = userMap[userID];
+export const sendWorkplaceCard = async (fromUser, choiceList, WorkCodeAM, WorkCodePM, user) => {
   const day1 = getToday(null);
   const tmpTemplate = JSON.parse(JSON.stringify(workplaceTemplate));
 
-  if(user === undefined || user === null) {
-    tmpTemplate.body[2].value = muser.account.userPrincipalName;
+  if(!user) {
+    tmpTemplate.body[2].value = fromUser.account.userPrincipalName;
     tmpTemplate.body[2].choices.push({
-      "title": muser.account.name,
-      "value": muser.account.userPrincipalName
+      "title": fromUser.account.name,
+      "value": fromUser.account.userPrincipalName
     });
   } else {
-    tmpTemplate.body[2].value = user.UPN;
+    tmpTemplate.body[2].value = user.account.userPrincipalName;
     tmpTemplate.body[2].choices.push({
-      "title": user.Name,
-      "value": user.UPN
+      "title": user.account.name,
+      "value": user.account.userPrincipalName
     });
   }
 
@@ -180,7 +181,7 @@ export const sendWorkplaceCard = async (userID, choiceList, WorkCodeAM, WorkCode
   tmpTemplate.body[5].choices = choiceList;
   tmpTemplate.body[5].value = WorkCodePM;
   
-  await muser.sendAdaptiveCard(
+  await fromUser.sendAdaptiveCard(
     AdaptiveCards.declare<CardData>(tmpTemplate).render({
       title: '근무지 등록',
       body: tmpTemplate.body[2].choices[0].title,
@@ -194,9 +195,7 @@ export const setWorkplace = async (id, upn, workDate, workCodeAM, workCodePM) =>
   request.stream = true;
 
   const user = userMap[id];
-  const userInfo = allUserList[upn];
-
-  if(user === undefined || user === null || userInfo === undefined || userInfo === null) {
+  if(!user) {
     await sendMessage(id, `잘못된 정보가 전달되었습니다.`);
     return;
   }
@@ -218,16 +217,16 @@ export const setWorkplace = async (id, upn, workDate, workCodeAM, workCodePM) =>
     console.log('Database Error : ' + err);
   });
 
-  await user.sendMessage(`${userInfo.Name}님의 ${workDate} 일자 업무 근무지가 입력되었습니다.`);
+  await user.sendMessage(`${user.account.name}님의 ${workDate} 일자 업무 근무지가 입력되었습니다.`);
 }
 
 export const getWorkplace = async (id, name, date) => {
-  if(name === undefined || name === null) {
+  if(!name) {
     sendMessage(id, `조회하실 분의 이름을 선택하고 다시 조회해주세요.`);
     return;
   }
   await sendMessage(id, `'${name}' 님을 선택하셨습니다.`);
-  if(date === undefined || date === null) {
+  if(!date) {
     date = 7;
   }
   const tmpTemplate = JSON.parse(JSON.stringify(workplaceMessage));
@@ -245,7 +244,8 @@ export const getWorkplace = async (id, name, date) => {
         return console.log('query error :',err)
     }
     if(result.rowsAffected[0] === 0){
-      sendMessage(id, `${name} 님의 근무지를 찾을 수 없습니다.`);
+      sendMessage(id, `${name} 님의 정보를 찾을 수 없습니다.`);
+      return;
     }
   });
 
@@ -306,6 +306,9 @@ export const getWorkplace = async (id, name, date) => {
     });
   })
   .on('done', async () => { 
+    if(tmpTemplate.body[2].columns[1].items.length === 1) {
+      return;
+    }
     const user = userMap[id];    
     await user.sendAdaptiveCard(AdaptiveCards.declare(tmpTemplate).render());
   });

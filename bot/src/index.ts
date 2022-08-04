@@ -57,13 +57,13 @@ async (req, res) => {
     return;
   }
   insertLog(req.body.from.id, JSON.stringify(req.body));
-  if(req.body.from === undefined || req.body.from === null || req.body.from.id === undefined || req.body.from.id === null) {
+  if(!req.body.from || !req.body.from.id) {
     await bot.requestHandler(req, res);
     return;
   }
   
   const user = userMap[req.body.from.id];
-  if(user === undefined || user === null) {
+  if(!user) {
     try {
       await userRegister(req.body.from.id);
       await getUserList(req.body.from.id);

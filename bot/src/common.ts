@@ -4,7 +4,6 @@ import sendCommandTemplate from "./adaptiveCards/sendCommand.json";
 import { sql } from "./mssql"
 
 export const userMap = new Object();
-export const allUserList = new Object();
 
 export const getToday = (day) => {
   const now = new Date();
@@ -12,7 +11,7 @@ export const getToday = (day) => {
   const koreaTimeDiff = 9 * 60 * 60 * 1000; 
   const date = new Date(utcNow + koreaTimeDiff);
 
-  if(day !== undefined && day !== null) {
+  if(day) {
     date.setDate(date.getDate() + day);
   }
   return date.getFullYear() + "-" + ("00" + (1 + date.getMonth())).slice(-2) + "-" + ("00" + date.getDate()).slice(-2);
@@ -38,7 +37,7 @@ export const checkWeekday = () => {
 
 export const sendMessage = async (userID, body) => {
   const user = userMap[userID];
-  if(user !== undefined)
+  if(user)
     await user.sendMessage(body);
 }
 
@@ -94,15 +93,9 @@ export const getUserList = async (userId) => {
       request.on('error', (err) => {
         console.log('Database Error : ' + err);
       }).on('row', (row) => {
-        allUserList[row.UPN] = ({
-          UPN: row.UPN,
-          Name: row.DisplayName,
-          BirthDate: row.BirthDate
-        });
-        
         if(row.AppUserId !== null && (userId === row.AppUserId || userId === null)) {
           const user = userMap[row.AppUserId];
-          if(user !== undefined && user !== null) {
+          if(user) {
             userMap[row.AppUserId].account.name = row.DisplayName;
           }
         }
@@ -123,7 +116,7 @@ export const insertLog = async (userId, body) => {
   let userPrincipalName = '';
   const user = userMap[userId]
 
-  if(user !== undefined && user !== null) {
+  if(user) {
     userPrincipalName = user.account.userPrincipalName;
   }
 
@@ -142,19 +135,6 @@ export const insertLog = async (userId, body) => {
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
   });
-}
-
-export const getUserForName = async (username) => {
-  if(username === undefined || username === null) {
-    return null;
-  }
-  for (const user of Object.entries(allUserList)) {
-    if(user[1].Name === username) {
-      return user[1];
-    }
-  }
-
-  return null;
 }
 
 export const sorryMessage = async (id) => {

@@ -21,9 +21,6 @@ sendMessageReaction } from "./secretMessage";
 import { sendBirthdayCard,
 openBirthMessage } from "./birthMessage";
 
-import { CardData } from "./model/cardModels";
-import viewSecretMessageTemplate from "./adaptiveCards/viewSecretMessage.json";
-
 export class TeamsBot extends TeamsActivityHandler {
   constructor() {
     super();
