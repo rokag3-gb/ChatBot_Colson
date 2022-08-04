@@ -9,6 +9,7 @@ import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { sendMessage, 
   viewCommandList,
   sendCommand, 
+  userMap,
   sorryMessage } from "./common";
 import { getWorkplaceForm,
   getWorkplace, 
@@ -29,6 +30,13 @@ export class TeamsBot extends TeamsActivityHandler {
       const message = MessageFactory.text('');
       message.type = ActivityTypes.Typing;
       await context.sendActivity(message);
+
+      const user = userMap[context.activity.from.id];
+      if(!user) {
+        await context.sendActivity('유저 정보를 등록중입니다. 다시 한번 요청해 주세요.');
+        await next();
+        return;
+      }
 
       if(context.activity.text) {
         let txt = context.activity.text;

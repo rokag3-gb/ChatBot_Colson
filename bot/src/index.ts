@@ -65,6 +65,7 @@ async (req, res) => {
   const user = userMap[req.body.from.id];
   if(!user) {
     try {
+      await bot.requestHandler(req, res);
       await userRegister(req.body.from.id);
       await getUserList(req.body.from.id);
     } catch(e) {
@@ -74,6 +75,7 @@ async (req, res) => {
 
   await adapter.processActivity(req, res, async (context) => {
     await teamsBot.run(context);
+    await bot.requestHandler(req, res);
   });
 });
 
