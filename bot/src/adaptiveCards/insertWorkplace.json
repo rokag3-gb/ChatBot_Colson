@@ -12,7 +12,13 @@
     },
     {
       "type": "TextBlock",
-      "text": "${body} 님의 근무지를 등록합니다.",
+      "text": "${subtitle}",
+      "isSubtle": true,
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "${body}",
       "isSubtle": true,
       "wrap": true
     },

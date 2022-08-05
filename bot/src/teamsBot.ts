@@ -46,9 +46,9 @@ export class TeamsBot extends TeamsActivityHandler {
         }
         const text = txt.split(" ");
         if (text[0] === '근무지등록') {
-          await setWorkplaceForm(context.activity.from.id, text[1], 'work');
+          await setWorkplaceForm(context.activity.from.id, text[1], 'work', null);
         } else if (text[0] + text[1] === '근무지등록') {
-          await setWorkplaceForm(context.activity.from.id, text[2], 'work');
+          await setWorkplaceForm(context.activity.from.id, text[2], 'work', null);
         } else if (text[0] === '근무지') {
           await getWorkplace(context.activity.from.id, text[1], text[2]);
         } else if (text[0] === '홈' || text[0].toLowerCase() === 'home' || text[0] === 'ㅎ') {
@@ -58,9 +58,9 @@ export class TeamsBot extends TeamsActivityHandler {
         } else if (text[0] === 'birthtest') {
           await sendBirthdayCard();
         } else if (text[0] === 'workplacetestsend') {
-          await setWorkplaceForm(null, null, 'send');
+          await setWorkplaceForm(null, null, 'send', '테스트로 전송된 메세지입니다. workplacetestsend');
         } else if (text[0] === 'workplacetestresend') {
-          await setWorkplaceForm(null, null, 'resend');
+          await setWorkplaceForm(null, null, 'resend', '테스트로 전송된 메세지입니다. workplacetestresend');
         } else {
           await sorryMessage(context.activity.from.id);
         }
@@ -72,7 +72,7 @@ export class TeamsBot extends TeamsActivityHandler {
         } else if (context.activity.value.messageType === "setWorkplace") {  
           await setWorkplace(context.activity.from.id, context.activity.value.UPN, context.activity.value.WorkDate, context.activity.value.WorkCodeAM, context.activity.value.WorkCodePM);
         } else if (context.activity.value.messageType === "setWorkplaceForm") {
-          await setWorkplaceForm(context.activity.from.id, null, 'work');
+          await setWorkplaceForm(context.activity.from.id, null, 'work', null);
         } else if (context.activity.value.messageType === "viewSecretMessage") {
           await viewSecretMessage(context.activity.from.id, null);
         } else if (context.activity.value.messageType === "sendSecretMessage") {  

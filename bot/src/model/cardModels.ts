@@ -8,11 +8,15 @@ export interface CardData {
   date: string;
 }
 
+export interface WorkplaceCardData {
+  subtitle: string;
+  body: string;
+}
+
 export interface BirthCardData {
   title: string;
   body: string;
 }
-
 
 export interface BirthOpenData {
   messageId: BigInteger;

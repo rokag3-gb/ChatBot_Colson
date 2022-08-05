@@ -1,18 +1,19 @@
 {
-  "_6d5ac8ee-3862-4452-93e7-a836c2d9742b_a:1_q3FHSiXUajlzYc3fhssaK8HWgV_IVG_G-4eajJUkXNhknkbvPZ1YH_jMJabshcVVN9ledfgcR3lCVv8o3FmjOTEjj31dfGo0e4NN73yv7AY_zYERs5m28YykgbCGVx5": {
-    "activityId": "f:10c9c41d-22a1-1972-d12c-11cec498774a",
+  "_6d5ac8ee-3862-4452-93e7-a836c2d9742b_a:17mrBMS_dzr0Xjys_D4ejIdJHad5ye0x4wRuclJIFtcW5COqEbUGOF7jQH5YRct_QDuwsVzorwd9yKJwVXqvKA8P2bW-e_Sms5OfU83QTEPRQzOITQkoM-ePebKF8O4Yw": {
+    "activityId": "1659658022358",
     "user": {
-      "id": "29:1LnRJK0IwwvSZmRGrpOvIeHFilkpqp51wiSb1v6s36lj5ngm4AD8hUiVFYY-ptncI9U5LgN9P9uP18vLq7dl6NA",
+      "id": "29:1YMWupGgq61msMIA8v6I1HFWQpPIwtwLrwk8nckJKSJh_TjbgiiiNfduIIeMz5JDB9ut4s0JloUEjDBGOfHrILg",
+      "name": "Kwangseok Moon",
       "aadObjectId": "2cdbeed5-9768-47f4-840d-5ac8e7cb2a6d"
     },
     "bot": {
-      "id": "28:8a82caa4-b7cd-49e3-aaa6-06368d73cbad",
+      "id": "28:e17ea374-87fd-4ce1-a19b-ee53117046b1",
       "name": "Colson-local-debug"
     },
     "conversation": {
       "conversationType": "personal",
       "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
-      "id": "a:1_q3FHSiXUajlzYc3fhssaK8HWgV_IVG_G-4eajJUkXNhknkbvPZ1YH_jMJabshcVVN9ledfgcR3lCVv8o3FmjOTEjj31dfGo0e4NN73yv7AY_zYERs5m28YykgbCGVx5"
+      "id": "a:17mrBMS_dzr0Xjys_D4ejIdJHad5ye0x4wRuclJIFtcW5COqEbUGOF7jQH5YRct_QDuwsVzorwd9yKJwVXqvKA8P2bW-e_Sms5OfU83QTEPRQzOITQkoM-ePebKF8O4Yw"
     },
     "channelId": "msteams",
     "locale": "ko-KR",
