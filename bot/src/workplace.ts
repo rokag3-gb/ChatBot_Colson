@@ -224,9 +224,9 @@ export const setWorkplace = async (id, upn, workDate, workCodeAM, workCodePM) =>
 
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
+  }).on('row', async (row) => {    
+    await user.sendMessage(`${user.account.name}님의 ${workDate} 일자 근무지가 입력되었습니다. (${row.WorkNameAM}${workCodePM?'/'+row.WorkNamePM:''})`);
   });
-
-  await user.sendMessage(`${user.account.name}님의 ${workDate} 일자 업무 근무지가 입력되었습니다.`);
 }
 
 export const getWorkplace = async (id, name, date) => {

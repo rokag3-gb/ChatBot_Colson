@@ -21,7 +21,7 @@ export const sendBirthdayCard = async () => {
     await userObject.sendAdaptiveCard(
       AdaptiveCards.declare<BirthOpenData>(openBirthMessageTemplate).render({
         messageId: msgId,
-        birthDate: userInfo.birthDate,
+        birthDate: userInfo.BirthDate,
         username: userInfo.DisplayName
       })
     );
