@@ -152,21 +152,22 @@ export const sendMessageReaction = async (id, activityId, type) => {
     }
 
     let icon = '';
+    
     if(type === 'like') {
-      icon = '좋아요';
+      icon = '👍';
     } else if(type === 'heart') {
-      icon = '하트';
+      icon = '❤️';
     } else if(type === 'laugh') {
-      icon = '웃겨요';
+      icon = '😆';
     } else if(type === 'surprised') {
-      icon = '놀랐어요';
+      icon = '😮';
     } else if(type === 'sad') {
-      icon = '슬퍼요';
+      icon = '🙁';
     } else if(type === 'angry') {
-      icon = '화나요';
+      icon = '😡';
     }
 
-    await sender.sendMessage(`${user.account.name} 님이 비밀 메시지에 '${icon}' 감정표현을 하였습니다.`);
-    await user.sendMessage(`${row.SenderNick} 님에게 '${icon}' 감정표현이 전달되었습니다.`)
+    await sender.sendMessage(`${user.account.name} 님이 메시지에 '${icon}' 반응했습니다.`);
+    await user.sendMessage(`${row.SenderNick} 님에게 '${icon}' 반응이 전달되었습니다.`)
   });
 }

@@ -86,6 +86,8 @@ export class TeamsBot extends TeamsActivityHandler {
         } else {
           await sorryMessage(context.activity.from.id);
         }
+      } else {
+        await sorryMessage(context.activity.from.id);
       }
 
       await next();
