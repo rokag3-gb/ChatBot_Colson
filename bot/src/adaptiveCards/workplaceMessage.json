@@ -22,12 +22,9 @@
           {
             "type": "Column",
             "width": "80px",
-            "spacing": "none",
-            "bleed": true,
             "items": [
               {
                 "type": "Container",
-                "bleed": true,
                 "style": "good",
                 "items": [
                   {
@@ -96,7 +93,6 @@
             "items": [
               {
                 "type": "Container",
-                "bleed": true,
                 "style": "good",
                 "items": [
                   {

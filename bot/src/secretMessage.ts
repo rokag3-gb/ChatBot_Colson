@@ -1,5 +1,5 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
-import { SecretCardData } from "./model/cardModels";
+import { SecretCardData, SecretOpenCardData } from "./model/cardModels";
 import viewSecretMessageTemplate from "./adaptiveCards/viewSecretMessage.json";
 import openSecretMessageTemplate from "./adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "./adaptiveCards/sendSecretMessage.json";
@@ -60,8 +60,9 @@ export const sendSecretMessage = async (id, receiverId, senderNick, message) => 
 
     const tmpTemplate = JSON.parse(JSON.stringify(openSecretMessageTemplate));
     tmpTemplate.actions[0].data.messageId = row.ID;    
-    await receiver.sendAdaptiveCard(AdaptiveCards.declare(tmpTemplate).render()
-    );
+    await receiver.sendAdaptiveCard<SecretOpenCardData>(AdaptiveCards.declare(tmpTemplate).render({
+      Receiver: receiver.account.name
+    }));
   });
 }
 
@@ -86,9 +87,11 @@ export const openSecretMessage = async (id, messageId, context) => {
           resolve(true);
           return;
         }
+
+        const replacer = new RegExp('\n', 'g');
         const card = AdaptiveCards.declare<SecretCardData>(viewSecretMessageTemplate).render({
           title: `${row.SenderNick} 님이 보낸 메시지 입니다.`,
-          body: row.Contents
+          body: row.Contents.replace(replacer, '\n\n')
         });
         const openedChatId = await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
         await openMessage(messageId, openedChatId.id);
