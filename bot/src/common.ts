@@ -27,8 +27,8 @@ export const getTodayTime = () => {
         ("00" + d.getHours()).slice(-2) + ":" + ("00" + d.getMinutes()).slice(-2) + ":" + ("00" + d.getSeconds()).slice(-2);
 }
 
-export const checkWeekday = () => {
-  const week = new Date().getDay();
+export const checkWeekday = (day) => {
+  const week = new Date(day).getDay();
   if(week === 0 || week === 6) {
     return true;
   }

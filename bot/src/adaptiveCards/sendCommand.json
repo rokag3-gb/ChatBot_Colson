@@ -34,7 +34,7 @@
     },
     {
       "type": "Action.Submit",
-      "title": "메시지 전달",
+      "title": "익명 메시지",
       "data": {
         "messageType": "viewSecretMessage"
       }

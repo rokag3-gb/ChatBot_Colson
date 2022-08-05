@@ -1,5 +1,5 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
-import { CardData } from "./model/cardModels";
+import { SecretCardData } from "./model/cardModels";
 import viewSecretMessageTemplate from "./adaptiveCards/viewSecretMessage.json";
 import openSecretMessageTemplate from "./adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "./adaptiveCards/sendSecretMessage.json";
@@ -56,9 +56,7 @@ export const sendSecretMessage = async (id, receiverId, senderNick, message) => 
       user.sendMessage(row.ERROR);
       return;
     }
-    user.sendMessage(`${receiver.account.name} 님에게 메시지가 전송되었습니다.
-    
-    (일일 남은 횟수 : ${row.SendCount})`);
+    user.sendMessage(`${receiver.account.name} 님에게 메시지가 전송되었습니다. (일일 남은 횟수 : ${row.SendCount})`);
 
     const tmpTemplate = JSON.parse(JSON.stringify(openSecretMessageTemplate));
     tmpTemplate.actions[0].data.messageId = row.ID;    
@@ -86,11 +84,11 @@ export const openSecretMessage = async (id, messageId, context) => {
         if(row.IsOpen === true) {
           await sendMessage(id, "이미 열어본 메세지입니다.");
           resolve(true);
+          return;
         }
-        const card = AdaptiveCards.declare<CardData>(viewSecretMessageTemplate).render({
+        const card = AdaptiveCards.declare<SecretCardData>(viewSecretMessageTemplate).render({
           title: `${row.SenderNick} 님이 보낸 메시지 입니다.`,
-          body: row.Contents,
-          date: ``,
+          body: row.Contents
         });
         const openedChatId = await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
         await openMessage(messageId, openedChatId.id);

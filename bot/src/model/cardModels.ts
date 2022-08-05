@@ -2,10 +2,9 @@
  * Adaptive Card data model. Properties can be referenced in an adaptive card via the `${var}`
  * Adaptive Card syntax.
  */
-export interface CardData {
+export interface SecretCardData {
   title: string;
   body: string;
-  date: string;
 }
 
 export interface WorkplaceCardData {
@@ -15,7 +14,8 @@ export interface WorkplaceCardData {
 
 export interface BirthCardData {
   title: string;
-  body: string;
+  bodyTop: string;
+  bodyBottom: string;
 }
 
 export interface BirthOpenData {

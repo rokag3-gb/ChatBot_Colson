@@ -128,7 +128,8 @@ export const openBirthMessage = async (id, messageId, username, birthDate) => {
   await user.sendAdaptiveCard(
     AdaptiveCards.declare<BirthCardData>(tmpTemplate).render({
       title: `${birthDateKr}은 ${username} 님의 생일입니다.`,
-      body: `생일축하해요~~~`
+      bodyTop: `${username} 님 생일 축하해요!`,
+      bodyBottom: `소중하고 행복한 하루 보내세요 :)`
     })
   );
 }

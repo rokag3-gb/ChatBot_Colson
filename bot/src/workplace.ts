@@ -10,7 +10,7 @@ import { sendMessage,
          userMap } from "./common";
     
 export const setWorkplaceForm = async (userId, username, type, message) => {
-  if(!userId && checkWeekday()) {
+  if(!userId && checkWeekday(new Date())) {
     return;
   }
   if(userId) {
@@ -222,8 +222,9 @@ export const setWorkplace = async (id, upn, workDate, workCodeAM, workCodePM) =>
       }
   });
 
-  request.on('error', (err) => {
+  request.on('error', async (err) => {
     console.log('Database Error : ' + err);
+    await user.sendMessage(err.message);
   }).on('row', async (row) => {    
     await user.sendMessage(`${user.account.name}님의 ${workDate} 일자 근무지가 입력되었습니다. (${row.WorkNameAM}${workCodePM?'/'+row.WorkNamePM:''})`);
   });

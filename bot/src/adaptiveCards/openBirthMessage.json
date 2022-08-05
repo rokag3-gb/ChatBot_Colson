@@ -4,10 +4,26 @@
   "version": "1.5",
   "body": [
     {
+      "type": "Container",
+      "minHeight": "20px",
+      "items": [
+      ]
+    },
+    {
       "type": "TextBlock",
-      "text": "메시지가 도착했습니다.",
-      "weight": "Bolder",
-      "wrap": true
+      "text": "깜짝 메시지가 도착했습니다.",
+      "weight": "Bolder"
+    },
+    {
+      "type": "TextBlock",
+      "text": "메시지를 열어보시겠어요?",
+      "weight": "Bolder"
+    },
+    {
+      "type": "Container",
+      "minHeight": "20px",
+      "items": [
+      ]
     }
   ],
   "actions": [
