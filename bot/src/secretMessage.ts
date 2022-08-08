@@ -1,5 +1,5 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
-import { SecretCardData, SecretOpenCardData } from "./model/cardModels";
+import { SecretSendCardData, SecretCardData, SecretOpenCardData } from "./model/cardModels";
 import viewSecretMessageTemplate from "./adaptiveCards/viewSecretMessage.json";
 import openSecretMessageTemplate from "./adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "./adaptiveCards/sendSecretMessage.json";
@@ -7,9 +7,17 @@ import { CardFactory } from "botbuilder";
 
 import { sql } from "./mssql"
 import { userMap, sendMessage } from "./common";
+const imageToBase64 = require('image-to-base64');
          
 export const viewSecretMessage = async (id, receiverName) => {
   const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
+
+  const background = await imageToBase64("resource/image/background_00.jpg")
+  const icon1 = await imageToBase64("resource/image/background_icon_01.jpg")
+  const icon2 = await imageToBase64("resource/image/background_icon_02.jpg")
+  const icon3 = await imageToBase64("resource/image/background_icon_03.jpg")
+
+  tmpTemplate.body[5].columns
 
   for (const user of Object.entries(userMap)) {
     if(id === user[1].account.id)
@@ -26,11 +34,22 @@ export const viewSecretMessage = async (id, receiverName) => {
 
   const user = userMap[id];
   await user.sendAdaptiveCard(
-    AdaptiveCards.declare(tmpTemplate).render()
+    AdaptiveCards.declare<SecretSendCardData>(tmpTemplate).render({
+      background: background,
+      Icon1: icon1,
+      Icon2: icon2,
+      Icon3: icon3,
+      IconName1: "Cute",
+      IconName2: "Passson",
+      IconName3: "Cool",
+      backgroundImage01: "background_01.jpg",
+      backgroundImage02: "background_02.jpg",
+      backgroundImage03: "background_03.jpg",
+    })
   );
 }
 
-export const sendSecretMessage = async (id, receiverId, senderNick, message) => {
+export const sendSecretMessage = async (id, receiverId, senderNick, message, background) => {
   const user = userMap[id];
   const receiver = userMap[receiverId];
 
@@ -40,8 +59,9 @@ export const sendSecretMessage = async (id, receiverId, senderNick, message) => 
   request.input('SenderNick', sql.NVarChar, senderNick);
   request.input('Receiver', sql.VarChar, receiver.account.userPrincipalName);
   request.input('Contents', sql.NVarChar, message);
+  request.input('Background', sql.VarChar, background);
 
-  const query = `[IAM].[bot].[Usp_Set_Send_Message] @AppId, @Sender, @SenderNick, @Receiver, @Contents`;
+  const query = `[IAM].[bot].[Usp_Set_Send_Message] @AppId, @Sender, @SenderNick, @Receiver, @Contents, @Background`;
 
   request.query(query, (err, result) => {
     if(err){
@@ -79,7 +99,7 @@ export const openSecretMessage = async (id, messageId, context) => {
         }
       });
     
-      request.on('error', (err) => {
+      request.on('error', async (err) => {
         console.log('Database Error : ' + err);
       }).on('row', async (row) => {   
         if(row.IsOpen === true) {
@@ -87,9 +107,17 @@ export const openSecretMessage = async (id, messageId, context) => {
           resolve(true);
           return;
         }
+        
+        let background = '';
+        try {
+          background = await imageToBase64("resource/image/" + row.Background);
+        } catch {
+          background = await imageToBase64("resource/image/background_01.jpg");
+        }
 
         const replacer = new RegExp('\n', 'g');
         const card = AdaptiveCards.declare<SecretCardData>(viewSecretMessageTemplate).render({
+          background: background,
           title: `${row.SenderNick} 님이 보낸 메시지 입니다.`,
           body: row.Contents.replace(replacer, '\n\n')
         });

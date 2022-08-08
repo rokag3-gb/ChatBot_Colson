@@ -76,7 +76,7 @@ export class TeamsBot extends TeamsActivityHandler {
         } else if (context.activity.value.messageType === "viewSecretMessage") {
           await viewSecretMessage(context.activity.from.id, null);
         } else if (context.activity.value.messageType === "sendSecretMessage") {  
-          await sendSecretMessage(context.activity.from.id, context.activity.value.receiver, context.activity.value.senderNick, context.activity.value.message);
+          await sendSecretMessage(context.activity.from.id, context.activity.value.receiver, context.activity.value.senderNick, context.activity.value.message, context.activity.value.background);
         } else if (context.activity.value.messageType === "openSecretMessage") {  
           await openSecretMessage(context.activity.from.id, context.activity.value.messageId, context);
         } else if (context.activity.value.messageType === "openBirthMessage") {  
