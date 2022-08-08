@@ -5,6 +5,8 @@ import { sql } from "./mssql"
 
 export const userMap = new Object();
 
+export const imgPath = process.env.EXECUTE_ENV==="PROD"?"../../image/":"./image/";
+
 export const getToday = (day) => {
   const now = new Date();
   const utcNow = now.getTime() + (now.getTimezoneOffset() * 60 * 1000); 

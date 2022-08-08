@@ -4,18 +4,19 @@ import viewSecretMessageTemplate from "./adaptiveCards/viewSecretMessage.json";
 import openSecretMessageTemplate from "./adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "./adaptiveCards/sendSecretMessage.json";
 import { CardFactory } from "botbuilder";
+import { imgPath } from "./common"
 
 import { sql } from "./mssql"
 import { userMap, sendMessage } from "./common";
-const imageToBase64 = require('image-to-base64');
+import imageToBase64 from "image-to-base64";
          
 export const viewSecretMessage = async (id, receiverName) => {
   const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
 
-  const background = await imageToBase64("resource/image/background_00.jpg")
-  const icon1 = await imageToBase64("resource/image/background_icon_01.jpg")
-  const icon2 = await imageToBase64("resource/image/background_icon_02.jpg")
-  const icon3 = await imageToBase64("resource/image/background_icon_03.jpg")
+  const background = await imageToBase64(imgPath + "background_00.jpg")
+  const icon1 = await imageToBase64(imgPath + "background_icon_01.jpg")
+  const icon2 = await imageToBase64(imgPath + "background_icon_02.jpg")
+  const icon3 = await imageToBase64(imgPath + "background_icon_03.jpg")
 
   tmpTemplate.body[5].columns
 
@@ -40,7 +41,7 @@ export const viewSecretMessage = async (id, receiverName) => {
       Icon2: icon2,
       Icon3: icon3,
       IconName1: "Cute",
-      IconName2: "Passson",
+      IconName2: "Passion",
       IconName3: "Cool",
       backgroundImage01: "background_01.jpg",
       backgroundImage02: "background_02.jpg",
@@ -110,9 +111,9 @@ export const openSecretMessage = async (id, messageId, context) => {
         
         let background = '';
         try {
-          background = await imageToBase64("resource/image/" + row.Background);
+          background = await imageToBase64(imgPath + row.Background);
         } catch {
-          background = await imageToBase64("resource/image/background_01.jpg");
+          background = await imageToBase64(imgPath + "background_01.jpg");
         }
 
         const replacer = new RegExp('\n', 'g');
