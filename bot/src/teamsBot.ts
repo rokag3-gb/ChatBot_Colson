@@ -54,7 +54,7 @@ export class TeamsBot extends TeamsActivityHandler {
         } else if (text[0] === '홈' || text[0].toLowerCase() === 'home' || text[0] === 'ㅎ') {
           await sendCommand(context.activity.from.id);
         } else if (text[0] === '메시지' || text[0] === '메세지') {
-          await viewSecretMessage(context.activity.from.id, text[1]);
+          await viewSecretMessage(context.activity.from.id, text[1], context);
         } else if (text[0] === 'birthtest') {
           await sendBirthdayCard();
         } else if (text[0] === 'workplacetestsend') {
@@ -74,9 +74,9 @@ export class TeamsBot extends TeamsActivityHandler {
         } else if (context.activity.value.messageType === "setWorkplaceForm") {
           await setWorkplaceForm(context.activity.from.id, null, 'work', null);
         } else if (context.activity.value.messageType === "viewSecretMessage") {
-          await viewSecretMessage(context.activity.from.id, null);
+          await viewSecretMessage(context.activity.from.id, null, context);
         } else if (context.activity.value.messageType === "sendSecretMessage") {  
-          await sendSecretMessage(context.activity.from.id, context.activity.value.receiver, context.activity.value.senderNick, context.activity.value.message, context.activity.value.background);
+          await sendSecretMessage(context.activity.from.id, context.activity.value.receiver, context.activity.value.senderNick, context.activity.value.message, context.activity.value.background, context);
         } else if (context.activity.value.messageType === "openSecretMessage") {  
           await openSecretMessage(context.activity.from.id, context.activity.value.messageId, context);
         } else if (context.activity.value.messageType === "openBirthMessage") {  

@@ -3,26 +3,44 @@ import { SecretSendCardData, SecretCardData, SecretOpenCardData } from "./model/
 import viewSecretMessageTemplate from "./adaptiveCards/viewSecretMessage.json";
 import openSecretMessageTemplate from "./adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "./adaptiveCards/sendSecretMessage.json";
-import { CardFactory } from "botbuilder";
+import { CardFactory, Attachment } from "botbuilder";
 import { imgPath } from "./common"
 
 import { sql } from "./mssql"
 import { userMap, sendMessage } from "./common";
 import imageToBase64 from "image-to-base64";
-         
-export const viewSecretMessage = async (id, receiverName) => {
-  const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
 
-  const background = await imageToBase64(imgPath + "background_00.jpg")
+import ACData = require("adaptivecards-templating");
+
+const makeData = async (senderNick, receiver, message) => {
+  const background2 = await imageToBase64(imgPath + "background_00.jpg")
   const icon1 = await imageToBase64(imgPath + "background_icon_01.jpg")
   const icon2 = await imageToBase64(imgPath + "background_icon_02.jpg")
   const icon3 = await imageToBase64(imgPath + "background_icon_03.jpg")
 
-  tmpTemplate.body[5].columns
+  return {
+    background: background2,
+    Icon1: icon1,
+    Icon2: icon2,
+    Icon3: icon3,
+    IconName1: "Cute",
+    IconName2: "Passion",
+    IconName3: "Cool",
+    backgroundImage01: "background_01.jpg",
+    backgroundImage02: "background_02.jpg",
+    backgroundImage03: "background_03.jpg",
+    senderNick: senderNick,
+    receiver: receiver,
+    contents: message,
+  };
+}
+         
+export const viewSecretMessage = async (id, receiverName, context) => {
+  const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
 
   for (const user of Object.entries(userMap)) {
-    if(id === user[1].account.id)
-      continue;
+ //   if(id === user[1].account.id)
+ //     continue;
     tmpTemplate.body[4].choices.push({
       "title": user[1].account.name,
       "value": user[1].account.id
@@ -33,26 +51,38 @@ export const viewSecretMessage = async (id, receiverName) => {
     }
   }
 
-  const user = userMap[id];
-  await user.sendAdaptiveCard(
-    AdaptiveCards.declare<SecretSendCardData>(tmpTemplate).render({
-      background: background,
-      Icon1: icon1,
-      Icon2: icon2,
-      Icon3: icon3,
-      IconName1: "Cute",
-      IconName2: "Passion",
-      IconName3: "Cool",
-      backgroundImage01: "background_01.jpg",
-      backgroundImage02: "background_02.jpg",
-      backgroundImage03: "background_03.jpg",
-    })
-  );
+  const cardTemplate = new ACData.Template(tmpTemplate);
+  const cardWithData = cardTemplate.expand({ $root: await makeData(null, receiverName, null) });
+  const card = CardFactory.adaptiveCard(cardWithData);
+
+  await context.sendActivity({ attachments: [card] });
 }
 
-export const sendSecretMessage = async (id, receiverId, senderNick, message, background) => {
+export const sendSecretMessage = async (id, receiverId, senderNick, message, background, context) => {
   const user = userMap[id];
-  const receiver = userMap[receiverId];
+  const receiver = userMap[receiverId]; 
+  const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
+
+  for (const user of Object.entries(userMap)) {
+    tmpTemplate.body[4].choices.push({
+      "title": user[1].account.name,
+      "value": user[1].account.id
+    });
+
+    if(context.activity.value.receiver === user[1].account.name) {
+      tmpTemplate.body[4].value = user[1].account.id;
+    }
+  }
+
+  const cardTemplate = new ACData.Template(tmpTemplate);
+  const cardWithData = cardTemplate.expand({ $root: await makeData(context.activity.value.senderNick, context.activity.value.receiver, context.activity.value.message) });
+  const card = CardFactory.adaptiveCard(cardWithData);
+
+  context.updateActivity({
+    type: "message",
+    id: context.activity.replyToId,
+    attachments: [card],
+  });
 
   const request = new sql.Request();
   request.input('AppId', sql.VarChar, process.env.BOT_ID);

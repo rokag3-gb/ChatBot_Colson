@@ -13,6 +13,9 @@ export interface SecretSendCardData {
   backgroundImage01: string;
   backgroundImage02: string;
   backgroundImage03: string;
+  senderNick: string;
+  receiver: string;
+  contents: string;
 }
 
 export interface SecretOpenCardData {
