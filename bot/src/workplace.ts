@@ -182,10 +182,14 @@ export const sendWorkplaceCard = async (userId, choiceList, WorkCodeAM, WorkCode
   tmpTemplate.body[6].choices = choiceList;
   tmpTemplate.body[6].value = WorkCodePM;
 
+  let title = '근무지 등록';
+  let button = '등록';
   let bodyMessage = '';
   if(!message) {
     bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 근무지를 등록합니다.`
   } else if(WorkCodeAM && WorkCodePM) {
+    title = '근무지 확인';
+    button = '수정';
     bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 오늘 근무지가 맞나요?`
   } else {
     bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 근무지를 등록해주세요`
@@ -193,8 +197,10 @@ export const sendWorkplaceCard = async (userId, choiceList, WorkCodeAM, WorkCode
   
   await fromUser.sendAdaptiveCard(
     AdaptiveCards.declare<WorkplaceCardData>(tmpTemplate).render({
+      title: title,
       subtitle: message,
       body: bodyMessage,
+      button: button
     })
   );
 }
@@ -271,7 +277,8 @@ export const getWorkplace = async (id, name, date) => {
         {
           "type": "TextBlock",
           "wrap": true,
-          "text": row.Date
+          "text": row.Date,
+          "size": "small"
         }
       ]
     });
@@ -284,7 +291,8 @@ export const getWorkplace = async (id, name, date) => {
           "type": "TextBlock",
           "horizontalAlignment": "center",
           "wrap": true,
-          "text": row.WeekName
+          "text": row.WeekName,
+          "size": "small"
         }
       ]
     });
@@ -297,7 +305,8 @@ export const getWorkplace = async (id, name, date) => {
           "type": "TextBlock",
           "horizontalAlignment": "center",
           "wrap": true,
-          "text": row.WorkAM?row.WorkAM:"."
+          "text": row.WorkAM?row.WorkAM:".",
+          "size": "small"
         }
       ]
     });
@@ -310,7 +319,8 @@ export const getWorkplace = async (id, name, date) => {
           "type": "TextBlock",
           "horizontalAlignment": "center",
           "wrap": true,
-          "text": row.WorkPM?row.WorkPM:"."
+          "text": row.WorkPM?row.WorkPM:".",
+          "size": "small"
         }
       ]
     });

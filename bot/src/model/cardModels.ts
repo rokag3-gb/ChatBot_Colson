@@ -29,8 +29,10 @@ export interface SecretCardData {
 }
 
 export interface WorkplaceCardData {
+  title: string;
   subtitle: string;
   body: string;
+  button: string;
 }
 
 export interface BirthCardData {
