@@ -34,6 +34,7 @@ export interface WorkplaceCardData {
 }
 
 export interface BirthCardData {
+  background: string;
   title: string;
   bodyTop: string;
   bodyBottom: string;

@@ -4,7 +4,8 @@ import openBirthMessageTemplate from "./adaptiveCards/openBirthMessage.json";
 import sendBirthMessageTemplate from "./adaptiveCards/sendBirthMessage.json";
 
 import { sql } from "./mssql"
-import { userMap } from "./common";
+import { userMap, imgPath } from "./common";
+import imageToBase64 from "image-to-base64";
 
 export const sendBirthdayCard = async () => {
   const userList = <[]>await getBirthdayUser();
@@ -123,10 +124,11 @@ export const openBirthMessage = async (id, messageId, username, birthDate) => {
     });
   }
 
-  await setOpenBirth(messageId);
-  
+  let background = await imageToBase64(imgPath + "birth_background.jpg");
+  await setOpenBirth(messageId);  
   await user.sendAdaptiveCard(
     AdaptiveCards.declare<BirthCardData>(tmpTemplate).render({
+      background: background,
       title: `${birthDateKr}은 ${username} 님의 생일입니다.`,
       bodyTop: `${username} 님 생일 축하해요!`,
       bodyBottom: `소중하고 행복한 하루 보내세요 :)`
