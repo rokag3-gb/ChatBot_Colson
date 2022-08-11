@@ -98,7 +98,9 @@ export const getUserList = async (userId) => {
         if(row.AppUserId !== null && (userId === row.AppUserId || userId === null)) {
           const user = userMap[row.AppUserId];
           if(user) {
-            userMap[row.AppUserId].account.name = row.DisplayName;
+            userMap[row.AppUserId].FullNameKR = row.DisplayName;
+            userMap[row.AppUserId].LastNameKR = row.LastNameKR;
+            userMap[row.AppUserId].FirstNameKR = row.FirstNameKR;
           }
         }
       }).on('done', async () => {

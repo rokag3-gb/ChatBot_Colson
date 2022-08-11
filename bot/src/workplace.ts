@@ -87,7 +87,7 @@ const userWorkplace = async (userId, username, choiceList, message) => {
 
   if(username) {
     for (const u of Object.entries(userMap)) {
-      if(u[1].account.name === username) {
+      if(u[1].FullNameKR === username) {
         user = u[1];
         break;
       }
@@ -165,13 +165,13 @@ export const sendWorkplaceCard = async (userId, choiceList, WorkCodeAM, WorkCode
   if(!user) {
     tmpTemplate.body[3].value = fromUser.account.userPrincipalName;
     tmpTemplate.body[3].choices.push({
-      "title": fromUser.account.name,
+      "title": fromUser.FullNameKR,
       "value": fromUser.account.userPrincipalName
     });
   } else {
     tmpTemplate.body[3].value = user.account.userPrincipalName;
     tmpTemplate.body[3].choices.push({
-      "title": user.account.name,
+      "title": user.FullNameKR,
       "value": user.account.userPrincipalName
     });
   }
@@ -226,7 +226,7 @@ export const setWorkplace = async (id, upn, workDate, workCodeAM, workCodePM) =>
     console.log('Database Error : ' + err);
     await user.sendMessage(err.message);
   }).on('row', async (row) => {    
-    await user.sendMessage(`${user.account.name}님의 ${workDate} 일자 근무지가 입력되었습니다. (${row.WorkNameAM}${workCodePM?'/'+row.WorkNamePM:''})`);
+    await user.sendMessage(`${user.FullNameKR}님의 ${workDate} 일자 근무지가 입력되었습니다. (${row.WorkNameAM}${workCodePM?'/'+row.WorkNamePM:''})`);
   });
 }
 
