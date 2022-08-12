@@ -43,13 +43,13 @@ export const viewSecretMessage = async (id, receiverName, context) => {
   for (const user of Object.entries(userMap)) {
     if(id === user[1].account.id)
       continue;
-    tmpTemplate.body[2].columns[1].items[0].choices.push({
+    tmpTemplate.body[3].columns[1].items[0].choices.push({
       "title": user[1].FullNameKR,
       "value": user[1].account.id
     });
 
     if(receiverName === user[1].FullNameKR) {
-      tmpTemplate.body[2].columns[1].items[0].value = user[1].account.id;
+      tmpTemplate.body[3].columns[1].items[0].value = user[1].account.id;
     }
   }
 
@@ -66,13 +66,13 @@ export const sendSecretMessage = async (id, receiverId, senderNick, message, bac
   const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
 
   for (const user of Object.entries(userMap)) {
-    tmpTemplate.body[2].columns[1].items[0].choices.push({
+    tmpTemplate.body[3].columns[1].items[0].choices.push({
       "title": user[1].FullNameKR,
       "value": user[1].account.id
     });
 
     if(context.activity.value.receiver === user[1].FullNameKR) {
-      tmpTemplate.body[2].columns[1].items[0].value = user[1].account.id;
+      tmpTemplate.body[3].columns[1].items[0].value = user[1].account.id;
     }
   }
 
@@ -140,7 +140,6 @@ export const openSecretMessage = async (id, messageId, context) => {
           resolve(true);
           return;
         }
-        
         let background = '';
         try {
           background = await imageToBase64(imgPath + row.Background);
