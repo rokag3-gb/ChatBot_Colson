@@ -17,7 +17,6 @@
       },
       {
         "type": "ColumnSet",
-        "bleed": true,
         "columns": [
           {
             "type": "Column",
@@ -43,11 +42,9 @@
             "separator": true,
             "width": "60px",
             "spacing": "none",
-            "bleed": true,
             "items": [
               {
                 "type": "Container",
-                "bleed": true,
                 "style": "accent",
                 "items": [
                   {
@@ -66,11 +63,9 @@
             "separator": true,
             "width": "stretch",
             "spacing": "none",
-            "bleed": true,
             "items": [
               {
                 "type": "Container",
-                "bleed": true,
                 "style": "accent",
                 "items": [
                   {
@@ -89,7 +84,6 @@
             "separator": true,
             "width": "stretch",
             "spacing": "none",
-            "bleed": true,
             "items": [
               {
                 "type": "Container",

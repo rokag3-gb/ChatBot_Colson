@@ -278,6 +278,7 @@ export const getWorkplace = async (id, name, date) => {
           "type": "TextBlock",
           "wrap": true,
           "text": row.Date,
+          "horizontalAlignment": "center",
           "size": "small"
         }
       ]
