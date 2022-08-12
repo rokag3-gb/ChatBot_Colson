@@ -25,7 +25,7 @@
             "items": [
               {
                 "type": "Container",
-                "style": "good",
+                "style": "accent",
                 "items": [
                   {
                     "type": "TextBlock",
@@ -48,7 +48,7 @@
               {
                 "type": "Container",
                 "bleed": true,
-                "style": "good",
+                "style": "accent",
                 "items": [
                   {
                     "type": "TextBlock",
@@ -71,7 +71,7 @@
               {
                 "type": "Container",
                 "bleed": true,
-                "style": "good",
+                "style": "accent",
                 "items": [
                   {
                     "type": "TextBlock",
@@ -93,7 +93,7 @@
             "items": [
               {
                 "type": "Container",
-                "style": "good",
+                "style": "accent",
                 "items": [
                   {
                     "type": "TextBlock",

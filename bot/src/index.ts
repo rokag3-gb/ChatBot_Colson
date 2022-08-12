@@ -33,7 +33,11 @@ const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
   );
 
   console.log(`The bot encountered unhandled error:\n ${error.message}`);
-  await context.sendActivity("죄송해요. 서버에서 에러가 났어요. 다시 시도해주세요.");
+  await context.sendActivity(`죄송해요. 서버에서 에러가 났어요. 다시 시도해주세요.
+  
+  
+  
+  {${error.message}}`);
 };
 
 adapter.onTurnError = onTurnErrorHandler;

@@ -3,7 +3,6 @@
  * Adaptive Card syntax.
  */
 export interface SecretSendCardData {
-  background: string;
   Icon1: string;
   Icon2: string;
   Icon3: string;

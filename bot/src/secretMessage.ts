@@ -13,7 +13,6 @@ import imageToBase64 from "image-to-base64";
 import ACData = require("adaptivecards-templating");
 
 const makeData = async (senderNick, receiver, message) => {
-  const background = await imageToBase64(imgPath + "background_00.jpg")
   const icon1 = await imageToBase64(imgPath + "background_icon_01.jpg")
   const icon2 = await imageToBase64(imgPath + "background_icon_02.jpg");
   const icon3 = await imageToBase64(imgPath + "background_icon_03.jpg");
@@ -21,13 +20,12 @@ const makeData = async (senderNick, receiver, message) => {
   let data: SecretSendCardData;
 
   data = {
-    background: background,
     Icon1: icon1,
     Icon2: icon2,
     Icon3: icon3,
-    IconName1: "Cute",
-    IconName2: "Passion",
-    IconName3: "Cool",
+    IconName1: "yellow",
+    IconName2: "green",
+    IconName3: "brown",
     backgroundImage01: "background_01.jpg",
     backgroundImage02: "background_02.jpg",
     backgroundImage03: "background_03.jpg",
@@ -43,15 +41,15 @@ export const viewSecretMessage = async (id, receiverName, context) => {
   const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
 
   for (const user of Object.entries(userMap)) {
- //   if(id === user[1].account.id)
- //     continue;
-    tmpTemplate.body[4].choices.push({
+    if(id === user[1].account.id)
+      continue;
+    tmpTemplate.body[2].columns[1].items[0].choices.push({
       "title": user[1].FullNameKR,
       "value": user[1].account.id
     });
 
     if(receiverName === user[1].FullNameKR) {
-      tmpTemplate.body[4].value = user[1].account.id;
+      tmpTemplate.body[2].columns[1].items[0].value = user[1].account.id;
     }
   }
 
@@ -68,13 +66,13 @@ export const sendSecretMessage = async (id, receiverId, senderNick, message, bac
   const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
 
   for (const user of Object.entries(userMap)) {
-    tmpTemplate.body[4].choices.push({
+    tmpTemplate.body[2].columns[1].items[0].choices.push({
       "title": user[1].FullNameKR,
       "value": user[1].account.id
     });
 
     if(context.activity.value.receiver === user[1].FullNameKR) {
-      tmpTemplate.body[4].value = user[1].account.id;
+      tmpTemplate.body[2].columns[1].items[0].value = user[1].account.id;
     }
   }
 
