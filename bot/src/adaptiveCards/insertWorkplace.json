@@ -20,6 +20,7 @@
       "type": "TextBlock",
       "text": "${body}",
       "isSubtle": true,
+      "spacing": "none",
       "wrap": true
     },
     {
