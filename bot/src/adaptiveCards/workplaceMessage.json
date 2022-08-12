@@ -21,6 +21,8 @@
           {
             "type": "Column",
             "width": "80px",
+            "separator": true,
+            "spacing": "none",
             "items": [
               {
                 "type": "Container",
