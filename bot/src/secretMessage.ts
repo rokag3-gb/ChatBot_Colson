@@ -156,7 +156,7 @@ export const openSecretMessage = async (id, messageId, context) => {
           body: row.Contents.replace(replacer, '\n\n')
         });
         const openedChatId = await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
-        await openMessage(messageId, openedChatId, id);
+        await openMessage(messageId, openedChatId.id, id);
     
         const user = userMap[id];
         const sender = userMap[row.AppUserId];
