@@ -56,7 +56,7 @@ export class TeamsBot extends TeamsActivityHandler {
         } else if (text[0] === '메시지' || text[0] === '메세지') {
           await viewSecretMessage(context.activity.from.id, text[1], context);
         } else if (text[0] === 'birthtest') {
-          await sendBirthdayCard();
+          await sendBirthdayCard(context.activity.from.id);
         } else if (text[0] === 'workplacetestsend') {
           await setWorkplaceForm(null, null, 'send', '테스트로 전송된 메세지입니다. workplacetestsend');
         } else if (text[0] === 'workplacetestresend') {

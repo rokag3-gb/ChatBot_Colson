@@ -4,7 +4,7 @@ import viewSecretMessageTemplate from "./adaptiveCards/viewSecretMessage.json";
 import openSecretMessageTemplate from "./adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "./adaptiveCards/sendSecretMessage.json";
 import { CardFactory } from "botbuilder";
-import { imgPath } from "./common"
+import { imgPath, errorMessageForId } from "./common"
 
 import { sql } from "./mssql"
 import { userMap, sendMessage } from "./common";
@@ -104,6 +104,7 @@ export const sendSecretMessage = async (id, receiverId, senderNick, message, bac
 
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
+    errorMessageForId(id, err);
   }).on('row', async (row) => {
     if(row.ID === -1) {
       user.sendMessage(row.ERROR);
@@ -132,8 +133,9 @@ export const openSecretMessage = async (id, messageId, context) => {
         }
       });
     
-      request.on('error', async (err) => {
+      request.on('error', (err) => {
         console.log('Database Error : ' + err);
+        errorMessageForId(id, err);
       }).on('row', async (row) => {   
         if(row.IsOpen === true) {
           await sendMessage(id, "이미 열어본 메세지입니다.");
@@ -154,7 +156,7 @@ export const openSecretMessage = async (id, messageId, context) => {
           body: row.Contents.replace(replacer, '\n\n')
         });
         const openedChatId = await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
-        await openMessage(messageId, openedChatId.id);
+        await openMessage(messageId, openedChatId, id);
     
         const user = userMap[id];
         const sender = userMap[row.AppUserId];
@@ -172,7 +174,7 @@ export const openSecretMessage = async (id, messageId, context) => {
   });
 }
 
-const openMessage = async (messageId, openedChatId) => {
+const openMessage = async (messageId, openedChatId, userId) => {
   const request = new sql.Request();
   
   request.input('MsgId', sql.BigInt, messageId);
@@ -188,6 +190,7 @@ const openMessage = async (messageId, openedChatId) => {
 
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
+    errorMessageForId(userId, err);
   });
 }
 
@@ -207,6 +210,7 @@ export const sendMessageReaction = async (id, activityId, type) => {
 
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
+    errorMessageForId(id, err);
   }).on('row', async (row) => {
     const user = userMap[id];
     const sender = userMap[row.AppUserId];

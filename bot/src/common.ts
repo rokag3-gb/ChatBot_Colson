@@ -71,6 +71,7 @@ export const userRegister = async (userId) => {
 
         request.on('error', (err) => {
           console.log('Database Error : ' + err);
+          errorMessageForId(userId, err);
         });
         
         userMap[member.account.id] = member;
@@ -94,6 +95,7 @@ export const getUserList = async (userId) => {
     
       request.on('error', (err) => {
         console.log('Database Error : ' + err);
+        errorMessageForId(userId, err);
       }).on('row', (row) => {
         if(row.AppUserId !== null && (userId === row.AppUserId || userId === null)) {
           const user = userMap[row.AppUserId];
@@ -138,13 +140,23 @@ export const insertLog = async (userId, body) => {
 
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
+    errorMessageForId(userId, err);
   });
 }
 
-export const sorryMessage = async (id) => {
-  await sendMessage(id,  `죄송합니다.
+export const errorMessageForId = async (id, err) => {
+  if(!id) {
+    return;
+  }
+  await sendMessage(id, `에러가 발생했습니다. 다시 시도해주세요.
+  
+  ㅤ
+  
+  (${err.message})`);
+}
 
-처리할 수 없는 메시지입니다.`);
+export const sorryMessage = async (id) => {
+  await sendMessage(id,  `처리할 수 없는 메시지입니다. 다시 시도해주세요.`);
 }
 
 export const viewCommandList = async(id) => {

@@ -7,7 +7,8 @@ import { sql } from "./mssql"
 import { sendMessage, 
          getToday,
          checkWeekday,
-         userMap } from "./common";
+         userMap,
+         errorMessageForId } from "./common";
     
 export const setWorkplaceForm = async (userId, username, type, message) => {
   if(!userId && checkWeekday(new Date())) {
@@ -17,13 +18,13 @@ export const setWorkplaceForm = async (userId, username, type, message) => {
     await sendMessage(userId, `근무지 등록을 선택하셨습니다.`);
   }
 
-  const choiceList = await getWorkCode();
+  const choiceList = await getWorkCode(userId);
   if(type === 'work') {
     userWorkplace(userId, username, choiceList, message);
   } else if(type === 'send') {
-    userWorkplaceSend(choiceList, message);
+    userWorkplaceSend(choiceList, message, userId);
   } else if(type === 'resend') {
-    userWorkplaceResend(choiceList, message);
+    userWorkplaceResend(choiceList, message, userId);
   }
 }
 
@@ -41,6 +42,7 @@ export const getWorkplaceForm = async (userId) => {
 
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
+    errorMessageForId(userId, err);
   }).on('row', (row) => {
     tmpTemplate.body[1].choices.push({
       "title": row.DisplayName,
@@ -55,7 +57,7 @@ export const getWorkplaceForm = async (userId) => {
   });
 }
 
-const getWorkCode = () => {
+const getWorkCode = (userId) => {
   return new Promise((resolve, reject) => {
     try {
       const request = new sql.Request();
@@ -68,6 +70,7 @@ const getWorkCode = () => {
     
       request.on('error', (err) => {
         console.log('Database Error : ' + err);
+        errorMessageForId(userId, err);
       }).on('row', (row) => {    
         choiceList.push({"title" : row.Name, "value" : row.Code});
       }).on('done', () => {
@@ -112,13 +115,14 @@ const userWorkplace = async (userId, username, choiceList, message) => {
 
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
+    errorMessageForId(userId, err);
   }).on('row', (row) => {    
     sendWorkplaceCard(userId, choiceList, row.WorkCodeAM, row.WorkCodePM, user, message);
   });
 }
 
 //전체 유저의 근무지 등록을 위한 함수
-export const userWorkplaceSend = async (choiceList, message) => {
+export const userWorkplaceSend = async (choiceList, message, userId) => {
   const request = new sql.Request();
   request.input('appId', sql.VarChar, process.env.BOT_ID);
   request.input('date', sql.VarChar, getToday(null));
@@ -132,13 +136,14 @@ export const userWorkplaceSend = async (choiceList, message) => {
 
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
+    errorMessageForId(userId, err);
   }).on('row', (row) => {    
     sendWorkplaceCard(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
   });
 }
 
 //근무지 등록을 하지 않은 유저의 근무지 등록을 위한 함수
-const userWorkplaceResend = async (choiceList, message) => {
+const userWorkplaceResend = async (choiceList, message, userId) => {
   const request = new sql.Request();
   request.input('appId', sql.VarChar, process.env.BOT_ID);
   request.input('date', sql.VarChar, getToday(null));
@@ -152,6 +157,7 @@ const userWorkplaceResend = async (choiceList, message) => {
 
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
+    errorMessageForId(userId, err);
   }).on('row', (row) => {    
     sendWorkplaceCard(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
   });
@@ -230,7 +236,7 @@ export const setWorkplace = async (id, upn, workDate, workCodeAM, workCodePM) =>
 
   request.on('error', async (err) => {
     console.log('Database Error : ' + err);
-    await user.sendMessage(err.message);
+    errorMessageForId(id, err);
   }).on('row', async (row) => {    
     await user.sendMessage(`${user.FullNameKR}님의 ${workDate} 일자 근무지가 입력되었습니다. (${row.WorkNameAM}${workCodePM?'/'+row.WorkNamePM:''})`);
   });
@@ -268,7 +274,7 @@ export const getWorkplace = async (id, name, date) => {
   tmpTemplate.body[1].text = `${name} 님의 근무지를 조회하였습니다.`;
   request.on('error', (err) => {
     console.log('Database Error : ' + err);
-    return;
+    errorMessageForId(id, err);
   }).on('row', (row) => {
     tmpTemplate.body[2].columns[0].items.push(<any>{
       "type": "Container",

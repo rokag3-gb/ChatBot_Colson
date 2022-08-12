@@ -4,11 +4,11 @@ import openBirthMessageTemplate from "./adaptiveCards/openBirthMessage.json";
 import sendBirthMessageTemplate from "./adaptiveCards/sendBirthMessage.json";
 
 import { sql } from "./mssql"
-import { userMap, imgPath } from "./common";
+import { userMap, imgPath, errorMessageForId } from "./common";
 import imageToBase64 from "image-to-base64";
 
-export const sendBirthdayCard = async () => {
-  const userList = <[]>await getBirthdayUser();
+export const sendBirthdayCard = async (id) => {
+  const userList = <[]>await getBirthdayUser(id);
   if(userList.length === 0) {
     return;
   }
@@ -18,7 +18,7 @@ export const sendBirthdayCard = async () => {
     if(!userObject) {
       continue;
     }    
-    const msgId = await <any>setSendBirth(userInfo.UPN, userInfo.BirthDate);
+    const msgId = await <any>setSendBirth(userInfo.UPN, userInfo.BirthDate, id);
     await userObject.sendAdaptiveCard(
       AdaptiveCards.declare<BirthOpenData>(openBirthMessageTemplate).render({
         messageId: msgId,
@@ -29,7 +29,7 @@ export const sendBirthdayCard = async () => {
   }
 }
 
-const getBirthdayLink = () => {
+const getBirthdayLink = (id) => {
   return new Promise((resolve, reject) => {
     try {
       const request = new sql.Request();
@@ -44,6 +44,7 @@ const getBirthdayLink = () => {
       const list = [];
       request.on('error', (err) => {
         console.log('Database Error : ' + err);
+        errorMessageForId(id, err);
       }).on('row', (row) => {    
         list.push(row);
       }).on('done', () => { 
@@ -55,7 +56,7 @@ const getBirthdayLink = () => {
   });
 }
 
-const getBirthdayUser = () => {
+const getBirthdayUser = (id) => {
   return new Promise((resolve, reject) => {
     try {
       const request = new sql.Request();
@@ -71,6 +72,7 @@ const getBirthdayUser = () => {
       const list = [];
       request.on('error', (err) => {
         console.log('Database Error : ' + err);
+        errorMessageForId(id, err);
       }).on('row', (row) => {    
         list.push(row);
       }).on('done', () => { 
@@ -82,7 +84,7 @@ const getBirthdayUser = () => {
   });
 }
 
-const setSendBirth = (receiver, birthDate) => {
+const setSendBirth = (receiver, birthDate, id) => {
   return new Promise((resolve, reject) => {
     try {
       const request = new sql.Request();
@@ -99,6 +101,7 @@ const setSendBirth = (receiver, birthDate) => {
     
       request.on('error', (err) => {
         console.log('Database Error : ' + err);
+        errorMessageForId(id, err);
       }).on('row', (row) => {
         resolve(row.birthId);
       });
@@ -113,7 +116,7 @@ export const openBirthMessage = async (id, messageId, username, birthDate) => {
   const birthDateKr = ("00" + (d.getMonth() + 1)).slice(-2) + "월 " + ("00" + d.getDate()).slice(-2) + "일"
   const user = userMap[id];
 
-  const link = <[any]>await getBirthdayLink();
+  const link = <[any]>await getBirthdayLink(id);
   const tmpTemplate = JSON.parse(JSON.stringify(sendBirthMessageTemplate));
 
   for(const row of link) {
@@ -125,7 +128,7 @@ export const openBirthMessage = async (id, messageId, username, birthDate) => {
   }
 
   let background = await imageToBase64(imgPath + "birth_background.jpg");
-  await setOpenBirth(messageId);  
+  await setOpenBirth(messageId, id);  
   await user.sendAdaptiveCard(
     AdaptiveCards.declare<BirthCardData>(tmpTemplate).render({
       background: background,
@@ -136,7 +139,7 @@ export const openBirthMessage = async (id, messageId, username, birthDate) => {
   );
 }
 
-const setOpenBirth = (birthId) => {
+const setOpenBirth = (birthId, id) => {
   return new Promise((resolve, reject) => {
     try {
       const request = new sql.Request();
@@ -151,6 +154,7 @@ const setOpenBirth = (birthId) => {
     
       request.on('error', (err) => {
         console.log('Database Error : ' + err);
+        errorMessageForId(id, err);
       }).on('done', () => {
         resolve(true);
       });
