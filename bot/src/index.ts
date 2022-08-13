@@ -85,20 +85,20 @@ async (req, res) => {
 
 //휴가자 제외한 전직원에게 근무지 입력 카드 전송
 cron.schedule('00 00 09 * * *', async () => {
-  setWorkplaceForm(null, null, 'send', '좋은 아침입니다!');
+  setWorkplaceForm(null, null, null, 'send', '좋은 아침입니다!');
 });
 
 //근무지 입력 안한 사람들에게 카드 전송
 cron.schedule('00 00 10 * * *', async () => {  
-  setWorkplaceForm(null, null, 'resend', '좋은 아침입니다!');
+  setWorkplaceForm(null, null, null, 'resend', '좋은 아침입니다!');
 });
 
 cron.schedule('00 00 14 * * *', async () => {
-  setWorkplaceForm(null, null, 'resend', '점심 식사 맛있게 하셨나요!');
+  setWorkplaceForm(null, null, null, 'resend', '점심 식사 맛있게 하셨나요!');
 });
 
 cron.schedule('00 30 17 * * *', async () => {  
-  setWorkplaceForm(null, null, 'send', '오늘 하루도 고생많으셨습니다.');
+  setWorkplaceForm(null, null, null, 'send', '오늘 하루도 고생많으셨습니다.');
 });
 
 //생일자에게 카드 전송

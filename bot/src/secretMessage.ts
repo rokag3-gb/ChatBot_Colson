@@ -5,12 +5,12 @@ import openSecretMessageTemplate from "./adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "./adaptiveCards/sendSecretMessage.json";
 import { CardFactory } from "botbuilder";
 import { imgPath, errorMessageForId } from "./common"
+import workplaceUserListTemplate from "./adaptiveCards/workplaceUserList.json";
+import ACData = require("adaptivecards-templating");
 
 import { sql } from "./mssql"
-import { userMap, sendMessage } from "./common";
+import { userMap } from "./common";
 import imageToBase64 from "image-to-base64";
-
-import ACData = require("adaptivecards-templating");
 
 const makeData = async (senderNick, receiver, message) => {
   const icon1 = await imageToBase64(imgPath + "background_icon_01.jpg")
@@ -37,12 +37,12 @@ const makeData = async (senderNick, receiver, message) => {
   return data;
 }
          
-export const viewSecretMessage = async (id, receiverName, context) => {
+export const viewSecretMessage = async (context, id, receiverName) => {
   const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
 
   for (const user of Object.entries(userMap)) {
-    if(id === user[1].account.id)
-      continue;
+//    if(id === user[1].account.id)
+//      continue;
     tmpTemplate.body[3].columns[1].items[0].choices.push({
       "title": user[1].FullNameKR,
       "value": user[1].account.id
@@ -53,75 +53,91 @@ export const viewSecretMessage = async (id, receiverName, context) => {
     }
   }
 
-  const cardTemplate = new ACData.Template(tmpTemplate);
-  const cardWithData = cardTemplate.expand({ $root: await makeData(null, receiverName, null) });
-  const card = CardFactory.adaptiveCard(cardWithData);
-
-  await context.sendActivity({ attachments: [card] });
+  const card = AdaptiveCards.declare(tmpTemplate).render(await makeData(null, receiverName, null));
+  await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
 }
 
-export const sendSecretMessage = async (id, receiverId, senderNick, message, background, context) => {
-  const user = userMap[id];
-  const receiver = userMap[receiverId]; 
-  const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
+export const sendSecretMessage = async (context, id, receiverId, senderNick, message, background) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      console.log('222222222222222222222222');
+      const user = userMap[id];
+      const receiver = userMap[receiverId]; 
+      const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
+    
+      for (const user of Object.entries(userMap)) {
+        tmpTemplate.body[3].columns[1].items[0].choices.push({
+          "title": user[1].FullNameKR,
+          "value": user[1].account.id
+        });
+    
+        if(context.activity.value.receiver === user[1].FullNameKR) {
+          tmpTemplate.body[3].columns[1].items[0].value = user[1].account.id;
+        }
+      }
+    
+      const cardTemplate = new ACData.Template(tmpTemplate);
+      const cardWithData = cardTemplate.expand({ $root: await makeData(context.activity.value.senderNick, context.activity.value.receiver, context.activity.value.message) });
+      const card = CardFactory.adaptiveCard(cardWithData);
 
-  for (const user of Object.entries(userMap)) {
-    tmpTemplate.body[3].columns[1].items[0].choices.push({
-      "title": user[1].FullNameKR,
-      "value": user[1].account.id
-    });
+      await context.updateActivity({
+        type: "message",
+        id: context.activity.replyToId,
+        attachments: [card],
+      });
 
-    if(context.activity.value.receiver === user[1].FullNameKR) {
-      tmpTemplate.body[3].columns[1].items[0].value = user[1].account.id;
+      const request = new sql.Request();
+      request.input('AppId', sql.VarChar, process.env.BOT_ID);
+      request.input('Sender', sql.VarChar, user.account.userPrincipalName);
+      request.input('SenderNick', sql.NVarChar, senderNick);
+      request.input('Receiver', sql.VarChar, receiver.account.userPrincipalName);
+      request.input('Contents', sql.NVarChar, message);
+      request.input('Background', sql.VarChar, background);
+    
+      const query = `[IAM].[bot].[Usp_Set_Send_Message] @AppId, @Sender, @SenderNick, @Receiver, @Contents, @Background`;
+    
+      request.query(query, async (err, result) => {
+        if(err) {
+          await errorMessageForId(context, err);
+          reject(err);
+        }
+      });
+    
+      request.on('error', async (err) => {
+        console.log('Database Error : ' + err);
+        await errorMessageForId(context, err);
+        reject(err);
+      }).on('row', async (row) => {
+        try {
+          if(row.ID === -1) {
+            await errorMessageForId(context, row.ERROR);
+          }
+          console.log('3333333333333333333 ' + JSON.stringify(context));
+         await context.sendActivity(`${receiver.FullNameKR} 님에게 메시지가 전송되었습니다. (일일 남은 횟수 : ${row.SendCount})`);
+         console.log('5555555555');
+      
+         const tmpTemplate = JSON.parse(JSON.stringify(openSecretMessageTemplate));
+         tmpTemplate.actions[0].data.messageId = row.ID;    
+      
+         await receiver.sendAdaptiveCard<SecretOpenCardData>(AdaptiveCards.declare(tmpTemplate).render({
+           Receiver: receiver.FirstNameKR
+         }));
+        } catch(e) {
+          console.log('ERROR !!!! ' + e);
+          reject(e);
+        }
+      }).on('done', () => { 
+        resolve(true);
+      });
+    } catch(e) {
+      await errorMessageForId(context, e);
+      reject(e);
     }
-  }
-
-  const cardTemplate = new ACData.Template(tmpTemplate);
-  const cardWithData = cardTemplate.expand({ $root: await makeData(context.activity.value.senderNick, context.activity.value.receiver, context.activity.value.message) });
-  const card = CardFactory.adaptiveCard(cardWithData);
-
-  context.updateActivity({
-    type: "message",
-    id: context.activity.replyToId,
-    attachments: [card],
-  });
-
-  const request = new sql.Request();
-  request.input('AppId', sql.VarChar, process.env.BOT_ID);
-  request.input('Sender', sql.VarChar, user.account.userPrincipalName);
-  request.input('SenderNick', sql.NVarChar, senderNick);
-  request.input('Receiver', sql.VarChar, receiver.account.userPrincipalName);
-  request.input('Contents', sql.NVarChar, message);
-  request.input('Background', sql.VarChar, background);
-
-  const query = `[IAM].[bot].[Usp_Set_Send_Message] @AppId, @Sender, @SenderNick, @Receiver, @Contents, @Background`;
-
-  request.query(query, (err, result) => {
-    if(err){
-        return console.log('query error :',err)
-    }
-  });
-
-  request.on('error', (err) => {
-    console.log('Database Error : ' + err);
-    errorMessageForId(id, err);
-  }).on('row', async (row) => {
-    if(row.ID === -1) {
-      user.sendMessage(row.ERROR);
-      return;
-    }
-    user.sendMessage(`${receiver.FullNameKR} 님에게 메시지가 전송되었습니다. (일일 남은 횟수 : ${row.SendCount})`);
-
-    const tmpTemplate = JSON.parse(JSON.stringify(openSecretMessageTemplate));
-    tmpTemplate.actions[0].data.messageId = row.ID;    
-    await receiver.sendAdaptiveCard<SecretOpenCardData>(AdaptiveCards.declare(tmpTemplate).render({
-      Receiver: receiver.FirstNameKR
-    }));
   });
 }
 
-export const openSecretMessage = async (id, messageId, context) => {
-  return new Promise((resolve, reject) => {
+export const openSecretMessage = async (context, id, messageId) => {
+  return new Promise(async (resolve, reject) => {
     try {
       const request = new sql.Request();
       request.input('MsgId', sql.BigInt, messageId);
@@ -133,39 +149,44 @@ export const openSecretMessage = async (id, messageId, context) => {
         }
       });
     
-      request.on('error', (err) => {
+      request.on('error', async (err) => {
         console.log('Database Error : ' + err);
-        errorMessageForId(id, err);
+        await errorMessageForId(id, err);
+        reject(err);
       }).on('row', async (row) => {   
-        if(row.IsOpen === true) {
-          await sendMessage(id, "이미 열어본 메세지입니다.");
-          resolve(true);
-          return;
-        }
-        let background = '';
         try {
-          background = await imageToBase64(imgPath + row.Background);
-        } catch {
-          background = await imageToBase64(imgPath + "background_01.jpg");
+          if(row.IsOpen === true) {
+            await context.sendActivity("이미 열어본 메세지입니다.");
+            resolve(true);
+            return;
+          }
+          let background = '';
+          try {
+            background = await imageToBase64(imgPath + row.Background);
+          } catch {
+            background = await imageToBase64(imgPath + "background_01.jpg");
+          }
+  
+          const replacer = new RegExp('\n', 'g');
+          const card = AdaptiveCards.declare<SecretCardData>(viewSecretMessageTemplate).render({
+            background: background,
+            title: `${row.SenderNick} 님이 보낸 메시지 입니다.`,
+            body: row.Contents.replace(replacer, '\n\n')
+          });
+          const openedChatId = await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
+          await openMessage(messageId, openedChatId.id, id);
+      
+          const user = userMap[id];
+          const sender = userMap[row.AppUserId];
+  
+          //어이없네 bit 타입을 insert 할때는 0, 1로 안보내면 에러나더니 select 할때는 true, false 로 받아야 처리가 가능하다
+          if(sender) {
+            await sender.sendMessage(`${user.FullNameKR} 님이 메시지를 열어보았습니다.`);
+          }
+        } catch (e) {
+          reject(e);
         }
-
-        const replacer = new RegExp('\n', 'g');
-        const card = AdaptiveCards.declare<SecretCardData>(viewSecretMessageTemplate).render({
-          background: background,
-          title: `${row.SenderNick} 님이 보낸 메시지 입니다.`,
-          body: row.Contents.replace(replacer, '\n\n')
-        });
-        const openedChatId = await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
-        await openMessage(messageId, openedChatId.id, id);
-    
-        const user = userMap[id];
-        const sender = userMap[row.AppUserId];
-
-        //어이없네 bit 타입을 insert 할때는 0, 1로 안보내면 에러나더니 select 할때는 true, false 로 받아야 처리가 가능하다
-        if(sender) {
-          sender.sendMessage(`${user.FullNameKR} 님이 메시지를 열어보았습니다.`);
-        }
-
+      }).on('done', () => { 
         resolve(true);
       });
     } catch(e) {
@@ -174,67 +195,90 @@ export const openSecretMessage = async (id, messageId, context) => {
   });
 }
 
-const openMessage = async (messageId, openedChatId, userId) => {
-  const request = new sql.Request();
-  
-  request.input('MsgId', sql.BigInt, messageId);
-  request.input('OpenedChatId', sql.VarChar, openedChatId);
-
-  const query = `[IAM].[bot].[Usp_Set_Send_Message_Open] @MsgId, @OpenedChatId`;
-
-  request.query(query, (err, result) => {
-    if(err){
-      return console.log('query error :',err)
+const openMessage = (context, messageId, openedChatId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const request = new sql.Request();
+      
+      request.input('MsgId', sql.BigInt, messageId);
+      request.input('OpenedChatId', sql.VarChar, openedChatId);
+    
+      const query = `[IAM].[bot].[Usp_Set_Send_Message_Open] @MsgId, @OpenedChatId`;
+    
+      request.query(query, (err, result) => {
+        if(err){
+          reject(err);
+          return console.log('query error :',err)
+        }
+      });
+    
+      request.on('error', async (err) => {
+        console.log('Database Error : ' + err);
+        await errorMessageForId(context, err);
+        reject(err);
+      }).on('done', () => { 
+        resolve(true);
+      });
+    } catch(e) {
+      reject(e);
     }
-  });
-
-  request.on('error', (err) => {
-    console.log('Database Error : ' + err);
-    errorMessageForId(userId, err);
   });
 }
 
-export const sendMessageReaction = async (id, activityId, type) => {
-  const request = new sql.Request();
-  
-  request.input('AppId', sql.VarChar, process.env.BOT_ID);
-  request.input('OpenedChatId', sql.VarChar, activityId);
-
-  const query = `[IAM].[bot].[Usp_Get_Send_Message_Chat_Id] @OpenedChatId, @AppId`;
-
-  request.query(query, (err, result) => {
-    if(err){
-      return console.log('query error :',err)
-    }
-  });
-
-  request.on('error', (err) => {
-    console.log('Database Error : ' + err);
-    errorMessageForId(id, err);
-  }).on('row', async (row) => {
-    const user = userMap[id];
-    const sender = userMap[row.AppUserId];
-    if(!sender || !user) {
-      return;
-    }
-
-    let icon = '';
+export const sendMessageReaction = (context, id, activityId, type) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const request = new sql.Request();
+      
+      request.input('AppId', sql.VarChar, process.env.BOT_ID);
+      request.input('OpenedChatId', sql.VarChar, activityId);
     
-    if(type === 'like') {
-      icon = '👍';
-    } else if(type === 'heart') {
-      icon = '❤️';
-    } else if(type === 'laugh') {
-      icon = '😆';
-    } else if(type === 'surprised') {
-      icon = '😮';
-    } else if(type === 'sad') {
-      icon = '🙁';
-    } else if(type === 'angry') {
-      icon = '😡';
+      const query = `[IAM].[bot].[Usp_Get_Send_Message_Chat_Id] @OpenedChatId, @AppId`;
+    
+      request.query(query, (err, result) => {
+        if(err){
+          return console.log('query error :',err)
+        }
+      });
+    
+      request.on('error', async (err) => {
+        console.log('Database Error : ' + err);
+        errorMessageForId(context, err);
+        reject(err);
+      }).on('row', async (row) => {
+        try {
+          const user = userMap[id];
+          const sender = userMap[row.AppUserId];
+          if(!sender) {
+            return;
+          }
+      
+          let icon = '';
+          
+          if(type === 'like') {
+            icon = '👍';
+          } else if(type === 'heart') {
+            icon = '❤️';
+          } else if(type === 'laugh') {
+            icon = '😆';
+          } else if(type === 'surprised') {
+            icon = '😮';
+          } else if(type === 'sad') {
+            icon = '🙁';
+          } else if(type === 'angry') {
+            icon = '😡';
+          }
+      
+          await sender.sendMessage(`${user.FullNameKR} 님이 메시지에 '${icon}' 반응했습니다.`);
+          await context.sendActivity(`${row.SenderNick} 님에게 '${icon}' 반응이 전달되었습니다.`)
+        } catch (e) {
+          reject(e);
+        }
+      }).on('done', () => { 
+        resolve(true);
+      });
+    } catch(e) {
+      reject(e);
     }
-
-    await sender.sendMessage(`${user.FullNameKR} 님이 메시지에 '${icon}' 반응했습니다.`);
-    await user.sendMessage(`${row.SenderNick} 님에게 '${icon}' 반응이 전달되었습니다.`)
   });
 }

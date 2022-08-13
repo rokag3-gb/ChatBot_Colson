@@ -1,6 +1,7 @@
 import { bot } from "./internal/initialize";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import sendCommandTemplate from "./adaptiveCards/sendCommand.json";
+import { CardFactory } from "botbuilder";
 import { sql } from "./mssql"
 
 export const userMap = new Object();
@@ -37,17 +38,9 @@ export const checkWeekday = (day) => {
   return false;
 }
 
-export const sendMessage = async (userID, body) => {
-  const user = userMap[userID];
-  if(user)
-    await user.sendMessage(body);
-}
-
-export const sendCommand = async (userID) => {
-  const user = userMap[userID];
-  await user.sendAdaptiveCard(
-    AdaptiveCards.declare(sendCommandTemplate).render()
-  );
+export const sendCommand = async (context) => {
+  const card = AdaptiveCards.declare(sendCommandTemplate).render();
+  await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
 }
 
 export const userRegister = async (userId) => {
@@ -69,9 +62,9 @@ export const userRegister = async (userId) => {
             }
         });        
 
-        request.on('error', (err) => {
+        request.on('error', async (err) => {
           console.log('Database Error : ' + err);
-          errorMessageForId(userId, err);
+          await errorMessageForId(userId, err);
         });
         
         userMap[member.account.id] = member;
@@ -93,9 +86,9 @@ export const getUserList = async (userId) => {
         }
       });
     
-      request.on('error', (err) => {
+      request.on('error', async (err) => {
         console.log('Database Error : ' + err);
-        errorMessageForId(userId, err);
+        await errorMessageForId(userId, err);
       }).on('row', (row) => {
         if(row.AppUserId !== null && (userId === row.AppUserId || userId === null)) {
           const user = userMap[row.AppUserId];
@@ -138,29 +131,32 @@ export const insertLog = async (userId, body) => {
     }
   });
 
-  request.on('error', (err) => {
+  request.on('error', async (err) => {
     console.log('Database Error : ' + err);
-    errorMessageForId(userId, err);
+    await errorMessageForId(userId, err);
   });
 }
 
-export const errorMessageForId = async (id, err) => {
-  if(!id) {
-    return;
-  }
-  await sendMessage(id, `에러가 발생했습니다. 다시 시도해주세요.
-  
-  ㅤ
-  
-  (${err.message})`);
+export const errorMessageForId = async (context, err) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await context.sendActivity(`에러가 발생했습니다. 다시 시도해주세요.
+      
+      ㅤ
+      
+      (${err.message})`);
+    } catch (e) {
+      console.log(e);
+    }
+  });
 }
 
-export const sorryMessage = async (id) => {
-  await sendMessage(id,  `처리할 수 없는 메시지입니다. 다시 시도해주세요.`);
+export const sorryMessage = async (context) => {
+  await context.sendActivity( `처리할 수 없는 메시지입니다. 다시 시도해주세요.`);
 }
 
-export const viewCommandList = async(id) => {
-  await sendMessage(id,  `홈, home, ㅎ => 홈 페이지 표시
+export const viewCommandList = async(context) => {
+  await context.sendActivity( `홈, home, ㅎ => 홈 페이지 표시
   
   근무지 홍길동 => 홍길동 사원의 14일간의 근무지를 조회
   
