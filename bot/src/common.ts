@@ -64,7 +64,6 @@ export const userRegister = async (userId) => {
 
         request.on('error', async (err) => {
           console.log('Database Error : ' + err);
-          await errorMessageForId(userId, err);
         });
         
         userMap[member.account.id] = member;
@@ -88,7 +87,6 @@ export const getUserList = async (userId) => {
     
       request.on('error', async (err) => {
         console.log('Database Error : ' + err);
-        await errorMessageForId(userId, err);
       }).on('row', (row) => {
         if(row.AppUserId !== null && (userId === row.AppUserId || userId === null)) {
           const user = userMap[row.AppUserId];
@@ -133,7 +131,6 @@ export const insertLog = async (userId, body) => {
 
   request.on('error', async (err) => {
     console.log('Database Error : ' + err);
-    await errorMessageForId(userId, err);
   });
 }
 
@@ -141,12 +138,14 @@ export const errorMessageForId = async (context, err) => {
   return new Promise(async (resolve, reject) => {
     try {
       await context.sendActivity(`에러가 발생했습니다. 다시 시도해주세요.
-      
-      ㅤ
-      
-      (${err.message})`);
+
+ㅤ
+ 
+(${err.message})`);
+      resolve(true);
     } catch (e) {
-      console.log(e);
+      console.log('errorMessageForId ' + e);
+      reject(e);
     }
   });
 }

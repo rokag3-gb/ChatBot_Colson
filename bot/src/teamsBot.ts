@@ -9,6 +9,7 @@ import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { viewCommandList,
   sendCommand, 
   userMap,
+  errorMessageForId,
   sorryMessage } from "./common";
 import { getWorkplaceForm,
   getWorkplace, 
@@ -27,7 +28,6 @@ export class TeamsBot extends TeamsActivityHandler {
 
     this.onMessage(async (context, next) => {
       try {
-        console.log('onMessage 001');
         const message = MessageFactory.text('');
         message.type = ActivityTypes.Typing;
         await context.sendActivity(message);
@@ -77,10 +77,7 @@ export class TeamsBot extends TeamsActivityHandler {
           } else if (context.activity.value.messageType === "viewSecretMessage") {
             await viewSecretMessage(context, context.activity.from.id, null);
           } else if (context.activity.value.messageType === "sendSecretMessage") {  
-            console.log('11111111111111111');
             await sendSecretMessage(context, context.activity.from.id, context.activity.value.receiver, context.activity.value.senderNick, context.activity.value.message, context.activity.value.background);
-            
-            console.log('444444444444444444');
           } else if (context.activity.value.messageType === "openSecretMessage") {  
             await openSecretMessage(context, context.activity.from.id, context.activity.value.messageId);
           } else if (context.activity.value.messageType === "openBirthMessage") {  
@@ -94,11 +91,10 @@ export class TeamsBot extends TeamsActivityHandler {
           await sorryMessage(context);
         }
   
-        console.log('await next() 001');
         await next();
-        console.log('await next() 002');
       } catch (e) {
-        console.log(e);
+        console.log(e.message);
+        await errorMessageForId(context, e);
       }
     });
 

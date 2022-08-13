@@ -43,8 +43,7 @@ const getBirthdayLink = (context) => {
     
       const list = [];
       request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-        await errorMessageForId(context, err);
+        reject(err);
       }).on('row', (row) => {    
         list.push(row);
       }).on('done', () => { 
@@ -72,8 +71,7 @@ const getBirthdayUser = (context) => {
     
       const list = [];
       request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-        await errorMessageForId(context, err);
+        reject(err);
       }).on('row', (row) => {    
         list.push(row);
       }).on('done', () => { 
@@ -101,8 +99,7 @@ const setSendBirth = (context, receiver, birthDate) => {
       });
     
       request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-        await errorMessageForId(context, err);
+        reject(err);
       }).on('row', (row) => {
         resolve(row.birthId);
       });
@@ -154,8 +151,7 @@ const setOpenBirth = (context, birthId) => {
       });
     
       request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-        await errorMessageForId(context, err);
+        reject(err);
       }).on('done', () => {
         resolve(true);
       });

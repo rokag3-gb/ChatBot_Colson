@@ -1,5 +1,4 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
-import { WorkplaceCardData } from "./model/cardModels";
 import workplaceTemplate from "./adaptiveCards/insertWorkplace.json";
 import workplaceMessage from "./adaptiveCards/workplaceMessage.json";
 import workplaceUserListTemplate from "./adaptiveCards/workplaceUserList.json";
@@ -47,8 +46,7 @@ export const getWorkplaceForm = async (context) => {
       });
     
       request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-        await errorMessageForId(context, err);
+        reject(err);
       }).on('row', (row) => {
         tmpTemplate.body[1].choices.push({
           "title": row.DisplayName,
@@ -84,8 +82,7 @@ const getWorkCode = (context) => {
       });
     
       request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-        await errorMessageForId(context, err);
+        reject(err);
       }).on('row', (row) => {    
         choiceList.push({"title" : row.Name, "value" : row.Code});
       }).on('done', () => {
@@ -98,7 +95,7 @@ const getWorkCode = (context) => {
 }
 
 //특정 유저의 근무지 등록을 위한 함수
-const userWorkplace = async (context, userId, username, choiceList, message) => {
+const userWorkplace = (context, userId, username, choiceList, message) => {
   return new Promise(async (resolve, reject) => {
     try {
       const request = new sql.Request();
@@ -131,16 +128,14 @@ const userWorkplace = async (context, userId, username, choiceList, message) => 
       });
     
       request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-        await errorMessageForId(context, err);
+        reject(err);
       }).on('row', async (row) => {    
         try {
           await sendWorkplaceCard(context, userId, choiceList, row.WorkCodeAM, row.WorkCodePM, user, message);
+          resolve(true);
         } catch(e) {
           reject(e);
         }
-      }).on('done', () => {
-        resolve(true);
       });
     } catch(e) {
       reject(e);
@@ -149,7 +144,7 @@ const userWorkplace = async (context, userId, username, choiceList, message) => 
 }
 
 //전체 유저의 근무지 등록을 위한 함수
-export const userWorkplaceSend = async (context, choiceList, message) => {
+export const userWorkplaceSend = (context, choiceList, message) => {
   return new Promise(async (resolve, reject) => {
     try {
       const request = new sql.Request();
@@ -164,16 +159,14 @@ export const userWorkplaceSend = async (context, choiceList, message) => {
       });
     
       request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-        await errorMessageForId(context, err);
+        reject(err);
       }).on('row', async (row) => {    
         try {
           await sendWorkplaceCard(context, row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
+          resolve(true);
         } catch(e) {
           reject(e);
         }
-      }).on('done', () => {
-        resolve(true);
       });
     } catch(e) {
       reject(e);
@@ -182,7 +175,7 @@ export const userWorkplaceSend = async (context, choiceList, message) => {
 }
 
 //근무지 등록을 하지 않은 유저의 근무지 등록을 위한 함수
-const userWorkplaceResend = async (context, choiceList, message) => {
+const userWorkplaceResend = (context, choiceList, message) => {
   return new Promise(async (resolve, reject) => {
     try {
       const request = new sql.Request();
@@ -192,21 +185,19 @@ const userWorkplaceResend = async (context, choiceList, message) => {
     
       request.query(query, (err, result) => {
         if(err){
-            return console.log('query error :',err)
+          return console.log('query error :',err)
         }
       });
     
       request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-        await errorMessageForId(context, err);
+        reject(err);
       }).on('row', async (row) => {    
         try {
           await sendWorkplaceCard(context, row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
+          resolve(true);
         } catch(e) {
           reject(e);
         }
-      }).on('done', () => {
-        resolve(true);
       });
     } catch(e) {
       reject(e);
@@ -214,55 +205,59 @@ const userWorkplaceResend = async (context, choiceList, message) => {
   });
 }
 
-export const sendWorkplaceCard = async (context, userId, choiceList, WorkCodeAM, WorkCodePM, user, message) => {
-  try {
-    const fromUser = userMap[userId];
-    const day1 = getToday(null);
-    const tmpTemplate = JSON.parse(JSON.stringify(workplaceTemplate));
-  
-    if(!user) {
-      tmpTemplate.body[3].value = fromUser.account.userPrincipalName;
-      tmpTemplate.body[3].choices.push({
-        "title": fromUser.FullNameKR,
-        "value": fromUser.account.userPrincipalName
+const sendWorkplaceCard = (context, userId, choiceList, WorkCodeAM, WorkCodePM, user, message) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const fromUser = userMap[userId];
+      const day1 = getToday(null);
+      const tmpTemplate = JSON.parse(JSON.stringify(workplaceTemplate));
+    
+      if(!user) {
+        tmpTemplate.body[3].value = fromUser.account.userPrincipalName;
+        tmpTemplate.body[3].choices.push({
+          "title": fromUser.FullNameKR,
+          "value": fromUser.account.userPrincipalName
+        });
+      } else {
+        tmpTemplate.body[3].value = user.account.userPrincipalName;
+        tmpTemplate.body[3].choices.push({
+          "title": user.FullNameKR,
+          "value": user.account.userPrincipalName
+        });
+      }
+    
+      tmpTemplate.body[4].value = day1;
+      tmpTemplate.body[5].choices = choiceList;
+      tmpTemplate.body[5].value = WorkCodeAM;
+      tmpTemplate.body[6].choices = choiceList;
+      tmpTemplate.body[6].value = WorkCodePM;
+    
+      let title = '근무지 등록';
+      let button = '등록';
+      let bodyMessage = '';
+      if(!message) {
+        bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 근무지를 등록합니다.`
+      } else if(WorkCodeAM && WorkCodePM) {
+        title = '근무지 확인';
+        button = '수정';
+        bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 오늘 근무지가 맞나요?`
+      } else {
+        bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 근무지를 등록해주세요`
+      }
+    
+      const card = AdaptiveCards.declare(tmpTemplate).render({
+        title: title,
+        subtitle: message,
+        body: bodyMessage,
+        button: button
       });
-    } else {
-      tmpTemplate.body[3].value = user.account.userPrincipalName;
-      tmpTemplate.body[3].choices.push({
-        "title": user.FullNameKR,
-        "value": user.account.userPrincipalName
-      });
+      await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
+      resolve(true);
+    } catch(e) {
+      await errorMessageForId(context, e);
+      reject(e);
     }
-  
-    tmpTemplate.body[4].value = day1;
-    tmpTemplate.body[5].choices = choiceList;
-    tmpTemplate.body[5].value = WorkCodeAM;
-    tmpTemplate.body[6].choices = choiceList;
-    tmpTemplate.body[6].value = WorkCodePM;
-  
-    let title = '근무지 등록';
-    let button = '등록';
-    let bodyMessage = '';
-    if(!message) {
-      bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 근무지를 등록합니다.`
-    } else if(WorkCodeAM && WorkCodePM) {
-      title = '근무지 확인';
-      button = '수정';
-      bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 오늘 근무지가 맞나요?`
-    } else {
-      bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 근무지를 등록해주세요`
-    }
-  
-    const card = AdaptiveCards.declare(tmpTemplate).render({
-      title: title,
-      subtitle: message,
-      body: bodyMessage,
-      button: button
-    });
-    await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
-  } catch(e) {
-    await errorMessageForId(context, e);
-  }
+  });
 }
 
 export const setWorkplace = async (context, id, upn, workDate, workCodeAM, workCodePM) => {
@@ -291,13 +286,7 @@ export const setWorkplace = async (context, id, upn, workDate, workCodeAM, workC
       });
     
       request.on('error', async (err) => {
-        try {
-          console.log('Database Error : ' + err);
-          await errorMessageForId(context, err);
-        } catch (e) {
-          reject(e);
-          throw e;
-        }
+        reject(err);
       }).on('row', async (row) => {    
         try {
           await context.sendActivity(`${user.FullNameKR}님의 ${workDate} 일자 근무지가 입력되었습니다. (${row.WorkNameAM}${workCodePM?'/'+row.WorkNamePM:''})`);
@@ -346,8 +335,7 @@ export const getWorkplace = async (context, name, date) => {
     
       tmpTemplate.body[1].text = `${name} 님의 근무지를 조회하였습니다.`;
       request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-        await errorMessageForId(context, err);
+        reject(err);
       }).on('row', (row) => {
         tmpTemplate.body[2].columns[0].items.push(<any>{
           "type": "Container",

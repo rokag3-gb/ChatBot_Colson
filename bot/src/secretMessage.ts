@@ -60,7 +60,6 @@ export const viewSecretMessage = async (context, id, receiverName) => {
 export const sendSecretMessage = async (context, id, receiverId, senderNick, message, background) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log('222222222222222222222222');
       const user = userMap[id];
       const receiver = userMap[receiverId]; 
       const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
@@ -104,17 +103,13 @@ export const sendSecretMessage = async (context, id, receiverId, senderNick, mes
       });
     
       request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-        await errorMessageForId(context, err);
         reject(err);
       }).on('row', async (row) => {
         try {
           if(row.ID === -1) {
             await errorMessageForId(context, row.ERROR);
           }
-          console.log('3333333333333333333 ' + JSON.stringify(context));
          await context.sendActivity(`${receiver.FullNameKR} 님에게 메시지가 전송되었습니다. (일일 남은 횟수 : ${row.SendCount})`);
-         console.log('5555555555');
       
          const tmpTemplate = JSON.parse(JSON.stringify(openSecretMessageTemplate));
          tmpTemplate.actions[0].data.messageId = row.ID;    
@@ -122,12 +117,10 @@ export const sendSecretMessage = async (context, id, receiverId, senderNick, mes
          await receiver.sendAdaptiveCard<SecretOpenCardData>(AdaptiveCards.declare(tmpTemplate).render({
            Receiver: receiver.FirstNameKR
          }));
+         resolve(true);
         } catch(e) {
-          console.log('ERROR !!!! ' + e);
           reject(e);
         }
-      }).on('done', () => { 
-        resolve(true);
       });
     } catch(e) {
       await errorMessageForId(context, e);
@@ -150,8 +143,6 @@ export const openSecretMessage = async (context, id, messageId) => {
       });
     
       request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-        await errorMessageForId(id, err);
         reject(err);
       }).on('row', async (row) => {   
         try {
@@ -174,7 +165,7 @@ export const openSecretMessage = async (context, id, messageId) => {
             body: row.Contents.replace(replacer, '\n\n')
           });
           const openedChatId = await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
-          await openMessage(messageId, openedChatId.id, id);
+          await openMessage(context, messageId, openedChatId.id);
       
           const user = userMap[id];
           const sender = userMap[row.AppUserId];
@@ -183,11 +174,10 @@ export const openSecretMessage = async (context, id, messageId) => {
           if(sender) {
             await sender.sendMessage(`${user.FullNameKR} 님이 메시지를 열어보았습니다.`);
           }
+          resolve(true);
         } catch (e) {
           reject(e);
         }
-      }).on('done', () => { 
-        resolve(true);
       });
     } catch(e) {
       reject(e);
@@ -213,8 +203,6 @@ const openMessage = (context, messageId, openedChatId) => {
       });
     
       request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-        await errorMessageForId(context, err);
         reject(err);
       }).on('done', () => { 
         resolve(true);
@@ -242,8 +230,6 @@ export const sendMessageReaction = (context, id, activityId, type) => {
       });
     
       request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-        errorMessageForId(context, err);
         reject(err);
       }).on('row', async (row) => {
         try {
@@ -271,11 +257,10 @@ export const sendMessageReaction = (context, id, activityId, type) => {
       
           await sender.sendMessage(`${user.FullNameKR} 님이 메시지에 '${icon}' 반응했습니다.`);
           await context.sendActivity(`${row.SenderNick} 님에게 '${icon}' 반응이 전달되었습니다.`)
+          resolve(true);
         } catch (e) {
           reject(e);
         }
-      }).on('done', () => { 
-        resolve(true);
       });
     } catch(e) {
       reject(e);
