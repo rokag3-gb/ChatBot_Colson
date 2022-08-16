@@ -3,10 +3,13 @@ import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import sendCommandTemplate from "./adaptiveCards/sendCommand.json";
 import { CardFactory } from "botbuilder";
 import { sql } from "./mssql"
+import { Member } from "@microsoft/teamsfx"
 
 export const userMap = new Object();
+export let userCount = 0;
 
 export const imgPath = process.env.EXECUTE_ENV==="PROD"?"../../image/":"./image/";
+export let parent = null;
 
 export const getToday = (day) => {
   const now = new Date();
@@ -44,30 +47,39 @@ export const sendCommand = async (context) => {
 }
 
 export const userRegister = async (userId) => {
+  if(userCount === 0) {
+    Object.keys(userMap).forEach(key => {
+      delete userMap[key];
+    });
+  }
+
   const installations = await bot.notification.installations();
+  let first = true;
   for (const target of installations) {
     try {
       const members = await target.members();
       for(const member of members) {
         if(member.account.id.indexOf(userId) >= 0 || userId === null) {
           try {
+            if(first) {
+              first = false;
+              userCount = members.length;
+              parent = member.parent;
+            }
+
             const request = new sql.Request();
             request.stream = true;
             request.input('appId', sql.VarChar, process.env.BOT_ID);
             request.input('userId', sql.VarChar, member.account.id);
             request.input('upn', sql.VarChar, member.account.userPrincipalName);
+            request.input('userObject', sql.VarChar, JSON.stringify(member));
     
-            request.query(`[IAM].[bot].[Usp_Set_App_User] @appId, @upn, @userId`
+            request.query(`[IAM].[bot].[Usp_Set_App_User] @appId, @upn, @userId, @userObject`
               , (err) => {
                 if(err){
                   return console.log('query error :',err)
                 }
-            });        
-    
-            request.on('error', async (err) => {
-              console.log('Database Error : ' + err);
-            });
-    
+            });    
             userMap[member.account.id] = member;
           } catch (e) {
             console.log('userRegister ERROR!! ' + e);
@@ -103,6 +115,10 @@ export const getUserList = async (userId) => {
               userMap[row.AppUserId].FullNameKR = row.DisplayName;
               userMap[row.AppUserId].LastNameKR = row.LastNameKR;
               userMap[row.AppUserId].FirstNameKR = row.FirstNameKR;
+            } else if (row.AppUserObject) {
+              const userObj = <Member>JSON.parse(row.AppUserObject);
+              const member = new Member(parent, userObj.account);
+              userMap[row.AppUserId] = member;
             }
           }
         } catch (e) {

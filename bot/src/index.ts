@@ -3,6 +3,7 @@ import { bot } from "./internal/initialize";
 import { getUserList,
          userRegister,
          insertLog,
+         userCount,
          userMap } from "./common";
 import { setWorkplaceForm } from "./workplace";
   
@@ -70,7 +71,7 @@ async (req, res) => {
   }
   
   const user = userMap[req.body.from.id];
-  if(!user) {
+  if(!user || userCount === 0) {
     try {
       await bot.requestHandler(req, res);
       await userRegister(req.body.from.id);

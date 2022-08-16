@@ -5,7 +5,6 @@ import openSecretMessageTemplate from "./adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "./adaptiveCards/sendSecretMessage.json";
 import { CardFactory } from "botbuilder";
 import { imgPath, errorMessageForContext } from "./common"
-import workplaceUserListTemplate from "./adaptiveCards/workplaceUserList.json";
 import ACData = require("adaptivecards-templating");
 
 import { sql } from "./mssql"
