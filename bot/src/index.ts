@@ -53,8 +53,11 @@ server.listen(process.env.port || process.env.PORT || 3978, () => {
 server.post("/api/messages", 
 restify.plugins.queryParser(),
 restify.plugins.bodyParser(),
+restify.plugins.authorizationParser(),
 async (req, res) => {
   console.log(JSON.stringify(req.body));
+  console.log(JSON.stringify(req.authorization));
+  
   if(!connected) {
     console.log('server not initialized');
     await bot.requestHandler(req, res);

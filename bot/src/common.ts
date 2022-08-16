@@ -46,28 +46,36 @@ export const sendCommand = async (context) => {
 export const userRegister = async (userId) => {
   const installations = await bot.notification.installations();
   for (const target of installations) {
-    const members = await target.members();
-    for(const member of members) {
-      if(member.account.id.indexOf(userId) >= 0 || userId === null) {
-        const request = new sql.Request();
-        request.stream = true;
-        request.input('appId', sql.VarChar, process.env.BOT_ID);
-        request.input('userId', sql.VarChar, member.account.id);
-        request.input('upn', sql.VarChar, member.account.userPrincipalName);
-
-        request.query(`[IAM].[bot].[Usp_Set_App_User] @appId, @upn, @userId`
-          , (err) => {
-            if(err){
-                return console.log('query error :',err)
-            }
-        });        
-
-        request.on('error', async (err) => {
-          console.log('Database Error : ' + err);
-        });
-        
-        userMap[member.account.id] = member;
+    try {
+      const members = await target.members();
+      for(const member of members) {
+        if(member.account.id.indexOf(userId) >= 0 || userId === null) {
+          try {
+            const request = new sql.Request();
+            request.stream = true;
+            request.input('appId', sql.VarChar, process.env.BOT_ID);
+            request.input('userId', sql.VarChar, member.account.id);
+            request.input('upn', sql.VarChar, member.account.userPrincipalName);
+    
+            request.query(`[IAM].[bot].[Usp_Set_App_User] @appId, @upn, @userId`
+              , (err) => {
+                if(err){
+                  return console.log('query error :',err)
+                }
+            });        
+    
+            request.on('error', async (err) => {
+              console.log('Database Error : ' + err);
+            });
+    
+            userMap[member.account.id] = member;
+          } catch (e) {
+            console.log('userRegister ERROR!! ' + e);
+          }
+        }
       }
+    } catch (e) {
+      console.log('userRegister ERROR2!! ' + e);
     }
   }
   console.log('userRegister complete');
@@ -88,13 +96,17 @@ export const getUserList = async (userId) => {
       request.on('error', async (err) => {
         console.log('Database Error : ' + err);
       }).on('row', (row) => {
-        if(row.AppUserId !== null && (userId === row.AppUserId || userId === null)) {
-          const user = userMap[row.AppUserId];
-          if(user) {
-            userMap[row.AppUserId].FullNameKR = row.DisplayName;
-            userMap[row.AppUserId].LastNameKR = row.LastNameKR;
-            userMap[row.AppUserId].FirstNameKR = row.FirstNameKR;
+        try {
+          if(row.AppUserId !== null && (userId === row.AppUserId || userId === null)) {
+            const user = userMap[row.AppUserId];
+            if(user) {
+              userMap[row.AppUserId].FullNameKR = row.DisplayName;
+              userMap[row.AppUserId].LastNameKR = row.LastNameKR;
+              userMap[row.AppUserId].FirstNameKR = row.FirstNameKR;
+            }
           }
+        } catch (e) {
+          console.log('getUserList ERROR!! ' + e);
         }
       }).on('done', async () => {
         console.log('getUserList complete');
@@ -154,11 +166,13 @@ export const errorMessageForId = async (id, err) => {
   return new Promise(async (resolve, reject) => {
     try {
       const user = userMap[id];
-      id.sendMessage(`에러가 발생했습니다. 다시 시도해주세요.
+      if(user && id) {
+        user.sendMessage(`에러가 발생했습니다. 다시 시도해주세요.
 
 ㅤ
- 
+
 (${err.message})`);
+      }
       resolve(true);
     } catch (e) {
       console.log('errorMessageForId ' + e);
