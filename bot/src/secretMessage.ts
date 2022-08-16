@@ -12,12 +12,16 @@ import { sql } from "./mssql"
 import { userMap } from "./common";
 import imageToBase64 from "image-to-base64";
 
-const makeData = async (senderNick, receiver, message) => {
+const makeData = async (senderNick, receiver, message, background) => {
   const icon1 = await imageToBase64(imgPath + "background_icon_01.jpg")
   const icon2 = await imageToBase64(imgPath + "background_icon_02.jpg");
   const icon3 = await imageToBase64(imgPath + "background_icon_03.jpg");
 
   let data: SecretSendCardData;
+  let backgroundImage = background;
+  if(!backgroundImage) {
+    backgroundImage = "background_01.jpg";
+  }
 
   data = {
     Icon1: icon1,
@@ -26,6 +30,7 @@ const makeData = async (senderNick, receiver, message) => {
     IconName1: "yellow",
     IconName2: "green",
     IconName3: "brown",
+    backgroundImage: backgroundImage,
     backgroundImage01: "background_01.jpg",
     backgroundImage02: "background_02.jpg",
     backgroundImage03: "background_03.jpg",
@@ -57,7 +62,7 @@ export const viewSecretMessage = async (context, id, receiverName) => {
     }
   }
 
-  const card = AdaptiveCards.declare(tmpTemplate).render(await makeData(null, receiverName, null));
+  const card = AdaptiveCards.declare(tmpTemplate).render(await makeData(null, receiverName, null, null));
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
 }
 
@@ -69,8 +74,8 @@ export const sendSecretMessage = async (context, id, receiverId, senderNick, mes
       const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
     
       for (const user of Object.entries(userMap)) {
-        if(id === user[1].account.id)
-          continue;
+  //      if(id === user[1].account.id)
+  //        continue;
         tmpTemplate.body[3].columns[1].items[0].choices.push({
           "title": user[1].FullNameKR,
           "value": user[1].account.id
@@ -86,7 +91,7 @@ export const sendSecretMessage = async (context, id, receiverId, senderNick, mes
       }
     
       const cardTemplate = new ACData.Template(tmpTemplate);
-      const cardWithData = cardTemplate.expand({ $root: await makeData(context.activity.value.senderNick, context.activity.value.receiver, context.activity.value.message) });
+      const cardWithData = cardTemplate.expand({ $root: await makeData(context.activity.value.senderNick, context.activity.value.receiver, context.activity.value.message, background) });
       const card = CardFactory.adaptiveCard(cardWithData);
 
       await context.updateActivity({

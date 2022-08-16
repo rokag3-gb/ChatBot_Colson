@@ -9,6 +9,7 @@ export interface SecretSendCardData {
   IconName1: string;
   IconName2: string;
   IconName3: string;
+  backgroundImage: string;
   backgroundImage01: string;
   backgroundImage02: string;
   backgroundImage03: string;
