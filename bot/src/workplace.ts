@@ -1,4 +1,5 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
+import { WorkplaceCardData } from "./model/cardModels";
 import workplaceTemplate from "./adaptiveCards/insertWorkplace.json";
 import workplaceMessage from "./adaptiveCards/workplaceMessage.json";
 import workplaceUserListTemplate from "./adaptiveCards/workplaceUserList.json";
@@ -7,7 +8,7 @@ import { sql } from "./mssql"
 import { getToday,
          checkWeekday,
          userMap,
-         errorMessageForId } from "./common";
+         errorMessageForContext } from "./common";
     
 export const setWorkplaceForm = async (context, userId, username, type, message) => {
   try {
@@ -22,9 +23,9 @@ export const setWorkplaceForm = async (context, userId, username, type, message)
     if(type === 'work') {
       await userWorkplace(context, userId, username, choiceList, message);
     } else if(type === 'send') {
-      await userWorkplaceSend(context, choiceList, message);
+      await userWorkplaceSend(choiceList, message);
     } else if(type === 'resend') {
-      await userWorkplaceResend(context, choiceList, message);
+      await userWorkplaceResend(choiceList, message);
     }
   } catch(e) {
 
@@ -131,7 +132,7 @@ const userWorkplace = (context, userId, username, choiceList, message) => {
         reject(err);
       }).on('row', async (row) => {    
         try {
-          await sendWorkplaceCard(context, userId, choiceList, row.WorkCodeAM, row.WorkCodePM, user, message);
+          await sendWorkplaceCardContext(context, userId, choiceList, row.WorkCodeAM, row.WorkCodePM, user, message);
           resolve(true);
         } catch(e) {
           reject(e);
@@ -144,7 +145,7 @@ const userWorkplace = (context, userId, username, choiceList, message) => {
 }
 
 //전체 유저의 근무지 등록을 위한 함수
-export const userWorkplaceSend = (context, choiceList, message) => {
+export const userWorkplaceSend = (choiceList, message) => {
   return new Promise(async (resolve, reject) => {
     try {
       const request = new sql.Request();
@@ -162,7 +163,7 @@ export const userWorkplaceSend = (context, choiceList, message) => {
         reject(err);
       }).on('row', async (row) => {    
         try {
-          await sendWorkplaceCard(context, row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
+          await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
           resolve(true);
         } catch(e) {
           reject(e);
@@ -175,7 +176,7 @@ export const userWorkplaceSend = (context, choiceList, message) => {
 }
 
 //근무지 등록을 하지 않은 유저의 근무지 등록을 위한 함수
-const userWorkplaceResend = (context, choiceList, message) => {
+const userWorkplaceResend = (choiceList, message) => {
   return new Promise(async (resolve, reject) => {
     try {
       const request = new sql.Request();
@@ -193,7 +194,7 @@ const userWorkplaceResend = (context, choiceList, message) => {
         reject(err);
       }).on('row', async (row) => {    
         try {
-          await sendWorkplaceCard(context, row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
+          await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
           resolve(true);
         } catch(e) {
           reject(e);
@@ -205,7 +206,7 @@ const userWorkplaceResend = (context, choiceList, message) => {
   });
 }
 
-const sendWorkplaceCard = (context, userId, choiceList, WorkCodeAM, WorkCodePM, user, message) => {
+const sendWorkplaceCardContext = (context, userId, choiceList, WorkCodeAM, WorkCodePM, user, message) => {
   return new Promise(async (resolve, reject) => {
     try {
       const fromUser = userMap[userId];
@@ -254,7 +255,61 @@ const sendWorkplaceCard = (context, userId, choiceList, WorkCodeAM, WorkCodePM, 
       await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
       resolve(true);
     } catch(e) {
-      await errorMessageForId(context, e);
+      await errorMessageForContext(context, e);
+      reject(e);
+    }
+  });
+}
+
+const sendWorkplaceCardUserId = (userId, choiceList, WorkCodeAM, WorkCodePM, user, message) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const fromUser = userMap[userId];
+      const day1 = getToday(null);
+      const tmpTemplate = JSON.parse(JSON.stringify(workplaceTemplate));
+    
+      if(!user) {
+        tmpTemplate.body[3].value = fromUser.account.userPrincipalName;
+        tmpTemplate.body[3].choices.push({
+          "title": fromUser.FullNameKR,
+          "value": fromUser.account.userPrincipalName
+        });
+      } else {
+        tmpTemplate.body[3].value = user.account.userPrincipalName;
+        tmpTemplate.body[3].choices.push({
+          "title": user.FullNameKR,
+          "value": user.account.userPrincipalName
+        });
+      }
+    
+      tmpTemplate.body[4].value = day1;
+      tmpTemplate.body[5].choices = choiceList;
+      tmpTemplate.body[5].value = WorkCodeAM;
+      tmpTemplate.body[6].choices = choiceList;
+      tmpTemplate.body[6].value = WorkCodePM;
+    
+      let title = '근무지 등록';
+      let button = '등록';
+      let bodyMessage = '';
+      if(!message) {
+        bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 근무지를 등록합니다.`
+      } else if(WorkCodeAM && WorkCodePM) {
+        title = '근무지 확인';
+        button = '수정';
+        bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 오늘 근무지가 맞나요?`
+      } else {
+        bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 근무지를 등록해주세요`
+      }      
+      await fromUser.sendAdaptiveCard(
+        AdaptiveCards.declare<WorkplaceCardData>(tmpTemplate).render({
+          title: title,
+          subtitle: message,
+          body: bodyMessage,
+          button: button
+        })
+      );
+      resolve(true);
+    } catch(e) {
       reject(e);
     }
   });

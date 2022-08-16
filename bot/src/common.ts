@@ -134,10 +134,27 @@ export const insertLog = async (userId, body) => {
   });
 }
 
-export const errorMessageForId = async (context, err) => {
+export const errorMessageForContext = async (context, err) => {
   return new Promise(async (resolve, reject) => {
     try {
       await context.sendActivity(`에러가 발생했습니다. 다시 시도해주세요.
+
+ㅤ
+ 
+(${err.message})`);
+      resolve(true);
+    } catch (e) {
+      console.log('errorMessageForContext ' + e);
+      reject(e);
+    }
+  });
+}
+
+export const errorMessageForId = async (id, err) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = userMap[id];
+      id.sendMessage(`에러가 발생했습니다. 다시 시도해주세요.
 
 ㅤ
  

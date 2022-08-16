@@ -4,7 +4,7 @@ import viewSecretMessageTemplate from "./adaptiveCards/viewSecretMessage.json";
 import openSecretMessageTemplate from "./adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "./adaptiveCards/sendSecretMessage.json";
 import { CardFactory } from "botbuilder";
-import { imgPath, errorMessageForId } from "./common"
+import { imgPath, errorMessageForContext } from "./common"
 import workplaceUserListTemplate from "./adaptiveCards/workplaceUserList.json";
 import ACData = require("adaptivecards-templating");
 
@@ -41,8 +41,8 @@ export const viewSecretMessage = async (context, id, receiverName) => {
   const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
 
   for (const user of Object.entries(userMap)) {
-    if(id === user[1].account.id)
-      continue;
+ //   if(id === user[1].account.id)
+ //     continue;
     tmpTemplate.body[3].columns[1].items[0].choices.push({
       "title": user[1].FullNameKR,
       "value": user[1].account.id
@@ -107,7 +107,7 @@ export const sendSecretMessage = async (context, id, receiverId, senderNick, mes
     
       request.query(query, async (err, result) => {
         if(err) {
-          await errorMessageForId(context, err);
+          await errorMessageForContext(context, err);
           reject(err);
         }
       });
@@ -117,7 +117,7 @@ export const sendSecretMessage = async (context, id, receiverId, senderNick, mes
       }).on('row', async (row) => {
         try {
           if(row.ID === -1) {
-            await errorMessageForId(context, row.ERROR);
+            await errorMessageForContext(context, row.ERROR);
           }
          await context.sendActivity(`${receiver.FullNameKR} 님에게 메시지가 전송되었습니다. (일일 남은 횟수 : ${row.SendCount})`);
       
@@ -133,7 +133,7 @@ export const sendSecretMessage = async (context, id, receiverId, senderNick, mes
         }
       });
     } catch(e) {
-      await errorMessageForId(context, e);
+      await errorMessageForContext(context, e);
       reject(e);
     }
   });

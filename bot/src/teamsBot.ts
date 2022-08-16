@@ -59,7 +59,7 @@ export class TeamsBot extends TeamsActivityHandler {
           } else if (text[0] === 'birthtest') {
             await sendBirthdayCard(context);
           } else if (text[0] === 'workplacetestsend') {
-            await setWorkplaceForm(context, null, null, 'send', '테스트로 전송된 메세지입니다. workplacetestsend');
+            await setWorkplaceForm(context, null, null, 'send', '좋은 아침입니다!');
           } else if (text[0] === 'workplacetestresend') {
             await setWorkplaceForm(context, null, null, 'resend', '테스트로 전송된 메세지입니다. workplacetestresend');
           } else {

@@ -1,15 +1,15 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { BirthCardData, BirthOpenData } from "./model/cardModels";
-import { CardFactory } from "botbuilder";
 import openBirthMessageTemplate from "./adaptiveCards/openBirthMessage.json";
 import sendBirthMessageTemplate from "./adaptiveCards/sendBirthMessage.json";
+import { CardFactory } from "botbuilder";
 
 import { sql } from "./mssql"
 import { userMap, imgPath, errorMessageForId } from "./common";
 import imageToBase64 from "image-to-base64";
 
-export const sendBirthdayCard = async (context) => {
-  const userList = <[]>await getBirthdayUser(context);
+export const sendBirthdayCard = async (id) => {
+  const userList = <[]>await getBirthdayUser(id);
   if(userList.length === 0) {
     return;
   }
@@ -19,18 +19,19 @@ export const sendBirthdayCard = async (context) => {
     if(!userObject) {
       continue;
     }    
-    const msgId = await <any>setSendBirth(context, userInfo.UPN, userInfo.BirthDate);
-    const card = AdaptiveCards.declare(openBirthMessageTemplate).render({
-      messageId: msgId,
-      birthDate: userInfo.BirthDate,
-      username: userInfo.DisplayName
-    });
-    await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
+    const msgId = await <any>setSendBirth(userInfo.UPN, userInfo.BirthDate, id);
+    await userObject.sendAdaptiveCard(
+      AdaptiveCards.declare<BirthOpenData>(openBirthMessageTemplate).render({
+        messageId: msgId,
+        birthDate: userInfo.BirthDate,
+        username: userInfo.DisplayName
+      })
+    );
   }
 }
 
-const getBirthdayLink = (context) => {
-  return new Promise(async (resolve, reject) => {
+const getBirthdayLink = (id) => {
+  return new Promise((resolve, reject) => {
     try {
       const request = new sql.Request();
       const query = `[IAM].[bot].[Usp_Get_Birth_Link]`;
@@ -42,21 +43,21 @@ const getBirthdayLink = (context) => {
       });
     
       const list = [];
-      request.on('error', async (err) => {
-        reject(err);
+      request.on('error', (err) => {
+        console.log('Database Error : ' + err);
+        errorMessageForId(id, err);
       }).on('row', (row) => {    
         list.push(row);
       }).on('done', () => { 
         resolve(list);
       });
     } catch(e) {
-      await errorMessageForId(context, e);
       reject(e);
     }
   });
 }
 
-const getBirthdayUser = (context) => {
+const getBirthdayUser = (id) => {
   return new Promise((resolve, reject) => {
     try {
       const request = new sql.Request();
@@ -70,8 +71,9 @@ const getBirthdayUser = (context) => {
       });
     
       const list = [];
-      request.on('error', async (err) => {
-        reject(err);
+      request.on('error', (err) => {
+        console.log('Database Error : ' + err);
+        errorMessageForId(id, err);
       }).on('row', (row) => {    
         list.push(row);
       }).on('done', () => { 
@@ -83,8 +85,8 @@ const getBirthdayUser = (context) => {
   });
 }
 
-const setSendBirth = (context, receiver, birthDate) => {
-  return new Promise(async (resolve, reject) => {
+const setSendBirth = (receiver, birthDate, id) => {
+  return new Promise((resolve, reject) => {
     try {
       const request = new sql.Request();
       request.input('appId', sql.VarChar, process.env.BOT_ID);
@@ -98,13 +100,13 @@ const setSendBirth = (context, receiver, birthDate) => {
           }
       });
     
-      request.on('error', async (err) => {
-        reject(err);
+      request.on('error', (err) => {
+        console.log('Database Error : ' + err);
+        errorMessageForId(id, err);
       }).on('row', (row) => {
         resolve(row.birthId);
       });
     } catch(e) {
-      await errorMessageForId(context, e);
       reject(e);
     }
   });
