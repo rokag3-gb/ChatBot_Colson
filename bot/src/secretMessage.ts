@@ -45,8 +45,8 @@ export const viewSecretMessage = async (context, id, receiverName) => {
   const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
 
   for (const user of Object.entries(userMap)) {
- //   if(id === user[1].account.id)
- //     continue;
+    if(id === user[1].account.id)
+      continue;
     tmpTemplate.body[3].columns[1].items[0].choices.push({
       "title": user[1].FullNameKR,
       "value": user[1].account.id
@@ -73,8 +73,8 @@ export const sendSecretMessage = async (context, id, receiverId, senderNick, mes
       const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
     
       for (const user of Object.entries(userMap)) {
-  //      if(id === user[1].account.id)
-  //        continue;
+        if(id === user[1].account.id)
+          continue;
         tmpTemplate.body[3].columns[1].items[0].choices.push({
           "title": user[1].FullNameKR,
           "value": user[1].account.id

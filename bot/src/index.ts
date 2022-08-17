@@ -52,13 +52,10 @@ server.listen(process.env.port || process.env.PORT || 3978, () => {
 });
 
 server.post("/api/messages", 
-restify.plugins.queryParser(),
 restify.plugins.bodyParser(),
 restify.plugins.authorizationParser(),
 async (req, res) => {
-  console.log(JSON.stringify(req.body));
-  console.log(JSON.stringify(req.authorization));
-  
+
   if(!connected) {
     console.log('server not initialized');
     await bot.requestHandler(req, res);
@@ -71,7 +68,7 @@ async (req, res) => {
   }
   
   const user = userMap[req.body.from.id];
-  if(!user || userCount === 0) {
+  if(!user) {
     try {
       await bot.requestHandler(req, res);
       await userRegister(req.body.from.id);
@@ -79,6 +76,10 @@ async (req, res) => {
     } catch(e) {
       console.log(e);
     }
+  } else if(userCount === 0) {
+    await bot.requestHandler(req, res);
+    await userRegister(null);
+    await getUserList(null);
   }
 
   await adapter.processActivity(req, res, async (context) => {
@@ -87,25 +88,27 @@ async (req, res) => {
   });
 });
 
+
+//앱서비스의 기본 시간대가 UTC 기준이고 이게 생각보다 자주 초기화 되어서 UTC 기준으로 크론을 작성함
 //휴가자 제외한 전직원에게 근무지 입력 카드 전송
-cron.schedule('00 00 09 * * *', async () => {
+cron.schedule('00 00 00 * * *', async () => {
   setWorkplaceForm(null, null, null, 'send', '좋은 아침입니다!');
 });
 
 //근무지 입력 안한 사람들에게 카드 전송
-cron.schedule('00 00 10 * * *', async () => {  
+cron.schedule('00 00 1 * * *', async () => {  
   setWorkplaceForm(null, null, null, 'resend', '좋은 아침입니다!');
 });
 
-cron.schedule('00 00 14 * * *', async () => {
+cron.schedule('00 00 05 * * *', async () => {
   setWorkplaceForm(null, null, null, 'resend', '점심 식사 맛있게 하셨나요!');
 });
 
-cron.schedule('00 30 17 * * *', async () => {  
+cron.schedule('00 30 08 * * *', async () => {  
   setWorkplaceForm(null, null, null, 'send', '오늘 하루도 고생많으셨습니다.');
 });
 
 //생일자에게 카드 전송
-cron.schedule('00 30 10 * * *', async () => {  
+cron.schedule('00 30 01 * * *', async () => {  
   sendBirthdayCard(null);
 });

@@ -117,7 +117,10 @@ export const getUserList = async (userId) => {
               userMap[row.AppUserId].FirstNameKR = row.FirstNameKR;
             } else if (row.AppUserObject) {
               const userObj = <Member>JSON.parse(row.AppUserObject);
-              const member = new Member(parent, userObj.account);
+              const member = <any>new Member(parent, userObj.account);
+              member.FullNameKR = row.DisplayName;
+              member.LastNameKR = row.LastNameKR;
+              member.FirstNameKR = row.FirstNameKR;
               userMap[row.AppUserId] = member;
             }
           }
