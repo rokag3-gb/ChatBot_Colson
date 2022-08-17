@@ -55,6 +55,7 @@ server.post("/api/messages",
 restify.plugins.bodyParser(),
 restify.plugins.authorizationParser(),
 async (req, res) => {
+  console.log(JSON.stringify(req.body));
 
   if(!connected) {
     console.log('server not initialized');

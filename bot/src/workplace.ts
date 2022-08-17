@@ -5,6 +5,7 @@ import workplaceMessage from "./adaptiveCards/workplaceMessage.json";
 import workplaceUserListTemplate from "./adaptiveCards/workplaceUserList.json";
 import { CardFactory } from "botbuilder";
 import { sql } from "./mssql"
+import ACData = require("adaptivecards-templating");
 import { getToday,
          checkWeekday,
          userMap,
@@ -60,6 +61,55 @@ export const getWorkplaceForm = async (context) => {
           }
           const card = AdaptiveCards.declare(tmpTemplate).render();
           await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
+          resolve(true);
+        } catch (e) {
+          reject(e);
+        }
+      });
+    } catch(e) {
+      reject(e);
+    }
+  });
+}
+
+const updateGetWorkplaceForm = async (context, value) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const tmpTemplate = JSON.parse(JSON.stringify(workplaceUserListTemplate));
+      const request = new sql.Request();
+    
+      request.input('appId', sql.VarChar, process.env.BOT_ID);
+      request.query(`EXEC [IAM].[bot].[Usp_Get_Users] @appId`, (err, result) => {
+        if(err){
+            return console.log('query error :',err)
+        }
+      });
+    
+      request.on('error', async (err) => {
+        reject(err);
+      }).on('row', (row) => {
+        tmpTemplate.body[1].choices.push({
+          "title": row.DisplayName,
+          "value": row.DisplayName
+        });    
+      }).on('done', async () => {
+        try {
+          if(tmpTemplate.body[1].choices.length !== 0) {
+            tmpTemplate.body[1].value = tmpTemplate.body[1].choices[0].value;
+          }
+          tmpTemplate.body[1].value = value;
+
+
+          const cardTemplate = new ACData.Template(tmpTemplate);
+          const cardWithData = cardTemplate.expand({ $root: {} });
+          const card = CardFactory.adaptiveCard(cardWithData);
+
+          await context.updateActivity({
+            type: "message",
+            id: context.activity.replyToId,
+            attachments: [card],
+          });
+
           resolve(true);
         } catch (e) {
           reject(e);
@@ -368,6 +418,9 @@ export const getWorkplace = async (context, name, date) => {
       if(!date) {
         date = 7;
       }
+
+      await updateGetWorkplaceForm(context, name);
+
       const tmpTemplate = JSON.parse(JSON.stringify(workplaceMessage));
     
       const tmp = date * 1;
