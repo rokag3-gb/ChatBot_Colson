@@ -99,7 +99,6 @@ const updateGetWorkplaceForm = async (context, value) => {
           }
           tmpTemplate.body[1].value = value;
 
-
           const cardTemplate = new ACData.Template(tmpTemplate);
           const cardWithData = cardTemplate.expand({ $root: {} });
           const card = CardFactory.adaptiveCard(cardWithData);
@@ -419,7 +418,8 @@ export const getWorkplace = async (context, name, date) => {
         date = 7;
       }
 
-      await updateGetWorkplaceForm(context, name);
+      if(context.activity.replyToId)
+        await updateGetWorkplaceForm(context, name);
 
       const tmpTemplate = JSON.parse(JSON.stringify(workplaceMessage));
     
