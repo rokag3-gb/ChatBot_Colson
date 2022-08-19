@@ -21,18 +21,6 @@ export const viewMealStoreSearch = async (context: TurnContext) => {
       });
     }
 
-
-    tmpTemplate.body[4].choices.push({
-      "title": '중식',
-      "value": '중식'
-    });
-    tmpTemplate.body[4].choices.push({
-      "title": '양식',
-      "value": '양식'
-    });
-
-
-
     const card = AdaptiveCards.declare(tmpTemplate).render();
     await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
   
@@ -46,11 +34,16 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
     const storeName = context.activity.value.storeName;
     const storeCategory = context.activity.value.storeCategory;
 
-    await context.sendActivity(`'${storeName}'을 포함한 지정가맹점을 조회합니다.`);
+    if(!storeName && !storeCategory) {
+      await context.sendActivity(`한가지 이상의 검색 조건을 입력해 주세요.`);
+      return;
+    }
+
+    await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}지정가맹점을 조회합니다.`);
 
     const category = await getMealStore(storeName, storeCategory);
     if(category.length === 0) {
-      await context.sendActivity(`'${storeName}'을 포함한 지정가맹점이 없습니다.`);
+      await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}지정가맹점이 없습니다.`);
       return;
     }
 
@@ -110,7 +103,7 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
       });
     }
     const card = AdaptiveCards.declare(tmpTemplate).render({
-      storeName: storeName
+      storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''} 지점가맹점을 조회하였습니다.`
     });
     await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
   

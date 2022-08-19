@@ -12,7 +12,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "${storeName}을 포함한 지점가맹점을 조회하였습니다.",
+      "text": "${storeNameText}",
       "wrap": true
     },
     {
