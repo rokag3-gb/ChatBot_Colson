@@ -5,6 +5,7 @@ import mealStoreSearchResult from "./adaptiveCards/mealStoreSearchResult.json";
 import { sql } from "./mssql"
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { CardFactory } from "botbuilder";
+import ACData = require("adaptivecards-templating");
 
 export const viewMealStoreSearch = async (context: TurnContext) => {
   try {
@@ -29,11 +30,41 @@ export const viewMealStoreSearch = async (context: TurnContext) => {
   }
 }
 
+const updateMealStoreSearch = async (context: TurnContext, storeName: string, storeCategory: string) => {
+  try {
+    const category = await getCategoryList();
+
+    const tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearch));
+    
+    for(const row of category) {
+      tmpTemplate.body[4].choices.push({
+        "title": row.Category,
+        "value": row.Category
+      });
+    }
+
+    tmpTemplate.body[2].value = storeName;
+    tmpTemplate.body[4].value = storeCategory;
+    
+    const cardTemplate = new ACData.Template(tmpTemplate);
+    const cardWithData = cardTemplate.expand({ $root: {} });
+    const card = CardFactory.adaptiveCard(cardWithData);
+
+    await context.updateActivity({
+      type: "message",
+      id: context.activity.replyToId,
+      attachments: [card],
+    });
+  
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 export const viewMealStoreSearchResult = async (context: TurnContext) => {
   try {
     const storeName = context.activity.value.storeName;
     const storeCategory = context.activity.value.storeCategory;
-
     if(!storeName && !storeCategory) {
       await context.sendActivity(`한가지 이상의 검색 조건을 입력해 주세요.`);
       return;
@@ -44,6 +75,7 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
     const category = await getMealStore(storeName, storeCategory);
     if(category.length === 0) {
       await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}지정가맹점이 없습니다.`);
+      await updateMealStoreSearch(context, storeName, storeCategory);
       return;
     }
 
@@ -106,7 +138,7 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
       storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''} 지점가맹점을 조회하였습니다.`
     });
     await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
-  
+    await updateMealStoreSearch(context, storeName, storeCategory);
   } catch (e) {
     console.log(e);
   }
