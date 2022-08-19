@@ -5,9 +5,9 @@ import { getUserList,
          insertLog,
          userCount,
          userMap } from "./common";
-import { setWorkplaceForm } from "./workplace";
+import { setWorkplaceForm } from "./bot/setWorkplace";
   
-import { sendBirthdayCard } from "./birthMessage";
+import { sendBirthdayCard } from "./bot/birthMessage";
 
 import { connected } from "./mssql"
 
@@ -111,5 +111,5 @@ cron.schedule('00 30 08 * * *', async () => {
 
 //생일자에게 카드 전송
 cron.schedule('00 30 01 * * *', async () => {  
-  sendBirthdayCard(null);
+  sendBirthdayCard();
 });

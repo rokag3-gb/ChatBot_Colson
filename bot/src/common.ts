@@ -215,3 +215,26 @@ export const viewCommandList = async(context) => {
   
   메시지 홍길동 => 홍길동 사원에게 비밀 메세지를 보냅니다.`);
 }
+      
+export const query = async (request: any, query: string): Promise<any[]> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = [];
+      request.query(query, (err, result) => {
+        if(err){
+          reject(err);
+        }
+      });
+    
+      request.on('error', async (err) => {
+        reject(err);
+      }).on('row', (row) => {
+        result.push(row);
+      }).on('done', async () => {
+        resolve(result);
+      });
+    } catch(e) {
+      reject(e);
+    }
+  });
+}

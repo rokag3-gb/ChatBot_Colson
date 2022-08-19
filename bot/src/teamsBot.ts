@@ -9,18 +9,16 @@ import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { viewCommandList,
   sendCommand, 
   userMap,
-  errorMessageForId,
+  errorMessageForContext,
   sorryMessage } from "./common";
-import { getWorkplaceForm,
-  getWorkplace, 
-  setWorkplaceForm,
-  setWorkplace } from "./workplace";
+import { setWorkplaceForm, setWorkplace } from "./bot/setWorkplace";
+import { getWorkplaceForm, getWorkplace } from "./bot/getWorkplace";
 import { viewSecretMessage,
 sendSecretMessage,
 openSecretMessage,
 sendMessageReaction } from "./secretMessage";
 import { sendBirthdayCard,
-openBirthMessage } from "./birthMessage";
+openBirthMessage } from "./bot/birthMessage";
 import { viewMealStoreSearch, viewMealStoreSearchResult } from "./mealStore";
 
 export class TeamsBot extends TeamsActivityHandler {
@@ -28,7 +26,6 @@ export class TeamsBot extends TeamsActivityHandler {
     super();
 
     this.onMessage(async (context, next) => {
-      try {
         const message = MessageFactory.text('');
         message.type = ActivityTypes.Typing;
         await context.sendActivity(message);
@@ -58,7 +55,7 @@ export class TeamsBot extends TeamsActivityHandler {
           } else if (text[0] === '메시지' || text[0] === '메세지') {
             await viewSecretMessage(context, context.activity.from.id, text[1]);
           } else if (text[0] === 'birthtest') {
-            await sendBirthdayCard(context);
+            await sendBirthdayCard();
           } else if (text[0] === 'workplacetestsend') {
             await setWorkplaceForm(context, null, null, 'send', '좋은 아침입니다!');
           } else if (text[0] === 'workplacetestresend') {
@@ -97,10 +94,6 @@ export class TeamsBot extends TeamsActivityHandler {
         }
   
         await next();
-      } catch (e) {
-        console.log(e.message);
-        await errorMessageForId(context, e);
-      }
     });
 
     this.onReactionsAdded(async (context, next) => {
