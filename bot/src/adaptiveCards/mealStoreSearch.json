@@ -1,0 +1,47 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "비플 지정가맹점 조회",
+      "size": "Medium",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "가맹점명 입력",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "style": "text",
+      "id": "storeName",
+      "placeholder": "입력한 글자 포함한 식당 (*식당명*)"
+    },
+    {
+      "type": "TextBlock",
+      "text": "카테고리 선택",
+      "wrap": true
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "storeCategory",
+      "isMultiSelect": true,
+      "style": "expanded",
+      "choices": [
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "조회하기",
+      "data": {
+        "messageType": "mealStoreSearchResult"
+      }
+    }
+  ]
+}

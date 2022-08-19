@@ -41,6 +41,13 @@
     },
     {
       "type": "Action.Submit",
+      "title": "비플식권페이 가맹점 조회",
+      "data": {
+        "messageType": "mealStoreSearch"
+      }
+    },
+    {
+      "type": "Action.Submit",
       "title": "명령어 목록",
       "data": {
         "messageType": "viewCommandList"

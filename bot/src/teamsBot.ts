@@ -21,6 +21,7 @@ openSecretMessage,
 sendMessageReaction } from "./secretMessage";
 import { sendBirthdayCard,
 openBirthMessage } from "./birthMessage";
+import { viewMealStoreSearch, viewMealStoreSearchResult } from "./mealStore";
 
 export class TeamsBot extends TeamsActivityHandler {
   constructor() {
@@ -70,6 +71,10 @@ export class TeamsBot extends TeamsActivityHandler {
             await getWorkplaceForm(context);
           } else if (context.activity.value.messageType === "getWorkplace") {  
             await getWorkplace(context, context.activity.value.username, null);
+          } else if (context.activity.value.messageType === "mealStoreSearch") {  
+            await viewMealStoreSearch(context);
+          } else if (context.activity.value.messageType === "mealStoreSearchResult") {  
+            await viewMealStoreSearchResult(context);
           } else if (context.activity.value.messageType === "setWorkplace") {  
             await setWorkplace(context, context.activity.from.id, context.activity.value.UPN, context.activity.value.WorkDate, context.activity.value.WorkCodeAM, context.activity.value.WorkCodePM);
           } else if (context.activity.value.messageType === "setWorkplaceForm") {
