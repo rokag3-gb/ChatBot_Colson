@@ -1,6 +1,6 @@
 export const sql = require('mssql');
 import { getUserList,
-         userRegister, } from "./common"
+         userRegister, } from "./bot/common"
 
 export let connected = false;
 

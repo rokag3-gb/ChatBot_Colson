@@ -1,5 +1,5 @@
 import { sql } from "../../mssql"
-import { query, getToday } from "../../common";
+import { query, getToday } from "../common";
 
 
 export const UspGetWorkCode = async (): Promise<any[]> => {

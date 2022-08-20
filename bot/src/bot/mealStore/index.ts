@@ -1,15 +1,14 @@
 import { TurnContext } from "botbuilder";
-import { errorMessageForContext } from "./common"
-import mealStoreSearch from "./adaptiveCards/mealStoreSearch.json";
-import mealStoreSearchResult from "./adaptiveCards/mealStoreSearchResult.json";
-import { sql } from "./mssql"
+import mealStoreSearch from "../../adaptiveCards/mealStoreSearch.json";
+import mealStoreSearchResult from "../../adaptiveCards/mealStoreSearchResult.json";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { CardFactory } from "botbuilder";
 import ACData = require("adaptivecards-templating");
+import { UspGetMealStoreCategory, UspGetMealStore } from "./query";
 
 export const viewMealStoreSearch = async (context: TurnContext) => {
   try {
-    const category = await getCategoryList();
+    const category = await UspGetMealStoreCategory();
 
     await context.sendActivity(`비플 가맹점 조회를 선택하셨습니다.`);
 
@@ -32,7 +31,7 @@ export const viewMealStoreSearch = async (context: TurnContext) => {
 
 const updateMealStoreSearch = async (context: TurnContext, storeName: string, storeCategory: string) => {
   try {
-    const category = await getCategoryList();
+    const category = await UspGetMealStoreCategory();
 
     const tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearch));
     
@@ -72,15 +71,15 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
 
     await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}지정가맹점을 조회합니다.`);
 
-    const category = await getMealStore(storeName, storeCategory);
-    if(category.length === 0) {
+    const rows = await UspGetMealStore(storeName, storeCategory);
+    if(rows.length === 0) {
       await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}지정가맹점이 없습니다.`);
       await updateMealStoreSearch(context, storeName, storeCategory);
       return;
     }
 
     const tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearchResult));
-    for(const row of category) {
+    for(const row of rows) {
       tmpTemplate.body[2].columns[0].items.push(<any>{
         "type": "Container",
         "bleed": true,
@@ -142,58 +141,4 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
   } catch (e) {
     console.log(e);
   }
-}
-
-const getCategoryList = (): Promise<any[]> => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const result = [];
-      const request = new sql.Request();
-      const query = `EXEC [IAM].[bot].[Usp_Get_Meal_Store_Category]`;
-    
-      request.query(query, async (err) => {
-        if(err) {
-          reject(err);
-        }
-      });
-    
-      request.on('error', async (err) => {
-        reject(err);
-      }).on('row', async (row) => {
-        result.push(row);
-      }).on('done', () => { 
-        resolve(result);
-      });
-     } catch(e) {
-       reject(e);
-     }
-  });
-}
-
-const getMealStore = (StoreName: string, CategoryCSV: string): Promise<any[]> => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const result = [];
-      const request = new sql.Request();
-      request.input('StoreName', sql.VarChar, StoreName);
-      request.input('CategoryCSV', sql.VarChar, CategoryCSV);
-      const query = `EXEC [IAM].[bot].[Usp_Get_Meal_Store] @StoreName, @CategoryCSV`;
-    
-      request.query(query, async (err) => {
-        if(err) {
-          reject(err);
-        }
-      });
-    
-      request.on('error', async (err) => {
-        reject(err);
-      }).on('row', async (row) => {
-        result.push(row);
-      }).on('done', () => { 
-        resolve(result);
-      });
-     } catch(e) {
-       reject(e);
-     }
-  });
 }

@@ -1,5 +1,5 @@
 import { sql } from "../../mssql"
-import { query } from "../../common";
+import { query } from "../common";
 
 export const getBirthdayLink1 = async (): Promise<any[]> => {
   const request = new sql.Request();

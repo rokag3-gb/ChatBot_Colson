@@ -9,17 +9,16 @@ import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { viewCommandList,
   sendCommand, 
   userMap,
-  errorMessageForContext,
-  sorryMessage } from "./common";
+  sorryMessage } from "./bot/common";
 import { setWorkplaceForm, setWorkplace } from "./bot/setWorkplace";
 import { getWorkplaceForm, getWorkplace } from "./bot/getWorkplace";
 import { viewSecretMessage,
 sendSecretMessage,
 openSecretMessage,
-sendMessageReaction } from "./secretMessage";
+sendMessageReaction } from "./bot/secretMessage";
 import { sendBirthdayCard,
 openBirthMessage } from "./bot/birthMessage";
-import { viewMealStoreSearch, viewMealStoreSearchResult } from "./mealStore";
+import { viewMealStoreSearch, viewMealStoreSearchResult } from "./bot/mealStore";
 
 export class TeamsBot extends TeamsActivityHandler {
   constructor() {

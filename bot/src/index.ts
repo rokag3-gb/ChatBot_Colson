@@ -4,7 +4,7 @@ import { getUserList,
          userRegister,
          insertLog,
          userCount,
-         userMap } from "./common";
+         userMap } from "./bot/common";
 import { setWorkplaceForm } from "./bot/setWorkplace";
   
 import { sendBirthdayCard } from "./bot/birthMessage";

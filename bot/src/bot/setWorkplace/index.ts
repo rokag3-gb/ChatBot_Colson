@@ -1,7 +1,7 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { WorkplaceCardData } from "../../model/cardModels";
 import { CardFactory } from "botbuilder";
-import { getToday, checkWeekday, userMap, errorMessageForContext } from "../../common";
+import { getToday, checkWeekday, userMap, errorMessageForContext } from "../common";
 import { UspGetWorkCode, UspGetUserWorkplace, UspGetUserWorkplaceSend, UspGetUserWorkplaceResend, UspSetWorkplace } from "./query";
 import workplaceTemplate from "../../adaptiveCards/insertWorkplace.json";
     

@@ -1,9 +1,10 @@
-import { bot } from "./internal/initialize";
+import { bot } from "../../internal/initialize";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
-import sendCommandTemplate from "./adaptiveCards/sendCommand.json";
+import sendCommandTemplate from "../../adaptiveCards/sendCommand.json";
 import { CardFactory } from "botbuilder";
-import { sql } from "./mssql"
+import { sql } from "../../mssql"
 import { Member } from "@microsoft/teamsfx"
+import { UspSetAppUser, UspGetUsers, UspSetAppLog } from "./query"
 
 export const userMap = new Object();
 export let userCount = 0;
@@ -67,19 +68,7 @@ export const userRegister = async (userId) => {
               parent = member.parent;
             }
 
-            const request = new sql.Request();
-            request.stream = true;
-            request.input('appId', sql.VarChar, process.env.BOT_ID);
-            request.input('userId', sql.VarChar, member.account.id);
-            request.input('upn', sql.VarChar, member.account.userPrincipalName);
-            request.input('userObject', sql.VarChar, JSON.stringify(member));
-    
-            request.query(`[IAM].[bot].[Usp_Set_App_User] @appId, @upn, @userId, @userObject`
-              , (err) => {
-                if(err){
-                  return console.log('query error :',err)
-                }
-            });    
+            await UspSetAppUser(member.account.id, member.account.userPrincipalName, JSON.stringify(member));
             userMap[member.account.id] = member;
           } catch (e) {
             console.log('userRegister ERROR!! ' + e);
@@ -94,47 +83,25 @@ export const userRegister = async (userId) => {
 }
 
 export const getUserList = async (userId) => {
-  return new Promise((resolve, reject) => {
-    try {
-      const request = new sql.Request();
-      request.input('appId', sql.VarChar, process.env.BOT_ID);
-    
-      request.query(`EXEC [IAM].[bot].[Usp_Get_Users] @appId`, (err, result) => {
-        if(err){
-            return console.log('query error :',err)
-        }
-      });
-    
-      request.on('error', async (err) => {
-        console.log('Database Error : ' + err);
-      }).on('row', (row) => {
-        try {
-          if(row.AppUserId !== null && (userId === row.AppUserId || userId === null)) {
-            const user = userMap[row.AppUserId];
-            if(user) {
-              userMap[row.AppUserId].FullNameKR = row.DisplayName;
-              userMap[row.AppUserId].LastNameKR = row.LastNameKR;
-              userMap[row.AppUserId].FirstNameKR = row.FirstNameKR;
-            } else if (row.AppUserObject) {
-              const userObj = <Member>JSON.parse(row.AppUserObject);
-              const member = <any>new Member(parent, userObj.account);
-              member.FullNameKR = row.DisplayName;
-              member.LastNameKR = row.LastNameKR;
-              member.FirstNameKR = row.FirstNameKR;
-              userMap[row.AppUserId] = member;
-            }
-          }
-        } catch (e) {
-          console.log('getUserList ERROR!! ' + e);
-        }
-      }).on('done', async () => {
-        console.log('getUserList complete');
-        resolve(true);
-      });
-    } catch (e) {
-      reject(e);
+  const rows = await UspGetUsers();
+  for(const row of rows) {
+    if(row.AppUserId !== null && (userId === row.AppUserId || userId === null)) {
+      const user = userMap[row.AppUserId];
+      if(user) {
+        userMap[row.AppUserId].FullNameKR = row.DisplayName;
+        userMap[row.AppUserId].LastNameKR = row.LastNameKR;
+        userMap[row.AppUserId].FirstNameKR = row.FirstNameKR;
+      } else if (row.AppUserObject) {
+        const userObj = <Member>JSON.parse(row.AppUserObject);
+        const member = <any>new Member(parent, userObj.account);
+        member.FullNameKR = row.DisplayName;
+        member.LastNameKR = row.LastNameKR;
+        member.FirstNameKR = row.FirstNameKR;
+        userMap[row.AppUserId] = member;
+      }
     }
-  });
+  }
+  console.log('getUserList complete');
 }
 
 export const insertLog = async (userId, body) => {
@@ -148,21 +115,7 @@ export const insertLog = async (userId, body) => {
     userPrincipalName = user.account.userPrincipalName;
   }
 
-  request.input("ts", sql.VarChar, getTodayTime()) ;
-  request.input('appId', sql.VarChar, process.env.BOT_ID);
-  request.input('upn', sql.VarChar, userPrincipalName);
-  request.input('body', sql.VarChar, body);
-
-  request.query(`[IAM].[bot].[Usp_Set_App_Log] @ts, @appId, @upn, @body`
-  , (err) => {
-    if(err) {
-        return console.log('query error :',err)
-    }
-  });
-
-  request.on('error', async (err) => {
-    console.log('Database Error : ' + err);
-  });
+  await UspSetAppLog(getTodayTime(), userPrincipalName, body);
 }
 
 export const errorMessageForContext = async (context, err) => {

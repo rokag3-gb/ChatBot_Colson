@@ -5,7 +5,7 @@ import sendBirthMessageTemplate from "../../adaptiveCards/sendBirthMessage.json"
 import { CardFactory } from "botbuilder";
 import { getBirthdayLink1, getBirthdayUser1, setSendBirth1, setOpenBirth1 } from "./query";
 
-import { userMap, imgPath, errorMessageForId } from "../../common";
+import { userMap, imgPath, errorMessageForId } from "../common";
 import imageToBase64 from "image-to-base64";
 
 export const sendBirthdayCard = async () => {
