@@ -5,6 +5,8 @@ import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { CardFactory } from "botbuilder";
 import ACData = require("adaptivecards-templating");
 import { UspGetMealStoreCategory, UspGetMealStore } from "./query";
+import imageToBase64 from "image-to-base64";
+import { imgPath } from "../common"
 
 export const viewMealStoreSearch = async (context: TurnContext) => {
   try {
@@ -77,6 +79,7 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
       await updateMealStoreSearch(context, storeName, storeCategory);
       return;
     }
+    const linkIcon = await imageToBase64(imgPath + 'external_link_icon.png');
 
     const tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearchResult));
     for(const row of rows) {
@@ -91,11 +94,7 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
             "horizontalAlignment": "center",
             "size": "small"
           }
-        ],
-        "selectAction": {
-          "type": "Action.OpenUrl",
-          "url": row.URL
-        }
+        ]
       });
       
       tmpTemplate.body[2].columns[1].items.push(<any>{
@@ -108,11 +107,7 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
             "text": row.Address,
             "size": "small"
           }
-        ],
-        "selectAction": {
-          "type": "Action.OpenUrl",
-          "url": row.URL
-        }
+        ]
       });
       
       tmpTemplate.body[2].columns[2].items.push(<any>{
@@ -125,6 +120,18 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
             "text": row.Category,
             "horizontalAlignment": "center",
             "size": "small"
+          }
+        ]
+      });
+  
+      tmpTemplate.body[2].columns[3].items.push(<any>{
+        "type": "Container",
+        "bleed": true,
+        "items": [
+          {
+            "type": "Image",
+            "horizontalAlignment": "center",
+            "url": "data:image/png;base64," + linkIcon
           }
         ],
         "selectAction": {

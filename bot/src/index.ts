@@ -38,7 +38,7 @@ const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
   
   ㅤ
   
-  {${error.message}}`);
+  ${error.message}`);
 };
 
 adapter.onTurnError = onTurnErrorHandler;

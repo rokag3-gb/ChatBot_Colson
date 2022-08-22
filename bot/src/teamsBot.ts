@@ -1,24 +1,13 @@
-import { TeamsActivityHandler,
-  MessageFactory, 
-  ActivityTypes,
-  CardFactory,
-  TurnContext,
-} from "botbuilder";
+import { TeamsActivityHandler, MessageFactory, ActivityTypes, CardFactory, TurnContext } from "botbuilder";
 import sendCommandTemplate from "./adaptiveCards/sendCommand.json";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
-import { viewCommandList,
-  sendCommand, 
-  userMap,
-  sorryMessage } from "./bot/common";
+import { viewCommandList, sendCommand, userMap, sorryMessage } from "./bot/common";
 import { setWorkplaceForm, setWorkplace } from "./bot/setWorkplace";
 import { getWorkplaceForm, getWorkplace } from "./bot/getWorkplace";
-import { viewSecretMessage,
-sendSecretMessage,
-openSecretMessage,
-sendMessageReaction } from "./bot/secretMessage";
-import { sendBirthdayCard,
-openBirthMessage } from "./bot/birthMessage";
+import { viewSecretMessage, sendSecretMessage, openSecretMessage, sendMessageReaction } from "./bot/secretMessage";
+import { sendBirthdayCard, openBirthMessage } from "./bot/birthMessage";
 import { viewMealStoreSearch, viewMealStoreSearchResult } from "./bot/mealStore";
+import { randomStoreSelect, openRandomStore } from "./bot/randomMealStore";
 
 export class TeamsBot extends TeamsActivityHandler {
   constructor() {
@@ -71,6 +60,10 @@ export class TeamsBot extends TeamsActivityHandler {
             await viewMealStoreSearch(context);
           } else if (context.activity.value.messageType === "mealStoreSearchResult") {  
             await viewMealStoreSearchResult(context);
+          } else if (context.activity.value.messageType === "randomStoreSelect") {  
+            await randomStoreSelect(context);
+          } else if (context.activity.value.messageType === "openRandomStore") {  
+            await openRandomStore(context);
           } else if (context.activity.value.messageType === "setWorkplace") {  
             await setWorkplace(context, context.activity.from.id, context.activity.value.UPN, context.activity.value.WorkDate, context.activity.value.WorkCodeAM, context.activity.value.WorkCodePM);
           } else if (context.activity.value.messageType === "setWorkplaceForm") {
