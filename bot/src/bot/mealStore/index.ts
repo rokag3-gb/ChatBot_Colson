@@ -15,12 +15,21 @@ export const viewMealStoreSearch = async (context: TurnContext) => {
     await context.sendActivity(`비플 가맹점 조회를 선택하셨습니다.`);
 
     const tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearch));
+    let first = true;
+    tmpTemplate.body[4].value = "";
     
     for(const row of category) {
       tmpTemplate.body[4].choices.push({
         "title": row.Category,
         "value": row.Category
       });
+
+      if(first) {
+        first = false;
+      } else {
+        tmpTemplate.body[4].value += ",";
+      }
+      tmpTemplate.body[4].value += row.Category;
     }
 
     const card = AdaptiveCards.declare(tmpTemplate).render();

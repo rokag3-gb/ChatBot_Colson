@@ -17,6 +17,8 @@
     },
     {
       "type": "ColumnSet",
+      "id": "storeResult",
+      "isVisible": false,
       "columns": [
         {
           "type": "Column",
