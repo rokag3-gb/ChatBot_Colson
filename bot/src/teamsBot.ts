@@ -42,6 +42,10 @@ export class TeamsBot extends TeamsActivityHandler {
             await sendCommand(context);
           } else if (text[0] === '메시지' || text[0] === '메세지') {
             await viewSecretMessage(context, context.activity.from.id, text[1]);
+          } else if (text[0] === '비플식권페이' || text[0] === '비식페' || text[0] === '식사' || text[0] === '점심') {
+            await viewMealStoreSearch(context);
+          } else if (text[0] === '식사랜덤') {
+            await randomStoreSelect(context);
           } else if (text[0] === 'birthtest') {
             await sendBirthdayCard();
           } else if (text[0] === 'workplacetestsend') {
