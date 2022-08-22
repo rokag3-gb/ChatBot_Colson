@@ -1,0 +1,80 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "식사 랜덤 뽑기!",
+      "size": "Medium",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "콜슨이 대신 선택해 드립니다. 그림을 선택해주세요.",
+      "wrap": true
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "Image",
+              "url": "data:image/png;base64,${icon01}"
+            }
+          ],
+          "selectAction": {
+            "type": "Action.Submit",
+            "title": "열기",
+            "data": {
+              "messageType": "openRandomStore",
+              "iconId": 1,
+              "storeJson": "${store01}"
+            }
+          }
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "Image",
+              "url": "data:image/png;base64,${icon02}"
+            }
+          ],
+          "selectAction": {
+            "type": "Action.Submit",
+            "title": "열기",
+            "data": {
+              "messageType": "openRandomStore",
+              "iconId": 2,
+              "storeJson": "${store02}"
+            }
+          }
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "Image",
+              "url": "data:image/png;base64,${icon03}"
+            }
+          ],
+          "selectAction": {
+            "type": "Action.Submit",
+            "title": "열기",
+            "data": {
+              "messageType": "openRandomStore",
+              "iconId": 3,
+              "storeJson": "${store03}"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "actions": [
+  ]
+}

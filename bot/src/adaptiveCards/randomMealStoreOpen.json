@@ -1,0 +1,114 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "오늘의 점심 메뉴는!! 뽑기 결과를 확인해 보세요",
+      "size": "Medium",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "식사 맛있게 하세요",
+      "wrap": true
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": 4,
+          "separator": true,
+          "spacing": "none",
+          "items": [
+            {
+              "type": "Container",
+              "style": "accent",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "weight": "bolder",
+                  "horizontalAlignment": "center",
+                  "text": "가맹점명",
+                  "size": "small"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "separator": true,
+          "width": 8,
+          "spacing": "none",
+          "items": [
+            {
+              "type": "Container",
+              "style": "accent",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "weight": "bolder",
+                  "horizontalAlignment": "center",
+                  "text": "주소",
+                  "size": "small"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "separator": true,
+          "width": 4,
+          "spacing": "none",
+          "items": [
+            {
+              "type": "Container",
+              "style": "accent",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "weight": "bolder",
+                  "horizontalAlignment": "center",
+                  "text": "카테고리",
+                  "size": "small"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "separator": true,
+          "width": 3,
+          "spacing": "none",
+          "items": [
+            {
+              "type": "Container",
+              "style": "accent",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "weight": "bolder",
+                  "text": "링크",
+                  "size": "small"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.ToggleVisibility",
+      "title": "확인하기",
+      "targetElements": [ "storeResult" ]
+    }
+  ]
+}
