@@ -132,7 +132,9 @@ export const getWorkplace = async (context, name, date) => {
     });
   }
 
-  const card = AdaptiveCards.declare(tmpTemplate).render();
+  const card = AdaptiveCards.declare(tmpTemplate).render({
+    name: name
+  });
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
 }
       

@@ -140,7 +140,7 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
     });
   }
   const card = AdaptiveCards.declare(tmpTemplate).render({
-    storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''} 지점가맹점을 조회하였습니다.`
+    storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''} 가맹점을 조회하였습니다.`
   });
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
   await updateMealStoreSearch(context, storeName, storeCategory);

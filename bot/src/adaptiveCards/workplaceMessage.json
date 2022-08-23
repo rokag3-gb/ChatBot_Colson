@@ -12,7 +12,7 @@
       },
       {
         "type": "TextBlock",
-        "text": "근무지",
+        "text": "${name} 님의 근무지를 조회하였습니다.",
         "wrap": true
       },
       {

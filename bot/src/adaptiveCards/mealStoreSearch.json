@@ -5,7 +5,7 @@
   "body": [
     {
       "type": "TextBlock",
-      "text": "비플 지정가맹점 조회",
+      "text": "비플식권페이 가맹점 조회",
       "size": "Medium",
       "weight": "Bolder",
       "wrap": true
@@ -19,7 +19,7 @@
       "type": "Input.Text",
       "style": "text",
       "id": "storeName",
-      "placeholder": "입력한 글자 포함한 식당 (*식당명*)"
+      "placeholder": "입력 글자가 포함된 식당이 조회 됩니다."
     },
     {
       "type": "TextBlock",
