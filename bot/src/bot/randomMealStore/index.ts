@@ -123,23 +123,17 @@ export const openRandomStore = async (context: TurnContext) => {
         "horizontalAlignment": "center",
         "size": "small"
       }
-    ],
-    "selectAction": {
-      "type": "Action.OpenUrl",
-      "url": row.URL
-    }
+    ]
   });
-  
+
   tmpTemplate.body[2].columns[3].items.push(<any>{
     "type": "Container",
-    "bleed": true,
     "style": "warning",
     "spacing": "none",
     "items": [
       {
         "type": "Image",
         "horizontalAlignment": "center",
-        "style": "warning",
         "url": "data:image/png;base64," + linkIcon
       }
     ],
