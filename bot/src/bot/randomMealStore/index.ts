@@ -133,10 +133,13 @@ export const openRandomStore = async (context: TurnContext) => {
   tmpTemplate.body[2].columns[3].items.push(<any>{
     "type": "Container",
     "bleed": true,
+    "style": "warning",
+    "spacing": "none",
     "items": [
       {
         "type": "Image",
         "horizontalAlignment": "center",
+        "style": "warning",
         "url": "data:image/png;base64," + linkIcon
       }
     ],
