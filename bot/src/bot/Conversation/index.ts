@@ -1,7 +1,7 @@
 import { TurnContext } from "botbuilder";
 import { getWorkplace } from "../getWorkplace";
 
-const greetingText = ["안녕", "hi", "hello", "콜슨"];
+const greetingText = ["안녕", "hi", "hello", "콜슨", "반가워", "어이", "여어"];
 const peopleText = [];
 const getWorkplaceText = ["나오니", "출근", "근무", "일정"];
 const getMealStoreText = ["밥", "점심", "먹을거", "먹을까"];
