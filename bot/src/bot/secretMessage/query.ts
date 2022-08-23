@@ -33,5 +33,5 @@ export const UspGetSendMessageChatid = async (activityId: string): Promise<any[]
   request.input('AppId', sql.VarChar, process.env.BOT_ID);
   request.input('OpenedChatId', sql.VarChar, activityId);
 
-  return query(request, `EXEC [IAM].[bot].[Usp_Get_Send_Message_Chat_Id] @OpenedChatId, @AppI`);
+  return query(request, `EXEC [IAM].[bot].[Usp_Get_Send_Message_Chat_Id] @OpenedChatId, @AppId`);
 }
