@@ -11,7 +11,7 @@ import { imgPath } from "../common"
 export const viewMealStoreSearch = async (context: TurnContext) => {
   const category = await UspGetMealStoreCategory();
 
-  await context.sendActivity(`비플 가맹점 조회를 선택하셨습니다.`);
+  await context.sendActivity(`비플식권페이 가맹점 조회를 선택하셨습니다.`);
 
   const tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearch));
   let first = true;
@@ -69,11 +69,11 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
     return;
   }
 
-  await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}지정가맹점을 조회합니다.`);
+  await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}가맹점을 조회합니다.`);
 
   const rows = await UspGetMealStore(storeName, storeCategory);
   if(rows.length === 0) {
-    await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}지정가맹점이 없습니다.`);
+    await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}가맹점이 없습니다.`);
     await updateMealStoreSearch(context, storeName, storeCategory);
     return;
   }
