@@ -5,6 +5,7 @@ import { CardFactory } from "botbuilder";
 import { sql } from "../../mssql"
 import { Member } from "@microsoft/teamsfx"
 import { UspSetAppUser, UspGetUsers, UspSetAppLog } from "./query"
+import { pushPeople } from "../Conversation"
 
 export const userMap = new Object();
 export let userCount = 0;
@@ -85,6 +86,7 @@ export const userRegister = async (userId) => {
 export const getUserList = async (userId) => {
   const rows = await UspGetUsers();
   for(const row of rows) {
+    pushPeople(row.DisplayName);
     if(row.AppUserId !== null && (userId === row.AppUserId || userId === null)) {
       const user = userMap[row.AppUserId];
       if(user) {

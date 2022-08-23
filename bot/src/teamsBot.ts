@@ -8,6 +8,7 @@ import { viewSecretMessage, sendSecretMessage, openSecretMessage, sendMessageRea
 import { sendBirthdayCard, openBirthMessage } from "./bot/birthMessage";
 import { viewMealStoreSearch, viewMealStoreSearchResult } from "./bot/mealStore";
 import { randomStoreSelect, openRandomStore } from "./bot/randomMealStore";
+import { checkConversation } from "./bot/Conversation";
 
 export class TeamsBot extends TeamsActivityHandler {
   constructor() {
@@ -53,7 +54,9 @@ export class TeamsBot extends TeamsActivityHandler {
           } else if (text[0] === 'workplacetestresend') {
             await setWorkplaceForm(context, null, null, 'resend', '테스트로 전송된 메세지입니다. workplacetestresend');
           } else {
-            await sorryMessage(context);
+
+            await checkConversation(context, txt);
+         //   await sorryMessage();
           }
         } else if(context.activity.value) {
           if (context.activity.value.messageType === "getWorkplaceForm") {
