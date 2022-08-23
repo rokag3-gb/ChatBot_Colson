@@ -102,8 +102,21 @@
           ]
         }
       ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "원하시는 결과가 없으신가요?",
+      "isSubtle": true,
+      "size": "small",
+      "spacing": "extraLarge",
+      "wrap": true
     }
   ],
   "actions": [
+    {
+      "type": "Action.OpenUrl",
+      "title": "식당 등록 요청하기",
+      "url": "https://adaptivecards.io/explorer/Action.OpenUrl.html"
+    }
   ]
 }

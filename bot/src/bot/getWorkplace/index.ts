@@ -70,6 +70,10 @@ export const getWorkplace = async (context, name, date) => {
   }
 
   const rows = await UspGetWorkplace(name, date);
+  if(rows.length === 0) {
+    await context.sendActivity(`대상자 이름으로 사용자를 찾을 수 없습니다.`);
+    return;
+  }
   for(const row of rows) {
     tmpTemplate.body[2].columns[0].items.push(<any>{
       "type": "Container",
@@ -127,10 +131,7 @@ export const getWorkplace = async (context, name, date) => {
       ]
     });
   }
-  
-  if(tmpTemplate.body[2].columns[1].items.length === 1) {
-    return;
-  }
+
   const card = AdaptiveCards.declare(tmpTemplate).render();
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
 }
