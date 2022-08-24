@@ -25,5 +25,5 @@ export const UspSetAppLog = async (ts: string, upn: string, body: string): Promi
   request.input('upn', sql.VarChar, upn);
   request.input('body', sql.VarChar, body);
 
-  return query(request, `EXEC [IAM].[bot].[Usp_Get_Users] @appId`);
+  return query(request, `EXEC [IAM].[bot].[Usp_Set_App_Log] @ts, @appId, @upn, @body`);
 }
