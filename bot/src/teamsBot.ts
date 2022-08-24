@@ -8,7 +8,7 @@ import { viewSecretMessage, sendSecretMessage, openSecretMessage, sendMessageRea
 import { sendBirthdayCard, openBirthMessage } from "./bot/birthMessage";
 import { viewMealStoreSearch, viewMealStoreSearchResult } from "./bot/mealStore";
 import { randomStoreSelect, openRandomStore } from "./bot/randomMealStore";
-import { checkConversation } from "./bot/Conversation";
+import { checkConversation } from "./bot/conversation";
 
 export class TeamsBot extends TeamsActivityHandler {
   constructor() {

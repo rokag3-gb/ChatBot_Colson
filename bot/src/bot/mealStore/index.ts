@@ -70,78 +70,131 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
   }
 
   await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}가맹점을 조회합니다.`);
+  let tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearchResult));
 
   const rows = await UspGetMealStore(storeName, storeCategory);
   if(rows.length === 0) {
-    await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}가맹점이 없습니다.`);
+    const card = AdaptiveCards.declare(tmpTemplate).render({
+      storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''}가맹점이 없습니다.`
+    });
+    await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
     await updateMealStoreSearch(context, storeName, storeCategory);
     return;
   }
-  const linkIcon = await imageToBase64(imgPath + 'external_link_icon.png');
 
-  const tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearchResult));
+  let start = 0;
+  let end = 0;
   for(const row of rows) {
-    tmpTemplate.body[2].columns[0].items.push(<any>{
-      "type": "Container",
+    if(end % 20 === 0 && start !== end) {
+      const card = AdaptiveCards.declare(tmpTemplate).render({
+        storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''} 가맹점을 조회하였습니다. (${start+1}~${end})`
+      });
+      await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
+      tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearchResult));
+      start = end;
+    }
+    end++;
+    tmpTemplate.body[2].items.push(<any>{
+      "type": "ColumnSet",
       "bleed": true,
-      "items": [
+      "columns": [
         {
-          "type": "TextBlock",
-          "wrap": true,
-          "text": row.StoreName,
-          "horizontalAlignment": "center",
-          "size": "small"
+          "type": "Column",
+          "width": 4,
+          "separator": true,
+          "bleed": true,
+          "verticalContentAlignment": "center",
+          "spacing": "none",
+          "items": [
+            {
+              "type": "Container",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "wrap": true,
+                  "text": row.StoreName,
+                  "size": "small"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "separator": true,
+          "width": 8,
+          "bleed": true,
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "type": "Container",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "wrap": true,
+                  "text": row.Address,
+                  "size": "small"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "separator": true,
+          "width": 3,
+          "bleed": true,
+          "verticalContentAlignment": "center",
+          "spacing": "none",
+          "items": [
+            {
+              "type": "Container",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "wrap": true,
+                  "text": row.Category,
+                  "horizontalAlignment": "center",
+                  "size": "small"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "separator": true,
+          "width": 2,
+          "bleed": true,
+          "verticalContentAlignment": "center",
+          "spacing": "none",
+          "items": [
+            {
+              "type": "Container",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "wrap": true,
+                  "text": "🔗",
+                  "horizontalAlignment": "center"
+                }
+              ]
+            }
+          ],
+          "selectAction": {
+            "type": "Action.OpenUrl",
+            "url": row.URL
+          }
         }
       ]
-    });
-    
-    tmpTemplate.body[2].columns[1].items.push(<any>{
-      "type": "Container",
-      "bleed": true,
-      "items": [
-        {
-          "type": "TextBlock",
-          "wrap": true,
-          "text": row.Address,
-          "size": "small"
-        }
-      ]
-    });
-    
-    tmpTemplate.body[2].columns[2].items.push(<any>{
-      "type": "Container",
-      "bleed": true,
-      "items": [
-        {
-          "type": "TextBlock",
-          "wrap": true,
-          "text": row.Category,
-          "horizontalAlignment": "center",
-          "size": "small"
-        }
-      ]
-    });
-
-    tmpTemplate.body[2].columns[3].items.push(<any>{
-      "type": "Container",
-      "style": "warning",
-      "spacing": "none",
-      "items": [
-        {
-          "type": "Image",
-          "horizontalAlignment": "center",
-          "url": "data:image/png;base64," + linkIcon
-        }
-      ],
-      "selectAction": {
-        "type": "Action.OpenUrl",
-        "url": row.URL
-      }
     });
   }
-  const card = AdaptiveCards.declare(tmpTemplate).render({
-    storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''} 가맹점을 조회하였습니다.`
-  });
-  await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
+  if(start !== end) {
+    const card = AdaptiveCards.declare(tmpTemplate).render({
+      storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''} 가맹점을 조회하였습니다. (${start+1}~${end})`
+    });
+    await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
+  }
+
   await updateMealStoreSearch(context, storeName, storeCategory);
 }

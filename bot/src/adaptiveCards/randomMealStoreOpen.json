@@ -16,88 +16,103 @@
       "wrap": true
     },
     {
-      "type": "ColumnSet",
+      "type": "Container",
       "id": "storeResult",
       "isVisible": false,
-      "columns": [
+      "bleed": true,
+      "items": [
         {
-          "type": "Column",
-          "width": 4,
-          "separator": true,
-          "spacing": "none",
-          "items": [
+          "type": "ColumnSet",
+          "bleed": true,
+          "columns": [
             {
-              "type": "Container",
-              "style": "accent",
+              "type": "Column",
+              "width": 4,
+              "separator": true,
+              "bleed": true,
+              "spacing": "none",
               "items": [
                 {
-                  "type": "TextBlock",
-                  "weight": "bolder",
-                  "horizontalAlignment": "center",
-                  "text": "가맹점명",
-                  "size": "small"
+                  "type": "Container",
+                  "style": "accent",
+                  "bleed": true,
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "weight": "bolder",
+                      "horizontalAlignment": "center",
+                      "text": "상호",
+                      "size": "small"
+                    }
+                  ]
                 }
               ]
-            }
-          ]
-        },
-        {
-          "type": "Column",
-          "separator": true,
-          "width": 8,
-          "spacing": "none",
-          "items": [
+            },
             {
-              "type": "Container",
-              "style": "accent",
+              "type": "Column",
+              "separator": true,
+              "width": 8,
+              "bleed": true,
+              "spacing": "none",
               "items": [
                 {
-                  "type": "TextBlock",
-                  "weight": "bolder",
-                  "horizontalAlignment": "center",
-                  "text": "주소",
-                  "size": "small"
+                  "type": "Container",
+                  "style": "accent",
+                  "bleed": true,
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "weight": "bolder",
+                      "horizontalAlignment": "center",
+                      "text": "주소",
+                      "size": "small"
+                    }
+                  ]
                 }
               ]
-            }
-          ]
-        },
-        {
-          "type": "Column",
-          "separator": true,
-          "width": 4,
-          "spacing": "none",
-          "items": [
+            },
             {
-              "type": "Container",
-              "style": "accent",
+              "type": "Column",
+              "separator": true,
+              "width": 3,
+              "bleed": true,
+              "spacing": "none",
               "items": [
                 {
-                  "type": "TextBlock",
-                  "weight": "bolder",
-                  "horizontalAlignment": "center",
-                  "text": "카테고리",
-                  "size": "small"
+                  "type": "Container",
+                  "style": "accent",
+                  "bleed": true,
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "weight": "bolder",
+                      "horizontalAlignment": "center",
+                      "text": "분류",
+                      "size": "small"
+                    }
+                  ]
                 }
               ]
-            }
-          ]
-        },
-        {
-          "type": "Column",
-          "separator": true,
-          "width": 3,
-          "spacing": "none",
-          "items": [
+            },
             {
-              "type": "Container",
-              "style": "accent",
+              "type": "Column",
+              "separator": true,
+              "width": 2,
+              "bleed": true,
+              "spacing": "none",
               "items": [
                 {
-                  "type": "TextBlock",
-                  "weight": "bolder",
-                  "text": "링크",
-                  "size": "small"
+                  "type": "Container",
+                  "style": "accent",
+                  "bleed": true,
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "weight": "bolder",
+                      "text": "링크",
+                      "size": "small"
+                    }
+                  ]
                 }
               ]
             }

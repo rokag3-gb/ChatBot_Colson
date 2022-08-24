@@ -83,64 +83,100 @@ const randomStoreSelectUpdate = async (context: TurnContext) => {
 export const openRandomStore = async (context: TurnContext) => {
   const tmpTemplate = JSON.parse(JSON.stringify(randomMealStoreOpen));
   const row = JSON.parse(context.activity.value.storeJson);
-  const linkIcon = await imageToBase64(imgPath + 'external_link_icon.png');
 
-  tmpTemplate.body[2].columns[0].items.push(<any>{
-    "type": "Container",
+  tmpTemplate.body[2].items.push(<any>{
+    "type": "ColumnSet",
     "bleed": true,
-    "items": [
+    "columns": [
       {
-        "type": "TextBlock",
-        "wrap": true,
-        "text": row.StoreName,
-        "horizontalAlignment": "center",
-        "size": "small"
+        "type": "Column",
+        "width": 4,
+        "separator": true,
+        "bleed": true,
+        "verticalContentAlignment": "center",
+        "spacing": "none",
+        "items": [
+          {
+            "type": "Container",
+            "items": [
+              {
+                "type": "TextBlock",
+                "wrap": true,
+                "text": row.StoreName,
+                "size": "small"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Column",
+        "separator": true,
+        "width": 8,
+        "bleed": true,
+        "verticalContentAlignment": "center",
+        "items": [
+          {
+            "type": "Container",
+            "items": [
+              {
+                "type": "TextBlock",
+                "wrap": true,
+                "text": row.Address,
+                "size": "small"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Column",
+        "separator": true,
+        "width": 3,
+        "bleed": true,
+        "verticalContentAlignment": "center",
+        "spacing": "none",
+        "items": [
+          {
+            "type": "Container",
+            "items": [
+              {
+                "type": "TextBlock",
+                "wrap": true,
+                "text": row.Category,
+                "horizontalAlignment": "center",
+                "size": "small"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Column",
+        "separator": true,
+        "width": 2,
+        "bleed": true,
+        "verticalContentAlignment": "center",
+        "spacing": "none",
+        "items": [
+          {
+            "type": "Container",
+            "items": [
+              {
+                "type": "TextBlock",
+                "wrap": true,
+                "text": "🔗",
+                "horizontalAlignment": "center"
+              }
+            ]
+          }
+        ],
+        "selectAction": {
+          "type": "Action.OpenUrl",
+          "url": row.URL
+        }
       }
     ]
-  });
-  
-  tmpTemplate.body[2].columns[1].items.push(<any>{
-    "type": "Container",
-    "bleed": true,
-    "items": [
-      {
-        "type": "TextBlock",
-        "wrap": true,
-        "text": row.Address,
-        "size": "small"
-      }
-    ]
-  });
-  
-  tmpTemplate.body[2].columns[2].items.push(<any>{
-    "type": "Container",
-    "bleed": true,
-    "items": [
-      {
-        "type": "TextBlock",
-        "wrap": true,
-        "text": row.Category,
-        "horizontalAlignment": "center",
-        "size": "small"
-      }
-    ]
-  });
-
-  tmpTemplate.body[2].columns[3].items.push(<any>{
-    "type": "Container",
-    "style": "warning",
-    "spacing": "none",
-    "items": [
-      {
-        "type": "Image",
-        "horizontalAlignment": "center",
-        "url": "data:image/png;base64," + linkIcon
-      }
-    ],
-    "selectAction": {
-      "type": "Action.OpenUrl",
-      "url": row.URL
-    }
   });
   const card = AdaptiveCards.declare(tmpTemplate).render();
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });

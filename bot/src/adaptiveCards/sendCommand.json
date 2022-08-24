@@ -54,11 +54,6 @@
       }
     },
     {
-      "type": "Action.OpenUrl",
-      "title": "비플식권페이 가맹점 등록 요청",
-      "url": "https://forms.office.com/r/aBXTL8GbsZ"
-    },
-    {
       "type": "Action.Submit",
       "title": "명령어 목록",
       "data": {

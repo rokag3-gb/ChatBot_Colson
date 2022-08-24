@@ -5,7 +5,7 @@ import { CardFactory } from "botbuilder";
 import { sql } from "../../mssql"
 import { Member } from "@microsoft/teamsfx"
 import { UspSetAppUser, UspGetUsers, UspSetAppLog } from "./query"
-import { pushPeople } from "../Conversation"
+import { pushPeople } from "../conversation"
 
 export const userMap = new Object();
 export let userCount = 0;
