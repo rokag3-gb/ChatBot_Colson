@@ -1,7 +1,7 @@
 {
     "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.13/MicrosoftTeams.schema.json",
     "manifestVersion": "1.13",
-    "version": "1.0.6",
+    "version": "1.0.8",
     "id": "{{state.fx-resource-appstudio.teamsAppId}}",
     "packageName": "com.microsoft.teams.extension",
     "developer": {
@@ -19,8 +19,8 @@
         "full": "Colson(콜슨)"
     },
     "description": {
-        "short": "콜슨은 클라우드메이트 내부 챗봇의 이름입니다.",
-        "full": "콜슨은 내부 구성원들의 업무 생산성을 향상 시키기 위한 목적으로, 다양한 문의에 대하여 응답할 수 있도록 개발되었습니다.\r\n시나리오 추가 개발, 기능 개선을 통하여 임직원의 니즈를 지속적으로 반영하게 될 것 입니다.\r\n\r\n서비스 개선 문의: SD팀 문광석, 김정우"
+        "short": "Colson(콜슨)은 클라우드메이트 임직원 전용 챗봇 서비스의 이름입니다.",
+        "full": "Colson(콜슨)은 클라우드메이트 임직원의 업무 생산성을 향상 시키기 위한 목적으로 다양한 문의에 대하여 응답할 수 있도록 개발되었으며 시나리오 추가 개발, 기능 개선을 통하여 임직원의 니즈를 지속적으로 반영하게 될 것 입니다.\r\nㅤ\r\n서비스 개선 문의: SD Team 문광석, 김정우"
     },
     "accentColor": "#FFFFFF",
     "bots": [

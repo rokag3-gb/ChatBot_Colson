@@ -5,8 +5,91 @@ import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { CardFactory } from "botbuilder";
 import ACData = require("adaptivecards-templating");
 import { UspGetMealStoreCategory, UspGetMealStore } from "./query";
-import imageToBase64 from "image-to-base64";
-import { imgPath } from "../common"
+
+const header = {
+  "type": "ColumnSet",
+  "bleed": true,
+  "columns": [
+    {
+      "type": "Column",
+      "width": 4,
+      "separator": true,
+      "bleed": true,
+      "spacing": "none",
+      "items": [
+        {
+          "type": "Container",
+          "style": "accent",
+          "bleed": true,
+          "items": [
+            {
+              "type": "TextBlock",
+              "weight": "bolder",
+              "horizontalAlignment": "center",
+              "text": "상호",
+              "size": "small"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Column",
+      "separator": true,
+      "width": 3,
+      "bleed": true,
+      "spacing": "none",
+      "items": [
+        {
+          "type": "Container",
+          "style": "accent",
+          "bleed": true,
+          "items": [
+            {
+              "type": "TextBlock",
+              "weight": "bolder",
+              "horizontalAlignment": "center",
+              "text": "분류",
+              "size": "small"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Column",
+      "separator": true,
+      "width": 2,
+      "bleed": true,
+      "spacing": "none",
+      "items": [
+        {
+          "type": "Container",
+          "style": "accent",
+          "bleed": true,
+          "items": [
+            {
+              "type": "TextBlock",
+              "weight": "bolder",
+              "horizontalAlignment": "center",
+              "text": "링크",
+              "size": "small"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+const footer = {
+  "type": "TextBlock",
+  "text": "원하시는 결과가 없으신가요?",
+  "isSubtle": true,
+  "size": "small",
+  "spacing": "extraLarge",
+  "wrap": true
+};
 
 export const viewMealStoreSearch = async (context: TurnContext) => {
   const category = await UspGetMealStoreCategory();
@@ -84,17 +167,50 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
 
   let start = 0;
   let end = 0;
+  let count = 1;
+  
+  let data = {
+    "type": "Action.ShowCard",
+    "title": count++,
+    "card": {
+      "type": "AdaptiveCard",
+      "body": [
+        header
+      ],
+      "actions": [
+        {
+          "type":"Action.OpenUrl",
+          "title":"식당 등록 요청하기",
+          "url":"https://forms.office.com/r/aBXTL8GbsZ"
+        }
+      ]
+    }
+  };
   for(const row of rows) {
-    if(end % 20 === 0 && start !== end) {
-      const card = AdaptiveCards.declare(tmpTemplate).render({
-        storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''} 가맹점을 조회하였습니다. (${start+1}~${end})`
-      });
-      await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
-      tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearchResult));
+    if(end % 10 === 0 && start !== end) {
+      tmpTemplate.actions.push(data);
+      data.card.body.push(<any>footer);
+
+      data = {
+        "type": "Action.ShowCard",
+        "title": count++,
+        "card": {
+          "type": "AdaptiveCard",
+          "body": [header],
+          "actions": [
+            {
+              "type":"Action.OpenUrl",
+              "title":"식당 등록 요청하기",
+              "url":"https://forms.office.com/r/aBXTL8GbsZ"
+            }
+          ]
+        }
+      };
       start = end;
     }
     end++;
-    tmpTemplate.body[2].items.push(<any>{
+
+    data.card.body.push(<any>{
       "type": "ColumnSet",
       "bleed": true,
       "columns": [
@@ -102,7 +218,6 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
           "type": "Column",
           "width": 4,
           "separator": true,
-          "bleed": true,
           "verticalContentAlignment": "center",
           "spacing": "none",
           "items": [
@@ -122,28 +237,7 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
         {
           "type": "Column",
           "separator": true,
-          "width": 8,
-          "bleed": true,
-          "verticalContentAlignment": "center",
-          "items": [
-            {
-              "type": "Container",
-              "items": [
-                {
-                  "type": "TextBlock",
-                  "wrap": true,
-                  "text": row.Address,
-                  "size": "small"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "Column",
-          "separator": true,
           "width": 3,
-          "bleed": true,
           "verticalContentAlignment": "center",
           "spacing": "none",
           "items": [
@@ -165,7 +259,6 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
           "type": "Column",
           "separator": true,
           "width": 2,
-          "bleed": true,
           "verticalContentAlignment": "center",
           "spacing": "none",
           "items": [
@@ -190,11 +283,15 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
     });
   }
   if(start !== end) {
-    const card = AdaptiveCards.declare(tmpTemplate).render({
-      storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''} 가맹점을 조회하였습니다. (${start+1}~${end})`
-    });
-    await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
+    tmpTemplate.actions.push(data);
+    data.card.body.push(<any>footer);
   }
+  
+  const card = AdaptiveCards.declare(tmpTemplate).render({
+    storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''} 가맹점을 조회하였습니다.`
+  });
+  await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
+  tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearchResult));
 
   await updateMealStoreSearch(context, storeName, storeCategory);
 }
