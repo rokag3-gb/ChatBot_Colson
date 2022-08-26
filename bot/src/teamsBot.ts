@@ -65,7 +65,7 @@ export class TeamsBot extends TeamsActivityHandler {
             await getWorkplace(context, context.activity.value.username, null);
           } else if (context.activity.value.messageType === "mealStoreSearch") {  
             await viewMealStoreSearch(context);
-          } else if (context.activity.value.messageType === "mealStoreSearchResult") {  
+          } else if (context.activity.value.messageType === "mealStoreSearchResult" || context.activity.value.messageType === "mealStoreSearchResultMore") {  
             await viewMealStoreSearchResult(context);
           } else if (context.activity.value.messageType === "randomStoreSelect") {  
             await randomStoreSelect(context);

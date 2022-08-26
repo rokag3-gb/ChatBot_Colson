@@ -147,16 +147,19 @@ const updateMealStoreSearch = async (context: TurnContext, storeName: string, st
 export const viewMealStoreSearchResult = async (context: TurnContext) => {
   const storeName = context.activity.value.storeName;
   const storeCategory = context.activity.value.storeCategory;
+  const pageNo = context.activity.value.pageNo;
   if(!storeName && !storeCategory) {
     await context.sendActivity(`한가지 이상의 검색 조건을 입력해 주세요.`);
     return;
   }
 
-  await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}가맹점을 조회합니다.`);
+  if(context.activity.value.messageType === "mealStoreSearchResult")
+    await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}가맹점을 조회합니다.`);
   let tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearchResult));
 
-  const rows = await UspGetMealStore(storeName, storeCategory);
-  if(rows.length === 0) {
+  const rows = await UspGetMealStore(storeName, storeCategory, pageNo);
+  const result = rows[rows.length-1];
+  if(result.DataRowCount === 0) {
     const card = AdaptiveCards.declare(tmpTemplate).render({
       storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''}가맹점이 없습니다.`
     });
@@ -186,7 +189,9 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
       ]
     }
   };
-  for(const row of rows) {
+
+  for(let i = 0; i < rows.length-1; i++) {
+    const row = rows[i];
     if(end % 10 === 0 && start !== end) {
       tmpTemplate.actions.push(data);
       data.card.body.push(<any>footer);
@@ -287,11 +292,28 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
     data.card.body.push(<any>footer);
   }
   
+  if(result.TotalPageCount !== result.CurrentPageNo) {
+    tmpTemplate.actions.push({
+      "type": "Action.Submit",
+      "title": "more",
+      "data": {
+        "storeName": storeName,
+        "storeCategory": storeCategory,
+        "messageType": "mealStoreSearchResultMore",
+        "pageNo": pageNo + 1
+      }
+    });
+  }
+
+  const curCountStart = result.PageSize * (result.CurrentPageNo-1) + 1;
+  const curCountEnd = result.CurrentPageNo===result.TotalPageCount?result.DataRowCount:result.PageSize * result.CurrentPageNo;
+  
   const card = AdaptiveCards.declare(tmpTemplate).render({
-    storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''} 가맹점을 조회하였습니다.`
+    storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''} 가맹점을 조회하였습니다. (${curCountStart}~${curCountEnd})`
   });
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
   tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearchResult));
 
-  await updateMealStoreSearch(context, storeName, storeCategory);
+  if(context.activity.value.messageType === "mealStoreSearchResult")
+    await updateMealStoreSearch(context, storeName, storeCategory);
 }

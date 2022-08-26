@@ -33,6 +33,11 @@
       "style": "expanded",
       "choices": [
       ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "※ 비플식권페이 전체 가맹점 중 회사 시스템에 등록된 가맹점만 조회됩니다.",
+      "wrap": true
     }
   ],
   "actions": [
@@ -40,8 +45,14 @@
       "type": "Action.Submit",
       "title": "조회하기",
       "data": {
-        "messageType": "mealStoreSearchResult"
+        "messageType": "mealStoreSearchResult",
+        "pageNo": 1
       }
+    },
+    {
+      "type":"Action.OpenUrl",
+      "title":"지도로 보기",
+      "url":"https://app.powerbi.com/reportEmbed?reportId=cbbc699e-db18-4bd3-aca5-245f1e6a63a7&autoAuth=true&ctid=6d5ac8ee-3862-4452-93e7-a836c2d9742b"
     }
   ]
 }
