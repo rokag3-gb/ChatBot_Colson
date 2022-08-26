@@ -6,6 +6,8 @@ import { CardFactory } from "botbuilder";
 import ACData = require("adaptivecards-templating");
 import { UspGetMealStoreCategory, UspGetMealStore } from "./query";
 
+const PAGE_ROW_SIZE = 10;
+
 const header = {
   "type": "ColumnSet",
   "bleed": true,
@@ -80,15 +82,6 @@ const header = {
       ]
     }
   ]
-};
-
-const footer = {
-  "type": "TextBlock",
-  "text": "원하시는 결과가 없으신가요?",
-  "isSubtle": true,
-  "size": "small",
-  "spacing": "extraLarge",
-  "wrap": true
 };
 
 export const viewMealStoreSearch = async (context: TurnContext) => {
@@ -167,55 +160,50 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
     await updateMealStoreSearch(context, storeName, storeCategory);
     return;
   }
-
-  let start = 0;
-  let end = 0;
-  let count = 1;
   
-  let data = {
-    "type": "Action.ShowCard",
-    "title": count++,
-    "card": {
-      "type": "AdaptiveCard",
-      "body": [
-        header
-      ],
-      "actions": [
-        {
-          "type":"Action.OpenUrl",
-          "title":"식당 등록 요청하기",
-          "url":"https://forms.office.com/r/aBXTL8GbsZ"
-        }
-      ]
-    }
+  const pageStart = (result.PageSize * (result.CurrentPageNo-1)) / PAGE_ROW_SIZE + 1;
+  let count = 0;
+  
+  let bodyData = {
+    "type": "Container",
+    "id": `page${count}`,
+    "isVisible": true,
+    "items": [
+      header
+    ]
+  };
+  let actionData = {
+    "type": "Action.ToggleVisibility",
+    "title": `${count+pageStart}`,
+    "targetElements": [
+    ]
   };
 
   for(let i = 0; i < rows.length-1; i++) {
     const row = rows[i];
-    if(end % 10 === 0 && start !== end) {
-      tmpTemplate.actions.push(data);
-      data.card.body.push(<any>footer);
+    if(i % PAGE_ROW_SIZE === 0 && i !== 0) {
+      tmpTemplate.body.push(bodyData);
+      tmpTemplate.actions.push(actionData);
 
-      data = {
-        "type": "Action.ShowCard",
-        "title": count++,
-        "card": {
-          "type": "AdaptiveCard",
-          "body": [header],
-          "actions": [
-            {
-              "type":"Action.OpenUrl",
-              "title":"식당 등록 요청하기",
-              "url":"https://forms.office.com/r/aBXTL8GbsZ"
-            }
-          ]
-        }
+      count++;
+
+      bodyData = {
+        "type": "Container",
+        "id": `page${count}`,
+        "isVisible": false,
+        "items": [
+          header
+        ]
       };
-      start = end;
+      actionData = {
+        "type": "Action.ToggleVisibility",
+        "title": `${count+pageStart}`,
+        "targetElements": [
+        ]
+      };
     }
-    end++;
 
-    data.card.body.push(<any>{
+    bodyData.items.push(<any>{
       "type": "ColumnSet",
       "bleed": true,
       "columns": [
@@ -287,9 +275,20 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
       ]
     });
   }
-  if(start !== end) {
-    tmpTemplate.actions.push(data);
-    data.card.body.push(<any>footer);
+  if(bodyData.items.length !== 0) {
+    tmpTemplate.body.push(bodyData);
+    tmpTemplate.actions.push(actionData);
+  }
+
+  for(let i = 0; i < count+1; i++) {
+    for(let j = 0; j < count+1; j++) {
+      tmpTemplate.actions[i].targetElements.push(
+        {
+          "elementId": `page${j}`,
+          "isVisible": j===i?true:false
+        }
+      )
+    }
   }
   
   if(result.TotalPageCount !== result.CurrentPageNo) {
@@ -304,6 +303,13 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
       }
     });
   }
+
+  tmpTemplate.actions.push({
+    "type":"Action.OpenUrl",
+    "title":"식당 등록 요청하기",
+    "url":"https://forms.office.com/r/aBXTL8GbsZ"
+  });
+  
 
   const curCountStart = result.PageSize * (result.CurrentPageNo-1) + 1;
   const curCountEnd = result.CurrentPageNo===result.TotalPageCount?result.DataRowCount:result.PageSize * result.CurrentPageNo;

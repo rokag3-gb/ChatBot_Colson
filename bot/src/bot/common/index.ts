@@ -194,7 +194,7 @@ export const viewCommandList = async(context) => {
 
   ㅤ
   
-  식사랜덤 -> 식사 랜덤 뽑기 화면 표시`);
+  식사랜덤 -> 식사 랜덤 뽑기 화면 표시 # 현재 미구현입니다.`);
 }
       
 export const query = async (request: any, query: string): Promise<any[]> => {
