@@ -9,7 +9,9 @@
         "hostType": "Azure",
         "azureResources": [],
         "capabilities": [
-            "Bot"
+            "Bot",
+            "Tab",
+            "TabSSO"
         ],
         "activeResourcePlugins": [
             "fx-resource-identity",

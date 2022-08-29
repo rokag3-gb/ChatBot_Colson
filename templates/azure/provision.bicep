@@ -7,6 +7,20 @@ module userAssignedIdentityProvision './provision/identity.bicep' = {
     provisionParameters: provisionParameters
   }
 }
+module frontendHostingProvision './provision/frontendHosting.bicep' = {
+  name: 'frontendHostingProvision'
+  params: {
+    provisionParameters: provisionParameters
+  }
+}
+
+output frontendHostingOutput object = {
+  teamsFxPluginId: 'fx-resource-frontend-hosting'
+  domain: frontendHostingProvision.outputs.domain
+  endpoint: frontendHostingProvision.outputs.endpoint
+  indexPath: frontendHostingProvision.outputs.indexPath
+  storageResourceId: frontendHostingProvision.outputs.resourceId
+}
 
 output identityOutput object = {
   teamsFxPluginId: 'fx-resource-identity'
