@@ -182,6 +182,20 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
   for(let i = 0; i < rows.length-1; i++) {
     const row = rows[i];
     if(i % PAGE_ROW_SIZE === 0 && i !== 0) {
+      bodyData.items.push(<any>{
+        "type": "Container",
+        "bleed": true,
+        "horizontalAlignment": "center",
+        "items": [
+          {
+            "type": "TextBlock",
+            "weight": "bolder",
+            "horizontalAlignment": "center",
+            "text": `${count+pageStart} Page`,
+            "size": "small"
+          }
+        ]
+      });
       tmpTemplate.body.push(bodyData);
       tmpTemplate.actions.push(actionData);
 
@@ -276,6 +290,20 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
     });
   }
   if(bodyData.items.length !== 0) {
+    bodyData.items.push(<any>{
+      "type": "Container",
+      "bleed": true,
+      "horizontalAlignment": "center",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "bolder",
+          "horizontalAlignment": "center",
+          "text": `${count+pageStart} Page`,
+          "size": "small"
+        }
+      ]
+    });
     tmpTemplate.body.push(bodyData);
     tmpTemplate.actions.push(actionData);
   }
