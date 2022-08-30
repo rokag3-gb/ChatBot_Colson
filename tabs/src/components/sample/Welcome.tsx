@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Image, Menu } from "@fluentui/react-northstar";
 import "./Welcome.css";
 import { EditCode } from "./EditCode";
@@ -8,6 +8,7 @@ import { useData } from "@microsoft/teamsfx-react";
 import { Deploy } from "./Deploy";
 import { Publish } from "./Publish";
 import { TeamsFxContext } from "../Context";
+import axios from 'axios'
 
 export function Welcome(props: { environment?: string }) {
   const { environment } = {
@@ -42,14 +43,38 @@ export function Welcome(props: { environment?: string }) {
       return userInfo;
     }
   });
+
+  const [collections, setCollections] = useState([]);
+  useEffect(() => {
+    axios.get('http://localhost:3978/api/getWorkplace').then(res => {
+      setCollections(res.data);
+    })
+  }, []);
+  const [test, setTest] = useState("test");
+  const doGetRequest = async () => {
+    let res = await axios.get('http://localhost:3978/api/getWorkplace');
+    setTest(res.data);
+    console.log('setTest');
+    return JSON.stringify(res.data);
+  }
+
+
   const userName = (loading || error) ? "": data!.displayName;
   return (
     <div className="welcome page">
       <div className="narrow page-padding">
         <Image src="hello.png" />
-        <h1 className="center">
-          Congratulations{userName ? ", " + userName : ""}!
+        <h1 className="center">Test123456 Congratulations{userName ? ", " + userName : ""}!
         </h1>
+        
+        {collections?.map((test: any) => (
+          <div>
+            <b>{test.Date} , 
+            {test.DisplayName}, 
+            {test.WorkAM}, 
+            {test.WorkPM}</b> 
+          </div>
+          ))} 
         <p className="center">
           Your app is running in your {friendlyEnvironmentName}
         </p>
