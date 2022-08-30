@@ -1,7 +1,7 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { WorkplaceCardData } from "../../model/cardModels";
 import { CardFactory } from "botbuilder";
-import { getToday, checkWeekday, userMap, errorMessageForContext } from "../common";
+import { getToday, checkWeekday, userMap, insertLog } from "../common";
 import { UspGetWorkCode, UspGetUserWorkplace, UspGetUserWorkplaceSend, UspGetUserWorkplaceResend, UspSetWorkplace } from "./query";
 import workplaceTemplate from "../../adaptiveCards/insertWorkplace.json";
     
@@ -67,6 +67,7 @@ export const userWorkplaceSend = async (choiceList, message, ampm) => {
       }
     }
   } catch(e) {
+    insertLog('', JSON.stringify(e));
     console.log(e);
   }
 }
@@ -80,6 +81,7 @@ const userWorkplaceResend = async (choiceList, message, ampm) => {
         await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
       }
     } catch(e) {
+      insertLog('', JSON.stringify(e));
       console.log(e);
     }
   }

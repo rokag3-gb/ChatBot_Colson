@@ -1,6 +1,5 @@
 export const sql = require('mssql');
-import { getUserList,
-         userRegister, } from "./bot/common"
+import { getUserList, insertLog, userRegister, } from "./bot/common"
 
 export let connected = false;
 
@@ -24,6 +23,7 @@ sql.connect(config, async function(err){
         await userRegister(null);
         await getUserList(null);
     } catch(e) {
+        insertLog('', JSON.stringify(e));
         console.log(e);
     }
 

@@ -33,6 +33,7 @@ const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
     "TurnError"
   );
 
+  insertLog(context.activity.from.id, JSON.stringify(error));
   console.log(`The bot encountered unhandled error:\n ${error.message}`);
   await context.sendActivity(`에러가 발생했습니다. 다시 시도해주세요.
   
@@ -75,6 +76,7 @@ async (req, res) => {
       await userRegister(req.body.from.id);
       await getUserList(req.body.from.id);
     } catch(e) {
+      insertLog(req.body.from.id, JSON.stringify(e));
       console.log(e);
     }
   } else if(userCount === 0) {
