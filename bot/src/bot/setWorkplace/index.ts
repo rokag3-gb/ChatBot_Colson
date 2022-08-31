@@ -60,15 +60,15 @@ const userWorkplace = async (context, userId, username, choiceList, message) => 
 //전체 유저의 근무지 등록을 위한 함수
 export const userWorkplaceSend = async (choiceList, message, ampm) => {
   const rows = await UspGetUserWorkplaceSend();
-  try {
-    for(const row of rows) {
+  for(const row of rows) {
+    try {
       if(!ampm || (row.WorkCodeAM !== 'WRK-OFF' && ampm === 'am') || (ampm && row.WorkCodePM !== 'WRK-OFF' && ampm === 'pm')) {
         await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
       }
+    } catch(e) {
+      insertLog('', JSON.stringify(e));
+      console.log(e);
     }
-  } catch(e) {
-    insertLog('', JSON.stringify(e));
-    console.log(e);
   }
 }
 
@@ -77,7 +77,7 @@ const userWorkplaceResend = async (choiceList, message, ampm) => {
   const rows = await UspGetUserWorkplaceResend();
   for(const row of rows) {
     try {
-      if(!ampm || (!(row.WorkCodeAM !== 'WRK-OFF' && ampm === 'am') && !(ampm && row.WorkCodePM !== 'WRK-OFF' && ampm === 'pm'))) {
+      if(!ampm || (row.WorkCodeAM !== 'WRK-OFF' && ampm === 'am') || (ampm && row.WorkCodePM !== 'WRK-OFF' && ampm === 'pm')) {
         await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
       }
     } catch(e) {

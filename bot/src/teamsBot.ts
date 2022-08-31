@@ -47,6 +47,14 @@ export class TeamsBot extends TeamsActivityHandler {
             await viewMealStoreSearch(context);
           } else if (text[0] === '식사랜덤') {
             await randomStoreSelect(context);
+          } else if (text[0] === 'workamsendtest') {
+            await setWorkplaceForm(null, null, null, 'send', '좋은 아침입니다!', 'am');
+          } else if (text[0] === 'workamresendtest') {
+            await setWorkplaceForm(null, null, null, 'resend', '좋은 아침입니다!', 'am');
+          } else if (text[0] === 'workresendtest') {
+            await setWorkplaceForm(null, null, null, 'resend', '점심 식사 맛있게 하셨나요!', null);
+          } else if (text[0] === 'workpmsendtest') {
+            await setWorkplaceForm(null, null, null, 'send', '오늘 하루도 고생많으셨습니다.', 'pm');
           } else if (text[0] === 'birthtest') {
             await sendBirthdayCard();
           } else {
