@@ -9,6 +9,7 @@ import { sendBirthdayCard, openBirthMessage } from "./bot/birthMessage";
 import { viewMealStoreSearch, viewMealStoreSearchResult } from "./bot/mealStore";
 import { randomStoreSelect, openRandomStore } from "./bot/randomMealStore";
 import { checkConversation } from "./bot/conversation";
+const Logger = require('./Logger');
 
 export class TeamsBot extends TeamsActivityHandler {
   constructor() {
@@ -21,6 +22,7 @@ export class TeamsBot extends TeamsActivityHandler {
   
         const user = userMap[context.activity.from.id];
         if(!user) {
+          Logger.info('유저 정보를 등록중입니다. 다시 한번 요청해 주세요.');
           await context.sendActivity('유저 정보를 등록중입니다. 다시 한번 요청해 주세요.');
           await next();
           return;

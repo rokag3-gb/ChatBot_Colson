@@ -6,6 +6,7 @@ import { sql } from "../../mssql"
 import { Member } from "@microsoft/teamsfx"
 import { UspSetAppUser, UspGetUsers, UspSetAppLog } from "./query"
 import { pushPeople } from "../conversation"
+const Logger = require('../../logger');
 
 export const userMap = new Object();
 export let userCount = 0;
@@ -49,6 +50,7 @@ export const sendCommand = async (context) => {
 }
 
 export const userRegister = async (userId) => {
+  Logger.info('userRegister start');
   if(userCount === 0) {
     Object.keys(userMap).forEach(key => {
       delete userMap[key];
@@ -69,21 +71,26 @@ export const userRegister = async (userId) => {
               parent = member.parent;
             }
 
+            Logger.info('userRegister [UspSetAppUser] ' + member.account.userPrincipalName);
             await UspSetAppUser(member.account.id, member.account.userPrincipalName, JSON.stringify(member));
             userMap[member.account.id] = member;
           } catch (e) {
+            Logger.error('userRegister ERROR!! ' + e);
             console.log('userRegister ERROR!! ' + e);
           }
         }
       }
     } catch (e) {
+      Logger.error('userRegister ERROR2!! ' + e);
       console.log('userRegister ERROR2!! ' + e);
     }
   }
+  Logger.info('userRegister complete');
   console.log('userRegister complete');
 }
 
 export const getUserList = async (userId) => {
+  Logger.info('getUserList start');
   const rows = await UspGetUsers();
   for(const row of rows) {
     pushPeople(row.DisplayName);
@@ -103,6 +110,7 @@ export const getUserList = async (userId) => {
       }
     }
   }
+  Logger.info('getUserList complete');
   console.log('getUserList complete');
 }
 
@@ -149,6 +157,7 @@ export const errorMessageForId = async (id, err) => {
       }
       resolve(true);
     } catch (e) {
+      Logger.error('errorMessageForId ' + e);
       console.log('errorMessageForId ' + e);
       reject(e);
     }
@@ -198,6 +207,7 @@ export const viewCommandList = async(context) => {
 }
       
 export const query = async (request: any, query: string): Promise<any[]> => {
+  Logger.info('query : ' + query);
   return new Promise(async (resolve, reject) => {
     try {
       const result = [];

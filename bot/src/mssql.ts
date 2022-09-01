@@ -1,5 +1,6 @@
 export const sql = require('mssql');
 import { getUserList, insertLog, userRegister, } from "./bot/common"
+const Logger = require('./Logger');
 
 export let connected = false;
 
@@ -23,6 +24,7 @@ sql.connect(config, async function(err){
         await userRegister(null);
         await getUserList(null);
     } catch(e) {
+        Logger.error('sql.connect ERROR ' + e);
         insertLog('', JSON.stringify(e));
         console.log(e);
     }

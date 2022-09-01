@@ -17,6 +17,8 @@ const cron = require('node-cron');
 
 import { BotFrameworkAdapter, TurnContext } from "botbuilder";
 
+const Logger = require('./Logger');
+
 const adapter = new BotFrameworkAdapter({
   appId: process.env.BOT_ID,
   appPassword: process.env.BOT_PASSWORD,
@@ -34,6 +36,7 @@ const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
   );
 
   insertLog(context.activity.from.id, JSON.stringify(error));
+  Logger.error(context.activity.from.id + ' ' + JSON.stringify(error));
   console.log(`The bot encountered unhandled error:\n ${error.message}`);
   await context.sendActivity(`에러가 발생했습니다. 다시 시도해주세요.
   
@@ -59,10 +62,12 @@ async (req, res) => {
 //  console.log(JSON.stringify(req.body));
 
   if(!connected) {
+    Logger.info('server not initialized');
     console.log('server not initialized');
     await bot.requestHandler(req, res);
     return;
   }
+  Logger.info('request : ' + JSON.stringify(req.body));
   insertLog(req.body.from.id, JSON.stringify(req.body));
   if(!req.body.from || !req.body.from.id) {
     await bot.requestHandler(req, res);
@@ -76,6 +81,7 @@ async (req, res) => {
       await userRegister(req.body.from.id);
       await getUserList(req.body.from.id);
     } catch(e) {
+      Logger.error(req.body.from.id + ' ' + e);
       insertLog(req.body.from.id, JSON.stringify(e));
       console.log(e);
     }

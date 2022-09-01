@@ -10,6 +10,7 @@ import ACData = require("adaptivecards-templating");
 import { userMap } from "../common";
 import imageToBase64 from "image-to-base64";
 import { UspSetSendMessage, UspGetSendMessage, UspSetSendMessageOpen, UspGetSendMessageChatid } from "./query";
+const Logger = require('../../logger');
          
 export const viewSecretMessage = async (context, id, receiverName) => {
   const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
@@ -92,7 +93,8 @@ export const openSecretMessage = async (context, id, messageId) => {
     let background = '';
     try {
       background = await imageToBase64(imgPath + row.Background);
-    } catch {
+    } catch(e) {
+      Logger.error('errorMessageForId ' + e);
       background = await imageToBase64(imgPath + "background_01.jpg");
     }
 

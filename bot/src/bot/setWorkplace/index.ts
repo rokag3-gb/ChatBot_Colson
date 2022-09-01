@@ -4,6 +4,7 @@ import { CardFactory } from "botbuilder";
 import { getToday, checkWeekday, userMap, insertLog } from "../common";
 import { UspGetWorkCode, UspGetUserWorkplace, UspGetUserWorkplaceSend, UspGetUserWorkplaceResend, UspSetWorkplace } from "./query";
 import workplaceTemplate from "../../adaptiveCards/insertWorkplace.json";
+const Logger = require('../../logger');
     
 export const setWorkplaceForm = async (context, userId, username, type, message, ampm) => {
   if(!userId && checkWeekday(new Date())) {
@@ -66,6 +67,7 @@ export const userWorkplaceSend = async (choiceList, message, ampm) => {
         await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
       }
     } catch(e) {
+      Logger.error('errorMessageForId ' + e);
       insertLog('', JSON.stringify(e));
       console.log(e);
     }
@@ -81,6 +83,7 @@ const userWorkplaceResend = async (choiceList, message, ampm) => {
         await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
       }
     } catch(e) {
+      Logger.error('errorMessageForId ' + e);
       insertLog('', JSON.stringify(e));
       console.log(e);
     }

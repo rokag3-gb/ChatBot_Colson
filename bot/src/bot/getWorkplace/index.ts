@@ -4,6 +4,7 @@ import workplaceUserListTemplate from "../../adaptiveCards/workplaceUserList.jso
 import { CardFactory } from "botbuilder";
 import ACData = require("adaptivecards-templating");
 import { UspGetUsers, UspGetWorkplace, } from "./query";
+import { userMap } from "../common";
 
 export const getWorkplaceForm = async (context) => {
   await context.sendActivity(`근무지 조회를 선택하셨습니다.`);
@@ -16,8 +17,9 @@ export const getWorkplaceForm = async (context) => {
       "value": user.DisplayName
     });    
   }
-  if(tmpTemplate.body[1].choices.length !== 0) {
-    tmpTemplate.body[1].value = tmpTemplate.body[1].choices[0].value;
+  const user = userMap[context.activity.from.id];
+  if(user && tmpTemplate.body[1].choices.length !== 0) {
+    tmpTemplate.body[1].value = user.FullNameKR;
   }
   const card = AdaptiveCards.declare(tmpTemplate).render();
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
