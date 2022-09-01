@@ -4,10 +4,10 @@
     },
     "fx-resource-bot": {
         "botId": "dba7364c-c3db-4179-9363-47b83187c834",
-        "botPassword": "{{fx-resource-bot.botPassword}}",
+        "botPassword": "",
         "objectId": "e3b3ccc2-802f-4580-8bd7-4623282c26bb",
-        "siteEndpoint": "https://524c-211-44-192-110.ngrok.io",
-        "validDomain": "524c-211-44-192-110.ngrok.io"
+        "siteEndpoint": "https://d44c-211-44-192-110.ngrok.io",
+        "validDomain": "d44c-211-44-192-110.ngrok.io"
     },
     "fx-resource-simple-auth": {},
     "fx-resource-frontend-hosting": {
@@ -31,7 +31,7 @@
         "botId": "dba7364c-c3db-4179-9363-47b83187c834"
     },
     "fx-resource-appstudio": {
-        "teamsAppUpdatedAt": 1661840117546,
+        "teamsAppUpdatedAt": 1661997514821,
         "teamsAppId": "eb900d84-7f20-4757-8b95-ecb8f0b856df"
     }
 }
