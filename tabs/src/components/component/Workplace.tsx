@@ -1,12 +1,13 @@
 import { useContext, useState, useEffect } from "react";
-import "./Welcome.css";
+import "./Workplace.css";
 import { useData } from "@microsoft/teamsfx-react";
 import { TeamsFxContext } from "../Context";
 import axios from 'axios'
+import { WorkplaceTable } from './WorkplaceTable'
 
 import Select from 'react-select'
 
-export function Welcome(props: { environment?: string }) {
+export function Workplace(props: { environment?: string }) {
   const { environment } = {
     environment: window.location.hostname === "localhost" ? "http://localhost:3978" : "https://colsonahat86dfc5bot.azurewebsites.net",
     ...props,
@@ -137,47 +138,7 @@ export function Welcome(props: { environment?: string }) {
           options={options}
         />
       </div>
-        
-        <table style={{border: "1px solid"}}>
-          <tr>
-            <td colSpan={2}>
-            </td>
-            {date?.map((d) => {
-              return (
-                <td>{d} </td>
-              )
-            })}
-          </tr>
-        {name?.map((n) => {
-          return (
-            <>
-            <tr>
-            <td rowSpan={2}>
-              {n}
-            </td>
-            <td>
-              오전
-            </td>
-            {date?.map((d) => {
-              return (
-                <td> {tableData?.get(`${d}${n}오전`)} </td>
-              )
-            })}
-            </tr>
-            <tr>
-            <td>
-              오후
-            </td>
-            {date?.map((d) => {
-              return (
-                <td> {tableData?.get(`${d}${n}오후`)} </td>
-              )
-            })}
-            </tr>
-            </>
-          );
-        })}
-        </table>
+        <WorkplaceTable tableData={tableData} date={date} name={name} />
       </div>
     </div>
   );

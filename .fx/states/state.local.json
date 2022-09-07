@@ -6,8 +6,8 @@
         "botId": "311d3bbc-da0b-4949-8c07-57a3d3c7f2cf",
         "botPassword": "{{fx-resource-bot.botPassword}}",
         "objectId": "cf8a08a0-f3ec-4666-a238-d1a965505b43",
-        "siteEndpoint": "https://a5fc-211-44-192-110.ngrok.io",
-        "validDomain": "a5fc-211-44-192-110.ngrok.io"
+        "siteEndpoint": "https://d3da-211-44-192-110.ngrok.io",
+        "validDomain": "d3da-211-44-192-110.ngrok.io"
     },
     "fx-resource-simple-auth": {},
     "fx-resource-frontend-hosting": {
@@ -26,12 +26,12 @@
         "oauthHost": "https://login.microsoftonline.com",
         "oauthAuthority": "https://login.microsoftonline.com/6d5ac8ee-3862-4452-93e7-a836c2d9742b",
         "applicationIdUris": "api://localhost/botid-311d3bbc-da0b-4949-8c07-57a3d3c7f2cf",
-        "botEndpoint": "https://a5fc-211-44-192-110.ngrok.io",
+        "botEndpoint": "https://d3da-211-44-192-110.ngrok.io",
         "frontendEndpoint": "https://localhost",
         "botId": "311d3bbc-da0b-4949-8c07-57a3d3c7f2cf"
     },
     "fx-resource-appstudio": {
-        "teamsAppUpdatedAt": 1662531670415,
+        "teamsAppUpdatedAt": 1662533012791,
         "teamsAppId": "e9fa8d5c-9a07-4aa3-9229-f2951fc5318b"
     }
 }
