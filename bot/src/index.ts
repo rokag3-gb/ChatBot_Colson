@@ -13,9 +13,7 @@ import { connected } from "./mssql"
 
 import { TeamsBot } from "./teamsBot";
 
-import { UspGetWorkplace, UspGetWorkplaceTest } from "./bot/getWorkplace/query";
-
-import { UspGetTeam } from "./bot/common/query";
+import { UspGetWorkplaceTeam, UspGetTeam } from "./bot/common/query";
 
 const cron = require('node-cron');
 
@@ -106,29 +104,15 @@ server.use(
 
 server.get("/api/getWorkplace", 
 restify.plugins.queryParser(),
-async (req, res) => {
-  console.log('요청이 들어왓음 ',req.query["startDate"], req.query["endDate"], req.query["team"]);
-  
-  const row = await UspGetWorkplaceTest(req.query["startDate"], req.query["endDate"], req.query["team"]);
+async (req, res) => { 
+  const row = await UspGetWorkplaceTeam(req.query["startDate"], req.query["endDate"], req.query["team"]);
   res.json(row);
 });
 
 server.get("/api/getTeam", 
 restify.plugins.queryParser(),
-async (req, res) => {
-  console.log('요청이 들어왓음Team ' + req.query["UPN"]);
-  
+async (req, res) => {  
   const row = await UspGetTeam(req.query["UPN"]);
-  res.json(row);
-});
-
-server.get("/api/getWorkplace2", 
-restify.plugins.bodyParser(),
-restify.plugins.authorizationParser(),
-async (req, res) => {
-  console.log('요청이 들어왓음2');
-  
-  const row = await UspGetWorkplace('문광석', <any>7);
   res.json(row);
 });
 
@@ -155,6 +139,7 @@ cron.schedule('00 30 08 * * *', async () => {
 cron.schedule('00 30 01 * * *', async () => {  
   await sendBirthdayCard();
 });
+
 
 /*테스트코드*/
 /*
