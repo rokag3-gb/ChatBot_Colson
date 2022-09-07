@@ -4,6 +4,7 @@ import { CardFactory } from "botbuilder";
 import { getToday, checkWeekday, userMap, insertLog } from "../common";
 import { UspGetWorkCode, UspGetUserWorkplace, UspGetUserWorkplaceSend, UspGetUserWorkplaceResend, UspSetWorkplace } from "./query";
 import workplaceTemplate from "../../adaptiveCards/insertWorkplace.json";
+import { Logger } from "../../logger";
     
 export const setWorkplaceForm = async (context, userId, username, type, message, ampm) => {
   if(!userId && checkWeekday(new Date())) {
@@ -64,8 +65,10 @@ export const userWorkplaceSend = async (choiceList, message, ampm) => {
     try {
       if(!ampm || (row.WorkCodeAM !== 'WRK-OFF' && ampm === 'am') || (ampm && row.WorkCodePM !== 'WRK-OFF' && ampm === 'pm')) {
         await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
+        Logger.info('userWorkplaceSend ' + row.AppUserId);
       }
     } catch(e) {
+      Logger.error(JSON.stringify(e));
       insertLog('', JSON.stringify(e));
       console.log(e);
     }
@@ -79,8 +82,10 @@ const userWorkplaceResend = async (choiceList, message, ampm) => {
     try {
       if(!ampm || (row.WorkCodeAM !== 'WRK-OFF' && ampm === 'am') || (ampm && row.WorkCodePM !== 'WRK-OFF' && ampm === 'pm')) {
         await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
+        Logger.info('userWorkplaceResend ' + row.AppUserId);
       }
     } catch(e) {
+      Logger.error(JSON.stringify(e));
       insertLog('', JSON.stringify(e));
       console.log(e);
     }

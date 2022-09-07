@@ -12,6 +12,7 @@ import { sendBirthdayCard } from "./bot/birthMessage";
 import { connected } from "./mssql"
 
 import { TeamsBot } from "./teamsBot";
+import { Logger } from "./logger";
 
 const cron = require('node-cron');
 
@@ -33,6 +34,7 @@ const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
     "TurnError"
   );
 
+  Logger.error(JSON.stringify(error));
   insertLog(context.activity.from.id, JSON.stringify(error));
   console.log(`The bot encountered unhandled error:\n ${error.message}`);
   await context.sendActivity(`에러가 발생했습니다. 다시 시도해주세요.
@@ -49,6 +51,7 @@ const teamsBot = new TeamsBot();
 
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
+  Logger.info(`\nBot Started, ${server.name} listening to ${server.url}`);
   console.log(`\nBot Started, ${server.name} listening to ${server.url}`);
 });
 
@@ -56,7 +59,7 @@ server.post("/api/messages",
 restify.plugins.bodyParser(),
 restify.plugins.authorizationParser(),
 async (req, res) => {
-//  console.log(JSON.stringify(req.body));
+  Logger.info(JSON.stringify(req.body));
 
   if(!connected) {
     console.log('server not initialized');
@@ -76,6 +79,7 @@ async (req, res) => {
       await userRegister(req.body.from.id);
       await getUserList(req.body.from.id);
     } catch(e) {
+      Logger.error(JSON.stringify(e));
       insertLog(req.body.from.id, JSON.stringify(e));
       console.log(e);
     }
@@ -95,24 +99,29 @@ async (req, res) => {
 //앱서비스의 기본 시간대가 UTC 기준이고 이게 생각보다 자주 초기화 되어서 UTC 기준으로 크론을 작성함
 //휴가자 제외한 전직원에게 근무지 입력 카드 전송
 cron.schedule('00 00 00 * * *', async () => {
+  Logger.info('setWorkplaceForm send 좋은 아침입니다!');
   await setWorkplaceForm(null, null, null, 'send', '좋은 아침입니다!', 'am');
 });
 
 //근무지 입력 안한 사람들에게 카드 전송
 cron.schedule('00 00 1 * * *', async () => {  
+  Logger.info('setWorkplaceForm resend 좋은 아침입니다!');
   await setWorkplaceForm(null, null, null, 'resend', '좋은 아침입니다!', 'am');
 });
 
 cron.schedule('00 00 05 * * *', async () => {
+  Logger.info('setWorkplaceForm resend 점심 식사 맛있게 하셨나요!');
   await setWorkplaceForm(null, null, null, 'resend', '점심 식사 맛있게 하셨나요!', null);
 });
 
 cron.schedule('00 30 08 * * *', async () => {  
+  Logger.info('setWorkplaceForm send 오늘 하루도 고생많으셨습니다.');
   await setWorkplaceForm(null, null, null, 'send', '오늘 하루도 고생많으셨습니다.', 'pm');
 });
 
 //생일자에게 카드 전송
 cron.schedule('00 30 01 * * *', async () => {  
+  Logger.info('sendBirthdayCard start');
   await sendBirthdayCard();
 });
 

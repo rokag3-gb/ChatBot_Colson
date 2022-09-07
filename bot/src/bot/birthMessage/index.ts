@@ -7,6 +7,7 @@ import { getBirthdayLink, getBirthdayUser, setSendBirth, setOpenBirth } from "./
 
 import { userMap, imgPath } from "../common";
 import imageToBase64 from "image-to-base64";
+import { Logger } from "../../logger";
 
 export const sendBirthdayCard = async () => {
   const userList = await getBirthdayUser();
@@ -28,6 +29,7 @@ export const sendBirthdayCard = async () => {
         username: userInfo.DisplayName
       })
     );
+    Logger.info('sendBirthdayCard ' + userInfo.AppUserId);
   }
 }
 

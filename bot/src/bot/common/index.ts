@@ -6,6 +6,7 @@ import { sql } from "../../mssql"
 import { Member } from "@microsoft/teamsfx"
 import { UspSetAppUser, UspGetUsers, UspSetAppLog } from "./query"
 import { pushPeople } from "../conversation"
+import { Logger } from "../../logger";
 
 export const userMap = new Object();
 export let userCount = 0;
@@ -72,14 +73,17 @@ export const userRegister = async (userId) => {
             await UspSetAppUser(member.account.id, member.account.userPrincipalName, JSON.stringify(member));
             userMap[member.account.id] = member;
           } catch (e) {
+            Logger.error('userRegister ERROR!! ' + e);
             console.log('userRegister ERROR!! ' + e);
           }
         }
       }
     } catch (e) {
+      Logger.error('userRegister ERROR!! ' + e);
       console.log('userRegister ERROR2!! ' + e);
     }
   }
+  Logger.info('userRegister complete');
   console.log('userRegister complete');
 }
 
@@ -103,6 +107,7 @@ export const getUserList = async (userId) => {
       }
     }
   }
+  Logger.info('getUserList complete');
   console.log('getUserList complete');
 }
 
@@ -130,6 +135,7 @@ export const errorMessageForContext = async (context, err) => {
 (${err.message})`);
       resolve(true);
     } catch (e) {
+      Logger.error('errorMessageForContext ' + e);
       console.log('errorMessageForContext ' + e);
       reject(e);
     }
@@ -149,6 +155,7 @@ export const errorMessageForId = async (id, err) => {
       }
       resolve(true);
     } catch (e) {
+      Logger.error('errorMessageForId ' + e);
       console.log('errorMessageForId ' + e);
       reject(e);
     }
