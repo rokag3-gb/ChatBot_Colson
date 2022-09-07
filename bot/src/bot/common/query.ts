@@ -27,3 +27,16 @@ export const UspSetAppLog = async (ts: string, upn: string, body: string): Promi
 
   return query(request, `EXEC [IAM].[bot].[Usp_Set_App_Log] @ts, @appId, @upn, @body`);
 }
+
+export const UspGetTeam = async (upn: string): Promise<any[]> => {
+  const request = new sql.Request();
+  request.input('UPN', sql.VarChar, upn);
+
+  return query(request, `SELECT
+    [TeamName]
+    ,[TeamAbbrName]
+    ,CASE WHEN [TeamName] = (SELECT TeamName FROM [IAM].[bot].[VW_User] WHERE UPN = @UPN) THEN 1 ELSE 0 END AS userTeam
+    FROM [IAM].[dbo].[Teams]
+    WHERE IsUse = 1
+    ORDER BY TeamSort`);
+}

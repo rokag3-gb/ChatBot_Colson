@@ -1,40 +1,16 @@
 import { useContext, useState, useEffect } from "react";
-import { Image, Menu } from "@fluentui/react-northstar";
 import "./Welcome.css";
-import { EditCode } from "./EditCode";
-import { Graph } from "./Graph";
-import { CurrentUser } from "./CurrentUser";
 import { useData } from "@microsoft/teamsfx-react";
-import { Deploy } from "./Deploy";
-import { Publish } from "./Publish";
 import { TeamsFxContext } from "../Context";
 import axios from 'axios'
 
+import Select from 'react-select'
+
 export function Welcome(props: { environment?: string }) {
   const { environment } = {
-    environment: window.location.hostname === "localhost" ? "local" : "azure",
+    environment: window.location.hostname === "localhost" ? "http://localhost:3978" : "https://colsonahat86dfc5bot.azurewebsites.net",
     ...props,
   };
-  const friendlyEnvironmentName =
-    {
-      local: "local environment",
-      azure: "Azure environment",
-    }[environment] || "local environment";
-
-  const steps = ["local", "azure", "publish"];
-  const friendlyStepsName: { [key: string]: string } = {
-    local: "1. Build your app locally",
-    azure: "2. Provision and Deploy to the Cloud",
-    publish: "3. Publish to Teams",
-  };
-  const [selectedMenuItem, setSelectedMenuItem] = useState("local");
-  const items = steps.map((step) => {
-    return {
-      key: step,
-      content: friendlyStepsName[step] || "",
-      onClick: () => setSelectedMenuItem(step),
-    };
-  });
 
   const { teamsfx } = useContext(TeamsFxContext);
   const { loading, data, error } = useData(async () => {
@@ -43,61 +19,165 @@ export function Welcome(props: { environment?: string }) {
       return userInfo;
     }
   });
+  
+  const getToday = (day: number) => {
+    const now = new Date();
+    const utcNow = now.getTime() + (now.getTimezoneOffset() * 60 * 1000); 
+    const koreaTimeDiff = 9 * 60 * 60 * 1000; 
+    const date = new Date(utcNow + koreaTimeDiff);
 
-  const [collections, setCollections] = useState([]);
-  useEffect(() => {
-    axios.get('http://localhost:3978/api/getWorkplace').then(res => {
-      setCollections(res.data);
-    })
-  }, []);
-  const [test, setTest] = useState("test");
-  const doGetRequest = async () => {
-    let res = await axios.get('http://localhost:3978/api/getWorkplace');
-    setTest(res.data);
-    console.log('setTest');
-    return JSON.stringify(res.data);
+    if(day) {
+      date.setDate(date.getDate() + day);
+    }
+    return date.getFullYear() + "-" + ("00" + (1 + date.getMonth())).slice(-2) + "-" + ("00" + date.getDate()).slice(-2);
   }
 
+  const [startDate, setStartDate] = useState(getToday(0));
+  const [endDate, setEndDate] = useState(getToday(2));
+  const [team, setTeam] = useState('');
+  
+  const [tableData, setTableData] = useState<Map<string, string>>();
+  const [date, setDate] = useState<string[]>();
+  const [name, setName] = useState<string[]>();
+  const [options, setOptions] = useState<any[]>();
+  const [defaultTeam, setDefaultTeam] = useState(0);
 
-  const userName = (loading || error) ? "": data!.displayName;
+  useEffect(() => {
+    console.log('getTeam');
+    axios.get(`${environment}/api/getTeam?UPN=${upn}`).then(res => {
+      const option = [];
+      for(let i = 0; i < res.data.length; i++) {
+        const data  = res.data[i];
+        option.push({
+          label: data.TeamName,
+          value: data.TeamAbbrName
+        });
+        if(data.userTeam === 1) {
+          setDefaultTeam(i);
+          setTeam(data.TeamAbbrName);
+        }
+      }
+      setOptions(option);
+    });
+  }, []);
+
+  useEffect(() => {
+    if(team?.length === 0) {
+      return;
+    }
+
+    axios.get(`${environment}/api/getWorkplace?startDate=${startDate}&endDate=${endDate}&team=${team}`).then(res => {
+      const obj = new Map<string, string>();
+      const dateSet = new Set<string>();
+      const nameSet = new Set<string>();
+
+      console.log(res.data);
+      for (const data of res.data) {
+        const dateText = data.Date + '(' + data.Weekname + ')';
+        if(data.Date !== null && data.Weekname !== null) {
+          dateSet.add(dateText);
+        }
+        if(data.DisplayName === undefined || data.DisplayName === null) {
+          continue;
+        }
+        nameSet.add(data.DisplayName);
+        obj.set(dateText + data.DisplayName + data.WorkTimeKR, data.Workplace);
+      }
+      
+      setDate(Array.from(dateSet).sort());
+      setName(Array.from(nameSet).sort());
+      setTableData(obj);
+    });
+
+  }, [data, endDate, startDate, team]);
+
+  //나중에 컴포넌트로 빼서 처리하기 쉽게 바꿔야겠다...
+  useEffect(() => {
+    if(options === undefined) {
+      return;
+    }
+
+    for(let i = 0; i < options.length; i++) {
+      if(options[i].value === team) {
+        setDefaultTeam(i);
+      }
+    }
+  }, [team]);
+
+  
+  const userName = (loading || error) ? "" : data!.displayName;
+  const upn = (loading || error) ? "kwangseok.moon@cloudmt.co.kr" : data!.preferredUserName;
+
+  const customStyles = {
+    control: () => ({
+      width: 100,
+    })
+  }
+
   return (
     <div className="welcome page">
-      <div className="narrow page-padding">
-        <Image src="hello.png" />
-        <h1 className="center">Test123456 Congratulations{userName ? ", " + userName : ""}!
-        </h1>
+      <div className="page-padding">
+        <h1>근무지를 조회합니다.</h1>
+      
+      <input type="date" id="start" name="trip-start"
+        onChange={(event) => setStartDate(event.target.value)}
+        value={startDate}>
+      </input>
+      
+      <input type="date" id="start" name="trip-start"
+        onChange={(event) => setEndDate(event.target.value)}
+        value={endDate}>
+      </input>
+
+      <div className="selectBox">
+        <Select
+          value={options?options[defaultTeam]:''}
+          isSearchable={false}
+          onChange={(event: any) => setTeam(event.value)}
+          options={options}
+        />
+      </div>
         
-        {collections?.map((test: any) => (
-          <div>
-            <b>{test.Date} , 
-            {test.DisplayName}, 
-            {test.WorkAM}, 
-            {test.WorkPM}</b> 
-          </div>
-          ))} 
-        <p className="center">
-          Your app is running in your {friendlyEnvironmentName}
-        </p>
-        <Menu defaultActiveIndex={0} items={items} underlined secondary />
-        <div className="sections">
-          {selectedMenuItem === "local" && (
-            <div>
-              <EditCode />
-              <CurrentUser userName={userName} />
-              <Graph />
-            </div>
-          )}
-          {selectedMenuItem === "azure" && (
-            <div>
-              <Deploy />
-            </div>
-          )}
-          {selectedMenuItem === "publish" && (
-            <div>
-              <Publish />
-            </div>
-          )}
-        </div>
+        <table style={{border: "1px solid"}}>
+          <tr>
+            <td colSpan={2}>
+            </td>
+            {date?.map((d) => {
+              return (
+                <td>{d} </td>
+              )
+            })}
+          </tr>
+        {name?.map((n) => {
+          return (
+            <>
+            <tr>
+            <td rowSpan={2}>
+              {n}
+            </td>
+            <td>
+              오전
+            </td>
+            {date?.map((d) => {
+              return (
+                <td> {tableData?.get(`${d}${n}오전`)} </td>
+              )
+            })}
+            </tr>
+            <tr>
+            <td>
+              오후
+            </td>
+            {date?.map((d) => {
+              return (
+                <td> {tableData?.get(`${d}${n}오후`)} </td>
+              )
+            })}
+            </tr>
+            </>
+          );
+        })}
+        </table>
       </div>
     </div>
   );

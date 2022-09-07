@@ -3,11 +3,11 @@
         "teamsAppTenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b"
     },
     "fx-resource-bot": {
-        "botId": "dba7364c-c3db-4179-9363-47b83187c834",
-        "botPassword": "",
-        "objectId": "e3b3ccc2-802f-4580-8bd7-4623282c26bb",
-        "siteEndpoint": "https://d44c-211-44-192-110.ngrok.io",
-        "validDomain": "d44c-211-44-192-110.ngrok.io"
+        "botId": "311d3bbc-da0b-4949-8c07-57a3d3c7f2cf",
+        "botPassword": "{{fx-resource-bot.botPassword}}",
+        "objectId": "cf8a08a0-f3ec-4666-a238-d1a965505b43",
+        "siteEndpoint": "https://a5fc-211-44-192-110.ngrok.io",
+        "validDomain": "a5fc-211-44-192-110.ngrok.io"
     },
     "fx-resource-simple-auth": {},
     "fx-resource-frontend-hosting": {
@@ -19,19 +19,19 @@
     },
     "fx-resource-aad-app-for-teams": {
         "clientId": "d036573c-1330-4b5c-aa6f-15e222a25878",
-        "clientSecret": "",
+        "clientSecret": "{{fx-resource-aad-app-for-teams.clientSecret}}",
         "objectId": "bf7cb481-aba2-40cb-bdaa-ed9414f5cde0",
         "oauth2PermissionScopeId": "4dd683ac-ec47-403a-ba40-c1a11c7bfe41",
         "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
         "oauthHost": "https://login.microsoftonline.com",
         "oauthAuthority": "https://login.microsoftonline.com/6d5ac8ee-3862-4452-93e7-a836c2d9742b",
-        "applicationIdUris": "api://localhost/botid-525f4319-faad-4e3f-975d-dcb1dd8ed22c",
-        "botEndpoint": "https://7753-211-44-192-110.ngrok.io",
+        "applicationIdUris": "api://localhost/botid-311d3bbc-da0b-4949-8c07-57a3d3c7f2cf",
+        "botEndpoint": "https://a5fc-211-44-192-110.ngrok.io",
         "frontendEndpoint": "https://localhost",
-        "botId": "dba7364c-c3db-4179-9363-47b83187c834"
+        "botId": "311d3bbc-da0b-4949-8c07-57a3d3c7f2cf"
     },
     "fx-resource-appstudio": {
-        "teamsAppUpdatedAt": 1661997514821,
-        "teamsAppId": "eb900d84-7f20-4757-8b95-ecb8f0b856df"
+        "teamsAppUpdatedAt": 1662531670415,
+        "teamsAppId": "e9fa8d5c-9a07-4aa3-9229-f2951fc5318b"
     }
 }

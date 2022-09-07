@@ -1,5 +1,5 @@
 {
-    "appName": "Colson",
+    "appName": "Colson_test",
     "projectId": "3702a1ce-c2e5-4a0c-a075-e219aa97be82",
     "version": "2.1.0",
     "isFromSample": false,
@@ -14,6 +14,8 @@
             "TabSSO"
         ],
         "activeResourcePlugins": [
+            "fx-resource-frontend-hosting",
+            "fx-resource-aad-app-for-teams",
             "fx-resource-identity",
             "fx-resource-bot",
             "fx-resource-local-debug",
