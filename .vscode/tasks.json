@@ -34,8 +34,19 @@
         {
             "label": "Start All",
             "dependsOn": [
+                "Start Frontend",
                 "Start Bot"
             ]
+        },
+        {
+            "label": "Start Frontend",
+            "type": "shell",
+            "command": "npm run dev:teamsfx",
+            "isBackground": true,
+            "problemMatcher": "$teamsfx-frontend-watch",
+            "options": {
+                "cwd": "${workspaceFolder}/tabs"
+            }
         },
         {
             "label": "Start Bot",

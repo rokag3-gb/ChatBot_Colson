@@ -10,6 +10,6 @@ export const UspGetUsers = async (): Promise<any[]> => {
 export const UspGetWorkplace = async (name: string, date: Int16Array): Promise<any[]> => {
   const request = new sql.Request();
   request.input('Username', sql.VarChar, name);
-  request.input('date', sql.Int, date);
+  request.input('date', sql.Int, 7);
   return query(request, `EXEC [IAM].[bot].[Usp_Get_Workplace] @Username, @date`);
 }

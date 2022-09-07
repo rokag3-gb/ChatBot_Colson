@@ -1,0 +1,55 @@
+{
+    "solution": {
+        "teamsAppTenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
+        "subscriptionId": "dcb2540f-afb3-4b17-b928-2b081a8613b2",
+        "subscriptionName": "Visual Studio Enterprise 구독 - KwangSeok Moon",
+        "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
+        "needCreateResourceGroup": false,
+        "resourceGroupName": "colson-ahat-rg",
+        "location": "koreasouth",
+        "resourceNameSuffix": "24d05e",
+        "provisionSucceeded": true
+    },
+    "fx-resource-appstudio": {
+        "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
+        "teamsAppId": "19259581-d65c-4b83-8e6a-e2cdce7c7263",
+        "teamsAppUpdatedAt": 1662341109665
+    },
+    "fx-resource-identity": {
+        "identityName": "colsonahat86dfc5",
+        "identityResourceId": "/subscriptions/dcb2540f-afb3-4b17-b928-2b081a8613b2/resourceGroups/colson-ahat-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/colsonahat86dfc5",
+        "identityClientId": "711ff74c-3f6b-43ea-8268-2072a7384142"
+    },
+    "fx-resource-bot": {
+        "botId": "94145785-b123-4b17-808c-ef7d956c6fc8",
+        "botPassword": "{{fx-resource-bot.botPassword}}",
+        "objectId": "05a8cbea-bd4a-4de2-9bc1-321641efe85a",
+        "skuName": "B1",
+        "siteName": "colsonahat86dfc5bot",
+        "validDomain": "colsonahat86dfc5bot.azurewebsites.net",
+        "appServicePlanName": "colsonahat86dfc5bot",
+        "resourceId": "/subscriptions/dcb2540f-afb3-4b17-b928-2b081a8613b2/resourceGroups/colson-ahat-rg/providers/Microsoft.Web/sites/colsonahat86dfc5bot",
+        "siteEndpoint": "https://colsonahat86dfc5bot.azurewebsites.net"
+    },
+    "fx-resource-aad-app-for-teams": {
+        "clientId": "85dc92ec-25b0-4f7a-8d61-0ea7cc7b5132",
+        "clientSecret": "{{fx-resource-aad-app-for-teams.clientSecret}}",
+        "objectId": "f79a1eaa-a977-4996-a1e5-c18aa8abf036",
+        "oauth2PermissionScopeId": "294c4267-d5c7-43f2-8aaa-4008dea85274",
+        "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
+        "oauthHost": "https://login.microsoftonline.com",
+        "oauthAuthority": "https://login.microsoftonline.com/6d5ac8ee-3862-4452-93e7-a836c2d9742b",
+        "applicationIdUris": "api://colsonahat86dfc5tab.z32.web.core.windows.net/botid-94145785-b123-4b17-808c-ef7d956c6fc8",
+        "frontendEndpoint": "https://colsonahat86dfc5tab.z32.web.core.windows.net",
+        "botId": "94145785-b123-4b17-808c-ef7d956c6fc8",
+        "botEndpoint": "https://colsonahat86dfc5bot.azurewebsites.net"
+    },
+    "fx-resource-frontend-hosting": {
+        "domain": "colsonahat86dfc5tab.z32.web.core.windows.net",
+        "endpoint": "https://colsonahat86dfc5tab.z32.web.core.windows.net",
+        "indexPath": "/index.html#",
+        "storageResourceId": "/subscriptions/dcb2540f-afb3-4b17-b928-2b081a8613b2/resourceGroups/colson-ahat-rg/providers/Microsoft.Storage/storageAccounts/colsonahat86dfc5tab"
+    },
+    "fx-resource-cicd": {},
+    "fx-resource-api-connector": {}
+}

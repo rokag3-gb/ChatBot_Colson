@@ -14,9 +14,12 @@ import { connected } from "./mssql"
 import { TeamsBot } from "./teamsBot";
 import { Logger } from "./logger";
 
+import { UspGetWorkplaceTeam, UspGetTeam } from "./bot/common/query";
+
 const cron = require('node-cron');
 
 import { BotFrameworkAdapter, TurnContext } from "botbuilder";
+
 
 const adapter = new BotFrameworkAdapter({
   appId: process.env.BOT_ID,
@@ -95,6 +98,27 @@ async (req, res) => {
   });
 });
 
+server.use(
+  function crossOrigin(req,res,next){
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    return next();
+  }
+);
+
+server.get("/api/getWorkplace", 
+restify.plugins.queryParser(),
+async (req, res) => { 
+  const row = await UspGetWorkplaceTeam(req.query["startDate"], req.query["endDate"], req.query["team"]);
+  res.json(row);
+});
+
+server.get("/api/getTeam", 
+restify.plugins.queryParser(),
+async (req, res) => {  
+  const row = await UspGetTeam(req.query["UPN"]);
+  res.json(row);
+});
 
 //앱서비스의 기본 시간대가 UTC 기준이고 이게 생각보다 자주 초기화 되어서 UTC 기준으로 크론을 작성함
 //휴가자 제외한 전직원에게 근무지 입력 카드 전송
@@ -124,6 +148,7 @@ cron.schedule('00 30 01 * * *', async () => {
   Logger.info('sendBirthdayCard start');
   await sendBirthdayCard();
 });
+
 
 /*테스트코드*/
 /*
