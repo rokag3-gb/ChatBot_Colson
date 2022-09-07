@@ -1,11 +1,12 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import workplaceMessage from "../../adaptiveCards/workplaceMessage.json";
 import workplaceUserListTemplate from "../../adaptiveCards/workplaceUserList.json";
-import { CardFactory } from "botbuilder";
+import { CardFactory, TurnContext } from "botbuilder";
 import ACData = require("adaptivecards-templating");
 import { UspGetUsers, UspGetWorkplace, } from "./query";
+import { userMap } from "../common";
 
-export const getWorkplaceForm = async (context) => {
+export const getWorkplaceForm = async (context: TurnContext) => {
   await context.sendActivity(`근무지 조회를 선택하셨습니다.`);
   const tmpTemplate = JSON.parse(JSON.stringify(workplaceUserListTemplate));
 
@@ -16,14 +17,17 @@ export const getWorkplaceForm = async (context) => {
       "value": user.DisplayName
     });    
   }
-  if(tmpTemplate.body[1].choices.length !== 0) {
-    tmpTemplate.body[1].value = tmpTemplate.body[1].choices[0].value;
+
+  const user = userMap[context.activity.from.id];
+  if(user && user.FullNameKR) {
+    tmpTemplate.body[1].value = user.FullNameKR
   }
+  
   const card = AdaptiveCards.declare(tmpTemplate).render();
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
 }
 
-const updateGetWorkplaceForm = async (context, value) => {
+const updateGetWorkplaceForm = async (context: TurnContext, value) => {
   const tmpTemplate = JSON.parse(JSON.stringify(workplaceUserListTemplate));
 
   const users = await UspGetUsers();
@@ -33,9 +37,7 @@ const updateGetWorkplaceForm = async (context, value) => {
       "value": user.DisplayName
     });    
   }
-  if(tmpTemplate.body[1].choices.length !== 0) {
-    tmpTemplate.body[1].value = tmpTemplate.body[1].choices[0].value;
-  }
+
   tmpTemplate.body[1].value = value;
 
   const cardTemplate = new ACData.Template(tmpTemplate);
@@ -49,7 +51,7 @@ const updateGetWorkplaceForm = async (context, value) => {
   });
 }
 
-export const getWorkplace = async (context, name, date) => {
+export const getWorkplace = async (context: TurnContext, name, date) => {
   if(!name) {
     await context.sendActivity(`조회하실 분의 이름을 선택하고 다시 조회해주세요.`);
     return;
