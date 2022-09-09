@@ -13,7 +13,7 @@
     "fx-resource-appstudio": {
         "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
         "teamsAppId": "1274b05a-ecac-4847-bb78-7600ff6c8f6b",
-        "teamsAppUpdatedAt": 1657671893293
+        "teamsAppUpdatedAt": 1662694045605
     },
     "fx-resource-identity": {
         "identityName": "cloudmtbotdev2eccee",
@@ -22,7 +22,7 @@
     },
     "fx-resource-bot": {
         "botId": "67ab75c8-d53a-44bd-9597-53d7dfb99da2",
-        "botPassword": "",
+        "botPassword": "{{fx-resource-bot.botPassword}}",
         "objectId": "afff5c80-62fa-4b86-9e2e-f6b39dcbd2c0",
         "skuName": "B1",
         "siteName": "cloudmtbotdev2ecceebot",
@@ -32,5 +32,24 @@
         "siteEndpoint": "https://cloudmtbotdev2ecceebot.azurewebsites.net"
     },
     "fx-resource-cicd": {},
-    "fx-resource-api-connector": {}
+    "fx-resource-api-connector": {},
+    "fx-resource-aad-app-for-teams": {
+        "clientId": "248b6c2c-167b-4f67-9eaf-d5b572ae5b5a",
+        "clientSecret": "{{fx-resource-aad-app-for-teams.clientSecret}}",
+        "objectId": "673f99e6-9464-4dc4-a9fd-c16a976e983e",
+        "oauth2PermissionScopeId": "96d970d6-73c0-427d-9943-fc281844f1a1",
+        "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
+        "oauthHost": "https://login.microsoftonline.com",
+        "oauthAuthority": "https://login.microsoftonline.com/6d5ac8ee-3862-4452-93e7-a836c2d9742b",
+        "applicationIdUris": "api://cloudmtbotdev2ecceetab.z12.web.core.windows.net/botid-67ab75c8-d53a-44bd-9597-53d7dfb99da2",
+        "botId": "67ab75c8-d53a-44bd-9597-53d7dfb99da2",
+        "botEndpoint": "https://cloudmtbotdev2ecceebot.azurewebsites.net",
+        "frontendEndpoint": "https://cloudmtbotdev2ecceetab.z12.web.core.windows.net"
+    },
+    "fx-resource-frontend-hosting": {
+        "domain": "cloudmtbotdev2ecceetab.z12.web.core.windows.net",
+        "endpoint": "https://cloudmtbotdev2ecceetab.z12.web.core.windows.net",
+        "indexPath": "/index.html#",
+        "storageResourceId": "/subscriptions/1f713097-c8f7-458d-8f33-53e3524e10f0/resourceGroups/RG-SDTeam2022-Dev/providers/Microsoft.Storage/storageAccounts/cloudmtbotdev2ecceetab"
+    }
 }

@@ -6,11 +6,8 @@ import { getUserList,
          userCount,
          userMap } from "./bot/common";
 import { setWorkplaceForm } from "./bot/setWorkplace";
-  
 import { sendBirthdayCard } from "./bot/birthMessage";
-
 import { connected } from "./mssql"
-
 import { TeamsBot } from "./teamsBot";
 import { Logger } from "./logger";
 

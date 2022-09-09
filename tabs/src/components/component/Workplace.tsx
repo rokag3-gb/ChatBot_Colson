@@ -9,9 +9,10 @@ import Select from 'react-select'
 
 export function Workplace(props: { environment?: string }) {
   const { environment } = {
-    environment: window.location.hostname === "localhost" ? "http://localhost:3978" : "https://colsonahat86dfc5bot.azurewebsites.net",
+    environment: window.location.hostname === "localhost" ? "http://localhost:3978" : "https://cloudmtbotdev2ecceebot.azurewebsites.net",
     ...props,
   };
+
 
   const { teamsfx } = useContext(TeamsFxContext);
   const { loading, data, error } = useData(async () => {
