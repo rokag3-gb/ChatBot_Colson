@@ -80,19 +80,6 @@ code {
   color: red;
 }
 
-table {
-  border: 1px solid #444444;
-  border-collapse: collapse;
-}
-
-th, td {
-  border: 1px solid #444444;
-  padding: 10px;
-  font-size: 0.875rem;
-  font-weight: 400;
-  white-space: nowrap;
-}
-
 .selectBox {
   width: 300px;
 }
