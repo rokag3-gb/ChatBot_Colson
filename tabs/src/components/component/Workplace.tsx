@@ -108,7 +108,7 @@ export function Workplace(props: { environment?: string }) {
   const upn = (loading || error) ? "kwangseok.moon@cloudmt.co.kr" : data!.preferredUserName;
 
   return (
-    <div className="welcome page">
+    <div className="welcome">
       <div className="page-padding">
         <h1>팀 근무지 조회</h1>
         <div className="workspaceBox">
