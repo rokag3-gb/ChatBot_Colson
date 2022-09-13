@@ -120,26 +120,43 @@ export function Workplace(props: { environment?: string }) {
     <div className="welcome page">
       <div className="page-padding">
         <h1>근무지를 조회합니다.</h1>
-      
-      <input type="date" id="start" name="trip-start"
-        onChange={(event) => setStartDate(event.target.value)}
-        value={startDate}>
-      </input>
-      
-      <input type="date" id="start" name="trip-start"
-        onChange={(event) => setEndDate(event.target.value)}
-        value={endDate}>
-      </input>
-
-      <div className="selectBox">
-        <Select
-          value={options?options[defaultTeam]:''}
-          isSearchable={false}
-          onChange={(event: any) => setTeam(event.value)}
-          options={options}
-        />
-      </div>
-        <WorkplaceTable tableData={tableData} date={date} name={name} />
+        <div className="workspaceBox">
+          <div className="headerBox">
+            <div className="dateBox">
+              <div className="virticalBox">
+                <div className="dateLabelBox">
+                  <div className="transformBox">
+                    시작일
+                  </div>
+                  <input type="date"
+                    onChange={(event) => setStartDate(event.target.value)}
+                    value={startDate}>
+                  </input>
+                </div>
+                <div className="dateLabelBox">
+                  <div className="transformBox">
+                    종료일
+                  </div>
+                  <input type="date"
+                    onChange={(event) => setEndDate(event.target.value)}
+                    value={endDate}>
+                  </input>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="selectBox">
+            <div className="dateLabelBox">
+              <Select
+                value={options?options[defaultTeam]:''}
+                isSearchable={false}
+                onChange={(event: any) => setTeam(event.value)}
+                options={options}
+              />
+            </div>
+          </div>
+          <WorkplaceTable tableData={tableData} date={date} name={name} />
+        </div>
       </div>
     </div>
   );

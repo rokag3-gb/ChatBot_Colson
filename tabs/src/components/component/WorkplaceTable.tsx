@@ -7,25 +7,25 @@ export const WorkplaceTable = ({tableData, date, name}: any) => {
   return (
   <div style={{width: "100%", display: "flex"}}>
 
-    <table style={{border: "1px solid", height: "100%", left:0}}>
+    <table style={{height: "100%", left:0}}>
       <tr>
-        <td colSpan={2}>ㅤ</td>
+        <th colSpan={2}>ㅤ</th>
       </tr>
     {name?.map((n: string) => {
       return (
         <>
         <tr>
-        <td rowSpan={2}>
+        <th rowSpan={2}>
           {n}
-        </td>
-        <td>
+        </th>
+        <th>
           오전
-        </td>
+        </th>
         </tr>
         <tr>
-        <td>
+        <th>
           오후
-        </td>
+        </th>
         </tr>
         </>
       );
@@ -33,35 +33,40 @@ export const WorkplaceTable = ({tableData, date, name}: any) => {
     </table>
 
     <div style={{width: "100%", height: "100%", overflowX: "scroll"}}>
-      <table style={{border: "1px solid"}}>
+      <table>
         <tr>
-          {console.log(date)}
           {date?.map((d: string) => {
             return (
-              <td>{d} </td>
+              <th>
+                {d.substring(0, d.indexOf('('))}
+                <br/>
+                {d.substring(d.indexOf('('))}
+              </th>
             )
           })}
         </tr>
-        {name?.map((n: string) => {
-          return (
-            <>
-            <tr>
-            {date?.map((d: string) => {
-              return (
-                <td> {tableData?.get(`${d}${n}오전`)?tableData?.get(`${d}${n}오전`):'ㅤ'} </td>
-              )
-            })}
-            </tr>
-            <tr>
-            {date?.map((d: string) => {
-              return (
-                <td> {tableData?.get(`${d}${n}오후`)?tableData?.get(`${d}${n}오후`):'ㅤ'} </td>
-              )
-            })}
-            </tr>
-            </>
-          );
-        })}
+        <tbody>
+          {name?.map((n: string) => {
+            return (
+              <>
+              <tr>
+              {date?.map((d: string) => {
+                return (
+                  <td> {tableData?.get(`${d}${n}오전`)?tableData?.get(`${d}${n}오전`):'ㅤ'} </td>
+                )
+              })}
+              </tr>
+              <tr>
+              {date?.map((d: string) => {
+                return (
+                  <td> {tableData?.get(`${d}${n}오후`)?tableData?.get(`${d}${n}오후`):'ㅤ'} </td>
+                )
+              })}
+              </tr>
+              </>
+            );
+          })}
+        </tbody>
       </table>
     </div>
   </div>

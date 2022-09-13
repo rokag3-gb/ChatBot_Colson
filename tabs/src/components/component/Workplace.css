@@ -1,14 +1,8 @@
-.narrow {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
 .page-padding {
   padding: 2rem;
 }
 
 .welcome.page > .narrow > img {
-  margin: 0 auto;
   display: block;
   width: 200px;
 }
@@ -80,7 +74,108 @@ code {
   color: red;
 }
 
+.virticalBox {
+  overflow-x: auto;
+  display: flex;
+}
+
+.workspaceBox {
+  width: 100%;
+  overflow-x: auto;
+  background-color: rgb(255, 255, 255);
+  border-radius: 0.75rem;
+  box-shadow: none;
+  padding: 2rem;
+}
+
+.dateLabelBox {
+  color: #999;
+  width: 50%;
+  height: 40px;
+  border: none;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  background: #eee;
+  margin: 10px;
+}
+
+.transformBox {
+  margin-top: 0.2rem;
+  margin-left: 5px;
+  font-size: x-small;
+}
+
+.dateBox {
+  width: 50%;
+}
+
 .selectBox {
-  width: 300px;
-  color: black;
+  margin-right: 1rem;
+}
+
+@media (max-width: 767px) {
+  .dateBox {
+    width: 100%;
+  }
+
+  .headerBox {
+    width: 100%;
+  }
+
+  .workspaceBox {
+    padding: 0rem;
+  }
+
+  .dateLabelBox {
+    width: 100%;
+    margin: 5px;
+  }
+
+  .page-padding {
+    padding: 0.5rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .dateBox {
+    width: 50%;
+  }
+
+  .dateLabelBox {
+    width: 100%;
+    margin: 5px;
+  }
+
+  .selectBox {
+    margin-right: 0px;
+    width: 70%;
+  }
+
+  .headerBox {
+    width: 100%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .dateBox {
+    width: 60%;
+  }
+
+  .headerBox {
+    width: 60%;
+  }
+
+  .selectBox {
+    margin-right: 0px;
+    width: 70%;
+  }
+}
+
+
+input {
+    border: none;
+    width: 100%;
+    background: #eee;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
