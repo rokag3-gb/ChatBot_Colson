@@ -9,7 +9,7 @@ export const WorkplaceTable = ({tableData, date, name}: any) => {
 
     <table style={{height: "100%", left:0}}>
       <tr>
-        <th colSpan={2}>ㅤ</th>
+        <th colSpan={2}>ㅤ<br/>ㅤ</th>
       </tr>
     {name?.map((n: string) => {
       return (

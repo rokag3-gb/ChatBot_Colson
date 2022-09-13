@@ -45,7 +45,6 @@ export function Workplace(props: { environment?: string }) {
   const [defaultTeam, setDefaultTeam] = useState(0);
 
   useEffect(() => {
-    console.log('getTeam');
     axios.get(`${environment}/api/getTeam?UPN=${upn}`).then(res => {
       const option = [];
       for(let i = 0; i < res.data.length; i++) {
@@ -106,23 +105,14 @@ export function Workplace(props: { environment?: string }) {
     }
   }, [team]);
 
-  
-  const userName = (loading || error) ? "" : data!.displayName;
   const upn = (loading || error) ? "kwangseok.moon@cloudmt.co.kr" : data!.preferredUserName;
-
-  const customStyles = {
-    control: () => ({
-      width: 100,
-    })
-  }
 
   return (
     <div className="welcome page">
       <div className="page-padding">
-        <h1>근무지를 조회합니다.</h1>
+        <h1>팀 근무지 조회</h1>
         <div className="workspaceBox">
           <div className="headerBox">
-            <div className="dateBox">
               <div className="virticalBox">
                 <div className="dateLabelBox">
                   <div className="transformBox">
@@ -142,11 +132,8 @@ export function Workplace(props: { environment?: string }) {
                     value={endDate}>
                   </input>
                 </div>
-              </div>
             </div>
-          </div>
-          <div className="selectBox">
-            <div className="dateLabelBox">
+            <div className="selectBox">
               <Select
                 value={options?options[defaultTeam]:''}
                 isSearchable={false}

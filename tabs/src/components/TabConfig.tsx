@@ -39,10 +39,9 @@ class TabConfig extends React.Component {
 
     return (
       <div>
-        <h1>Tab Configuration</h1>
+        <h1>팀 근무지 조회</h1>
         <div>
-          This is where you will add your tab configuration options the user can choose when the tab
-          is added to your team/group chat.
+          팀별 근무지 현황을 조회합니다.
         </div>
       </div>
     );

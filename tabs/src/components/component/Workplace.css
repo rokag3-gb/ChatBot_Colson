@@ -90,13 +90,13 @@ code {
 
 .dateLabelBox {
   color: #999;
-  width: 50%;
+  width: 100%;
   height: 40px;
   border: none;
   -moz-border-radius: 5px;
   border-radius: 5px;
   background: #eee;
-  margin: 10px;
+  margin: 5px;
 }
 
 .transformBox {
@@ -105,18 +105,12 @@ code {
   font-size: x-small;
 }
 
-.dateBox {
-  width: 50%;
-}
-
 .selectBox {
-  margin-right: 1rem;
+  color: black;
+  padding: 5px;
 }
 
 @media (max-width: 767px) {
-  .dateBox {
-    width: 100%;
-  }
 
   .headerBox {
     width: 100%;
@@ -128,7 +122,6 @@ code {
 
   .dateLabelBox {
     width: 100%;
-    margin: 5px;
   }
 
   .page-padding {
@@ -137,37 +130,19 @@ code {
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
-  .dateBox {
-    width: 50%;
-  }
 
   .dateLabelBox {
     width: 100%;
-    margin: 5px;
-  }
-
-  .selectBox {
-    margin-right: 0px;
-    width: 70%;
   }
 
   .headerBox {
-    width: 100%;
+    width: 60%;
   }
 }
 
 @media (min-width: 1200px) {
-  .dateBox {
-    width: 60%;
-  }
-
   .headerBox {
-    width: 60%;
-  }
-
-  .selectBox {
-    margin-right: 0px;
-    width: 70%;
+    width: 40%;
   }
 }
 
