@@ -7,7 +7,7 @@ export const WorkplaceTable = ({tableData, date, name}: any) => {
   return (
   <div style={{width: "100%", display: "flex"}}>
 
-    <table style={{border: "1px solid", height: "100%", background: "#fff", left:0}}>
+    <table style={{border: "1px solid", height: "100%", left:0}}>
       <tr>
         <td colSpan={2}>ㅤ</td>
       </tr>
