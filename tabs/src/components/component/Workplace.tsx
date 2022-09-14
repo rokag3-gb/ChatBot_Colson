@@ -34,8 +34,8 @@ export function Workplace(props: { environment?: string }) {
     return date.getFullYear() + "-" + ("00" + (1 + date.getMonth())).slice(-2) + "-" + ("00" + date.getDate()).slice(-2);
   }
 
-  const [startDate, setStartDate] = useState(getToday(0));
-  const [endDate, setEndDate] = useState(getToday(2));
+  const [startDate, setStartDate] = useState(getToday(-1));
+  const [endDate, setEndDate] = useState(getToday(7));
   const [team, setTeam] = useState('');
   
   const [tableData, setTableData] = useState<Map<string, string>>();
