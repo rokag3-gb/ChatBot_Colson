@@ -7,9 +7,9 @@ export const UspGetUsers = async (): Promise<any[]> => {
   return query(request, `EXEC [IAM].[bot].[Usp_Get_Users] @appId`);
 }
 
-export const UspGetWorkplace = async (name: string, date: Int16Array): Promise<any[]> => {
+export const UspGetWorkplace = async (name: string, date: number): Promise<any[]> => {
   const request = new sql.Request();
   request.input('Username', sql.VarChar, name);
-  request.input('date', sql.Int, 7);
+  request.input('date', sql.Int, date);
   return query(request, `EXEC [IAM].[bot].[Usp_Get_Workplace] @Username, @date`);
 }

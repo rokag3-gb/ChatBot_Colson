@@ -51,7 +51,7 @@ const updateGetWorkplaceForm = async (context: TurnContext, value) => {
   });
 }
 
-export const getWorkplace = async (context: TurnContext, name, date) => {
+export const getWorkplace = async (context: TurnContext, name: string, date: number) => {
   if(!name) {
     await context.sendActivity(`조회하실 분의 이름을 선택하고 다시 조회해주세요.`);
     return;

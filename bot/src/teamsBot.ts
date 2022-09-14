@@ -38,7 +38,7 @@ export class TeamsBot extends TeamsActivityHandler {
           } else if (text[0] + text[1] === '근무지등록') {
             await setWorkplaceForm(context, context.activity.from.id, text[2], 'work', null, null);
           } else if (text[0] === '근무지') {
-            await getWorkplace(context, text[1], text[2]);
+            await getWorkplace(context, text[1], Number(text[2]));
           } else if (text[0] === '홈' || text[0].toLowerCase() === 'home' || text[0] === 'ㅎ') {
             await sendCommand(context);
           } else if (text[0] === '메시지' || text[0] === '메세지') {
