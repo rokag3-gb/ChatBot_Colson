@@ -137,16 +137,40 @@ const updateMealStoreSearch = async (context: TurnContext, storeName: string, st
   });
 }
 
-export const viewMealStoreSearchResult = async (context: TurnContext) => {
-  const storeName = context.activity.value.storeName;
-  const storeCategory = context.activity.value.storeCategory;
-  const pageNo = context.activity.value.pageNo;
+export const redirectMealStoreSearchResult = async (context: TurnContext, text: string[]) => {
+  const category = await UspGetMealStoreCategory();
+  let storeCategory = '';
+  let storeName = '';
+  let first = true;
+  for(const row of category) {
+    if(first) {
+      first = false;
+    } else {
+      storeCategory += ",";
+    }
+    storeCategory += row.Category;
+  }
+
+  first = true;
+  for(let i = 1; i < text.length; i++) {
+    if(first) {
+      first = false;
+    } else {
+      storeName += " ";
+    }
+    storeName += text[i];
+  }
+
+  await viewMealStoreSearchResult(context, storeName, storeCategory, 1);
+}
+
+export const viewMealStoreSearchResult = async (context: TurnContext, storeName: string, storeCategory: string, pageNo: any) => {
   if(!storeName && !storeCategory) {
     await context.sendActivity(`한가지 이상의 검색 조건을 입력해 주세요.`);
     return;
   }
 
-  if(context.activity.value.messageType === "mealStoreSearchResult")
+  if(!context.activity.value || context.activity.value.messageType === "mealStoreSearchResult")
     await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}가맹점을 조회합니다.`);
   let tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearchResult));
 
@@ -157,7 +181,9 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
       storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''}가맹점이 없습니다.`
     });
     await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
-    await updateMealStoreSearch(context, storeName, storeCategory);
+    if(context.activity.value) {
+      await updateMealStoreSearch(context, storeName, storeCategory);
+    }
     return;
   }
   
@@ -348,6 +374,7 @@ export const viewMealStoreSearchResult = async (context: TurnContext) => {
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
   tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearchResult));
 
-  if(context.activity.value.messageType === "mealStoreSearchResult")
+  if(context.activity.value && context.activity.value.messageType === "mealStoreSearchResult") {
     await updateMealStoreSearch(context, storeName, storeCategory);
+  }
 }

@@ -6,7 +6,7 @@ import { setWorkplaceForm, setWorkplace } from "./bot/setWorkplace";
 import { getWorkplaceForm, getWorkplace } from "./bot/getWorkplace";
 import { viewSecretMessage, sendSecretMessage, openSecretMessage, sendMessageReaction } from "./bot/secretMessage";
 import { sendBirthdayCard, openBirthMessage } from "./bot/birthMessage";
-import { viewMealStoreSearch, viewMealStoreSearchResult } from "./bot/mealStore";
+import { viewMealStoreSearch, viewMealStoreSearchResult, redirectMealStoreSearchResult } from "./bot/mealStore";
 import { randomStoreSelect, openRandomStore } from "./bot/randomMealStore";
 import { checkConversation } from "./bot/conversation";
 
@@ -43,8 +43,12 @@ export class TeamsBot extends TeamsActivityHandler {
             await sendCommand(context);
           } else if (text[0] === '메시지' || text[0] === '메세지') {
             await viewSecretMessage(context, context.activity.from.id, text[1]);
-          } else if (text[0] === '비플식권페이' || text[0] === '비식페' || text[0] === '식사' || text[0] === '점심') {
-            await viewMealStoreSearch(context);
+          } else if (text[0] === '비플식권페이' || text[0] === '비식페' || text[0] === '식사' || text[0] === '점심' || text[0] === '식당') {
+            if(text.length === 1) {
+              await viewMealStoreSearch(context);
+            } else {
+              await redirectMealStoreSearchResult(context, text);
+            }
           } else if (text[0] === '식사랜덤') {
             await randomStoreSelect(context);
           } else if (text[0] === 'workamsendtest') {
@@ -69,7 +73,7 @@ export class TeamsBot extends TeamsActivityHandler {
           } else if (context.activity.value.messageType === "mealStoreSearch") {  
             await viewMealStoreSearch(context);
           } else if (context.activity.value.messageType === "mealStoreSearchResult" || context.activity.value.messageType === "mealStoreSearchResultMore") {  
-            await viewMealStoreSearchResult(context);
+            await viewMealStoreSearchResult(context, context.activity.value.storeName, context.activity.value.storeCategory, context.activity.value.pageNo);
           } else if (context.activity.value.messageType === "randomStoreSelect") {  
             await randomStoreSelect(context);
           } else if (context.activity.value.messageType === "openRandomStore") {  

@@ -7,7 +7,7 @@ export const UspGetMealStoreCategory = async (): Promise<any[]> => {
   return query(request, `EXEC [IAM].[bot].[Usp_Get_Meal_Store_Category]`);
 }
 
-export const UspGetMealStore = async (StoreName: string, CategoryCSV: string, PageNo: Int16Array): Promise<any[]> => {
+export const UspGetMealStore = async (StoreName: string, CategoryCSV: string, PageNo: number): Promise<any[]> => {
   const request = new sql.Request();
   if(StoreName === undefined)
     StoreName = null;
