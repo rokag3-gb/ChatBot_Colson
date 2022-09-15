@@ -367,10 +367,10 @@ export const viewMealStoreSearchResult = async (context: TurnContext, storeName:
   const curCountEnd = result.CurrentPageNo===result.TotalPageCount?result.DataRowCount:result.PageSize * result.CurrentPageNo;
   
   const card = AdaptiveCards.declare(tmpTemplate).render({
+    title: `비플식권페이 가맹점 조회`,
     storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''} 가맹점을 조회하였습니다. (${curCountStart}~${curCountEnd})`
   });
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
-  tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearchResult));
 
   if(context.activity.value && context.activity.value.messageType === "mealStoreSearchResult") {
     await updateMealStoreSearch(context, storeName, storeCategory);

@@ -5,7 +5,7 @@
   "body": [
     {
       "type": "TextBlock",
-      "text": "오늘의 점심 메뉴는!! 뽑기 결과를 확인해 보세요",
+      "text": "오늘의 점심 메뉴는!!\r\n\r\n뽑기 결과를 확인해 보세요",
       "size": "Medium",
       "weight": "Bolder",
       "wrap": true
@@ -42,29 +42,6 @@
                       "weight": "bolder",
                       "horizontalAlignment": "center",
                       "text": "상호",
-                      "size": "small"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Column",
-              "separator": true,
-              "width": 8,
-              "bleed": true,
-              "spacing": "none",
-              "items": [
-                {
-                  "type": "Container",
-                  "style": "accent",
-                  "bleed": true,
-                  "items": [
-                    {
-                      "type": "TextBlock",
-                      "weight": "bolder",
-                      "horizontalAlignment": "center",
-                      "text": "주소",
                       "size": "small"
                     }
                   ]
@@ -115,6 +92,80 @@
                   ]
                 }
               ]
+            }
+          ]
+        },
+        {
+          "type": "ColumnSet",
+          "bleed": true,
+          "columns": [
+            {
+              "type": "Column",
+              "width": 4,
+              "separator": true,
+              "bleed": true,
+              "verticalContentAlignment": "center",
+              "spacing": "none",
+              "items": [
+                {
+                  "type": "Container",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "wrap": true,
+                      "text": "${StoreName}",
+                      "size": "small"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "separator": true,
+              "width": 3,
+              "bleed": true,
+              "verticalContentAlignment": "center",
+              "spacing": "none",
+              "items": [
+                {
+                  "type": "Container",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "wrap": true,
+                      "text": "${Category}",
+                      "horizontalAlignment": "center",
+                      "size": "small"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "separator": true,
+              "width": 2,
+              "bleed": true,
+              "verticalContentAlignment": "center",
+              "spacing": "none",
+              "items": [
+                {
+                  "type": "Container",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "wrap": true,
+                      "text": "🔗",
+                      "horizontalAlignment": "center"
+                    }
+                  ]
+                }
+              ],
+              "selectAction": {
+                "type": "Action.OpenUrl",
+                "url": "${URL}"
+              }
             }
           ]
         }

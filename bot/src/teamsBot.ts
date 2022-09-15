@@ -14,7 +14,16 @@ export class TeamsBot extends TeamsActivityHandler {
   constructor() {
     super();
 
-    this.onMessage(async (context, next) => {
+    this.onMessage(async (context: TurnContext, next) => {
+        if(context.activity.from.name !== 'Kwangseok Moon' && context.activity.from.name !== 'Jungwoo Kim') {
+          context.sendActivity(`이 채팅방은 테스트 버전의 콜슨입니다.
+
+사용자 버전의 콜슨을 이용해주세요.
+
+감사합니다.`);
+        }
+
+
         const message = MessageFactory.text('');
         message.type = ActivityTypes.Typing;
         await context.sendActivity(message);
@@ -43,14 +52,16 @@ export class TeamsBot extends TeamsActivityHandler {
             await sendCommand(context);
           } else if (text[0] === '메시지' || text[0] === '메세지') {
             await viewSecretMessage(context, context.activity.from.id, text[1]);
+          } else if (txt === '식사 랜덤' || txt === '랜덤 식사' || txt === '식당 랜덤' || txt === '랜덤 식당' || 
+          text[0] === '랜덤' || text[0] === '식사랜덤' || text[0] === '랜덤식사' || 
+          text[0] === '랜덤식당' || text[0] === '식당랜덤' || text[0] === '점심랜덤') {
+            await randomStoreSelect(context);
           } else if (text[0] === '비플식권페이' || text[0] === '비식페' || text[0] === '식사' || text[0] === '점심' || text[0] === '식당') {
             if(text.length === 1) {
               await viewMealStoreSearch(context);
             } else {
               await redirectMealStoreSearchResult(context, text);
             }
-          } else if (text[0] === '식사랜덤') {
-            await randomStoreSelect(context);
           } else if (text[0] === 'workamsendtest') {
             await setWorkplaceForm(null, null, null, 'send', '좋은 아침입니다!', 'am');
           } else if (text[0] === 'workamresendtest') {

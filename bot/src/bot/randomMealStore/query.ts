@@ -5,7 +5,7 @@ export const UspLotMealStore = async (upn: string): Promise<any[]> => {
   const request = new sql.Request();
   request.input('UPN', sql.VarChar, upn);
 
-  return query(request, `EXEC [IAM].[bot].[Usp_Lot_Meal_Store]`);
+  return query(request, `EXEC [IAM].[bot].[Usp_Lot_Meal_Store] @UPN`);
 }
 
 export const UspSetMealStoreLotsPick = async (LotId: Int16Array, SaveId: string, PickedStoreId: Int16Array): Promise<any[]> => {

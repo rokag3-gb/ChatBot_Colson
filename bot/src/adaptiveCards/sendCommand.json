@@ -53,6 +53,13 @@
     },
     {
       "type": "Action.Submit",
+      "title": "식사랜덤뽑기",
+      "data": {
+        "messageType": "randomStoreSelect"
+      }
+    },
+    {
+      "type": "Action.Submit",
       "title": "명령어 목록",
       "data": {
         "messageType": "viewCommandList"
