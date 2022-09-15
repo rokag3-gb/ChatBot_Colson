@@ -15,15 +15,6 @@ export class TeamsBot extends TeamsActivityHandler {
     super();
 
     this.onMessage(async (context: TurnContext, next) => {
-        if(context.activity.from.name !== 'Kwangseok Moon' && context.activity.from.name !== 'Jungwoo Kim') {
-          context.sendActivity(`이 채팅방은 테스트 버전의 콜슨입니다.
-
-사용자 버전의 콜슨을 이용해주세요.
-
-감사합니다.`);
-        }
-
-
         const message = MessageFactory.text('');
         message.type = ActivityTypes.Typing;
         await context.sendActivity(message);
