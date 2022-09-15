@@ -5,65 +5,149 @@
   "body": [
     {
       "type": "TextBlock",
-      "text": "Home",
-      "size": "Large",
-      "weight": "Bolder",
-      "wrap": true
+      "text": "명령을 선택해주세요.",
+      "weight": "bolder"
     },
     {
-      "type": "TextBlock",
-      "text": "명령을 선택해주세요.",
-      "isSubtle": true,
-      "wrap": true
+      "type": "ColumnSet",
+      "style": "emphasis",
+      "spacing": "medium",
+      "columns": [
+        {
+          "type": "Column",
+          "width": 4,
+          "items": [
+            {
+              "type": "TextBlock",
+              "weight": "bolder",
+              "text": "◾ 근무지 조회"
+            }
+          ]
+        }
+      ],
+      "selectAction": {
+        "type": "Action.Submit",
+        "data": {
+          "messageType": "getWorkplaceForm"
+        }
+      }
+    },
+    {
+      "type": "ColumnSet",
+      "style": "emphasis",
+      "columns": [
+        {
+          "type": "Column",
+          "width": 4,
+          "items": [
+            {
+              "type": "TextBlock",
+              "weight": "bolder",
+              "text": "◾ 근무지 등록"
+            }
+          ]
+        }
+      ],
+      "selectAction": {
+        "type": "Action.Submit",
+        "data": {
+          "messageType": "setWorkplaceForm"
+        }
+      }
+    },
+    {
+      "type": "ColumnSet",
+      "style": "emphasis",
+      "columns": [
+        {
+          "type": "Column",
+          "width": 4,
+          "items": [
+            {
+              "type": "TextBlock",
+              "weight": "bolder",
+              "text": "◾ 익명 메시지"
+            }
+          ]
+        }
+      ],
+      "selectAction": {
+        "type": "Action.Submit",
+        "data": {
+          "messageType": "viewSecretMessage"
+        }
+      }
+    },
+    {
+      "type": "ColumnSet",
+      "style": "emphasis",
+      "columns": [
+        {
+          "type": "Column",
+          "width": 4,
+          "items": [
+            {
+              "type": "TextBlock",
+              "weight": "bolder",
+              "text": "◾ 비플식권페이 가맹점 조회"
+            }
+          ]
+        }
+      ],
+      "selectAction": {
+        "type": "Action.Submit",
+        "data": {
+          "messageType": "mealStoreSearch"
+        }
+      }
+    },
+    {
+      "type": "ColumnSet",
+      "style": "emphasis",
+      "columns": [
+        {
+          "type": "Column",
+          "width": 4,
+          "items": [
+            {
+              "type": "TextBlock",
+              "weight": "bolder",
+              "text": "◾ 식사 랜덤 뽑기"
+            }
+          ]
+        }
+      ],
+      "selectAction": {
+        "type": "Action.Submit",
+        "data": {
+          "messageType": "randomStoreSelect"
+        }
+      }
+    },
+    {
+      "type": "ColumnSet",
+      "style": "emphasis",
+      "columns": [
+        {
+          "type": "Column",
+          "width": 4,
+          "items": [
+            {
+              "type": "TextBlock",
+              "weight": "bolder",
+              "text": "◾ 명령어 목록"
+            }
+          ]
+        }
+      ],
+      "selectAction": {
+        "type": "Action.Submit",
+        "data": {
+          "messageType": "viewCommandList"
+        }
+      }
     }
   ],
   "actions": [
-    {
-      "type": "Action.Submit",
-      "title": "근무지 조회",
-      "data": {
-        "messageType": "getWorkplaceForm"
-      }
-    },
-    {
-      "type": "Action.Submit",
-      "title": "근무지 등록",
-      "data": {
-        "messageType": "setWorkplaceForm"
-      }
-    },
-    {
-      "type":"Action.OpenUrl",
-      "title":"팀 근무지 조회",
-      "url":"https://teams.microsoft.com/l/entity/140ee9e7-0efe-4907-9522-2b1eccb5f2c2/_djb2_msteams_prefix_3131623993?context=%7B%22subEntityId%22%3Anull%2C%22channelId%22%3A%2219%3A0e406ada29554f02931afd05e5c00c4f%40thread.skype%22%7D&groupId=14b50a7a-90d5-4e6a-80cc-4f82625aaf76&tenantId=6d5ac8ee-3862-4452-93e7-a836c2d9742b&allowXTenantAccess=false"
-    },
-    {
-      "type": "Action.Submit",
-      "title": "익명 메시지",
-      "data": {
-        "messageType": "viewSecretMessage"
-      }
-    },
-    {
-      "type": "Action.Submit",
-      "title": "비플식권페이 가맹점 조회",
-      "data": {
-        "messageType": "mealStoreSearch"
-      }
-    },
-    {
-      "type": "Action.Submit",
-      "title": "식사랜덤뽑기",
-      "data": {
-        "messageType": "randomStoreSelect"
-      }
-    },
-    {
-      "type": "Action.Submit",
-      "title": "명령어 목록",
-      "data": {
-        "messageType": "viewCommandList"
-      }
-    }
   ]
 }
