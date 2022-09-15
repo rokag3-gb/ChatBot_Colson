@@ -354,20 +354,12 @@ export const viewMealStoreSearchResult = async (context: TurnContext, storeName:
         "pageNo": pageNo + 1
       }
     });
-  }
-
-  tmpTemplate.actions.push({
-    "type":"Action.OpenUrl",
-    "title":"식당 등록 요청하기",
-    "url":"https://forms.office.com/r/aBXTL8GbsZ"
-  });
-  
+  }  
 
   const curCountStart = result.PageSize * (result.CurrentPageNo-1) + 1;
   const curCountEnd = result.CurrentPageNo===result.TotalPageCount?result.DataRowCount:result.PageSize * result.CurrentPageNo;
   
   const card = AdaptiveCards.declare(tmpTemplate).render({
-    title: `비플식권페이 가맹점 조회`,
     storeNameText: `${storeName?"'"+storeName+"'을 포함한 ":''} 가맹점을 조회하였습니다. (${curCountStart}~${curCountEnd})`
   });
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });

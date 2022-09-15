@@ -19,7 +19,7 @@
       "type": "Input.Text",
       "style": "text",
       "id": "storeName",
-      "placeholder": "입력 글자가 포함된 식당이 조회 됩니다."
+      "placeholder": "검색어와 관련된 식당이 조회 됩니다."
     },
     {
       "type": "TextBlock",
@@ -53,6 +53,11 @@
       "type":"Action.OpenUrl",
       "title":"지도로 보기",
       "url":"https://app.powerbi.com/reportEmbed?reportId=cbbc699e-db18-4bd3-aca5-245f1e6a63a7&autoAuth=true&ctid=6d5ac8ee-3862-4452-93e7-a836c2d9742b"
+    },
+    {
+      "type":"Action.OpenUrl",
+      "title":"식당 등록 요청하기",
+      "url":"https://forms.office.com/r/aBXTL8GbsZ"
     }
   ]
 }
