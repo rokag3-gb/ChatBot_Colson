@@ -170,8 +170,6 @@ export const viewMealStoreSearchResult = async (context: TurnContext, storeName:
     return;
   }
 
-  if(!context.activity.value || context.activity.value.messageType === "mealStoreSearchResult")
-    await context.sendActivity(`${storeName?"'"+storeName+"'을 포함한 ":''}가맹점을 조회합니다.`);
   let tmpTemplate = JSON.parse(JSON.stringify(mealStoreSearchResult));
 
   const rows = await UspGetMealStore(storeName, storeCategory, pageNo);

@@ -18,6 +18,7 @@ export function Workplace(props: { environment?: string }) {
   const { loading, data, error } = useData(async () => {
     if (teamsfx) {
       const userInfo = await teamsfx.getUserInfo();
+      setUPN(userInfo!.preferredUserName);
       return userInfo;
     }
   });
@@ -43,9 +44,14 @@ export function Workplace(props: { environment?: string }) {
   const [name, setName] = useState<string[]>();
   const [options, setOptions] = useState<any[]>();
   const [defaultTeam, setDefaultTeam] = useState(0);
+  const [UPN, setUPN] = useState('');
 
   useEffect(() => {
-    axios.get(`${environment}/api/getTeam?UPN=${upn}`).then(res => {
+    if(UPN?.length === 0) {
+      return;
+    }
+
+    axios.get(`${environment}/api/getTeam?UPN=${UPN}`).then(res => {
       const option = [];
       for(let i = 0; i < res.data.length; i++) {
         const data  = res.data[i];
@@ -60,7 +66,7 @@ export function Workplace(props: { environment?: string }) {
       }
       setOptions(option);
     });
-  }, []);
+  }, [UPN]);
 
   useEffect(() => {
     if(team?.length === 0) {
@@ -72,7 +78,6 @@ export function Workplace(props: { environment?: string }) {
       const dateSet = new Set<string>();
       const nameSet = new Set<string>();
 
-      console.log(res.data);
       for (const data of res.data) {
         const dateText = data.Date + '(' + data.Weekname + ')';
         if(data.Date !== null && data.Weekname !== null) {
@@ -104,8 +109,6 @@ export function Workplace(props: { environment?: string }) {
       }
     }
   }, [team]);
-
-  const upn = (loading || error) ? "kwangseok.moon@cloudmt.co.kr" : data!.preferredUserName;
 
   return (
     <div className="welcome">
