@@ -53,6 +53,8 @@ export class TeamsBot extends TeamsActivityHandler {
             } else {
               await redirectMealStoreSearchResult(context, text);
             }
+          } else if (text[0] === '/?' || text[0] === '/h' || text[0] === '/help') {
+            await viewCommandList(context);
           } else if (text[0] === 'workamsendtest') {
             await setWorkplaceForm(null, null, null, 'send', '좋은 아침입니다!', 'am');
           } else if (text[0] === 'workamresendtest') {

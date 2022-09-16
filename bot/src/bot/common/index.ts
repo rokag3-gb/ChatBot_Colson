@@ -175,6 +175,10 @@ export const viewCommandList = async(context) => {
 
   ㅤ
   
+  \`/?\`, \`/help\` -> 명령어 목록 화면 표시
+
+  ㅤ
+  
   \`근무지 홍길동\` -> 홍길동 님의 14일 간의 근무지 데이터 조회 (공휴일 제외)
 
   ㅤ
