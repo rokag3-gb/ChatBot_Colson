@@ -12,7 +12,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "가맹점 검색",
+      "text": "가맹점 검색(가맹점명, 위치, 메뉴명)",
       "wrap": true
     },
     {
