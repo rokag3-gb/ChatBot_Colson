@@ -20,56 +20,245 @@
       "columns": [
         {
           "type": "Column",
+          "id": "select_01_normal",
+          "isVisible": true,
           "items": [
             {
               "type": "Image",
-              "url": "data:image/png;base64,${icon01}"
+              "url": "data:image/png;base64,${select_01_normal}"
             }
           ],
           "selectAction": {
-            "type": "Action.Submit",
-            "title": "열기",
-            "data": {
-              "messageType": "openRandomStore",
-              "iconId": 1,
-              "storeJson": "${store01}"
-            }
+            "type": "Action.ToggleVisibility",
+            "targetElements": [
+              {
+                "elementId": "select_01_normal",
+                "isVisible": false
+              },
+              {
+                "elementId": "select_02_normal",
+                "isVisible": true
+              },
+              {
+                "elementId": "select_03_normal",
+                "isVisible": true
+              },
+              {
+                "elementId": "select_01_select",
+                "isVisible": true
+              },
+              {
+                "elementId": "select_02_select",
+                "isVisible": false
+              },
+              {
+                "elementId": "select_03_select",
+                "isVisible": false
+              },
+              {
+                "elementId": "Submit01",
+                "isVisible": true
+              },
+              {
+                "elementId": "Submit02",
+                "isVisible": false
+              },
+              {
+                "elementId": "Submit03",
+                "isVisible": false
+              }
+            ]
           }
         },
         {
           "type": "Column",
+          "id": "select_01_select",
+          "isVisible": false,
           "items": [
             {
               "type": "Image",
-              "url": "data:image/png;base64,${icon02}"
+              "url": "data:image/png;base64,${select_01_select}"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "id": "select_02_normal",
+          "isVisible": true,
+          "items": [
+            {
+              "type": "Image",
+              "url": "data:image/png;base64,${select_02_normal}"
             }
           ],
           "selectAction": {
-            "type": "Action.Submit",
-            "title": "열기",
-            "data": {
-              "messageType": "openRandomStore",
-              "iconId": 2,
-              "storeJson": "${store02}"
-            }
+            "type": "Action.ToggleVisibility",
+            "targetElements": [
+              {
+                "elementId": "select_01_normal",
+                "isVisible": true
+              },
+              {
+                "elementId": "select_02_normal",
+                "isVisible": false
+              },
+              {
+                "elementId": "select_03_normal",
+                "isVisible": true
+              },
+              {
+                "elementId": "select_01_select",
+                "isVisible": false
+              },
+              {
+                "elementId": "select_02_select",
+                "isVisible": true
+              },
+              {
+                "elementId": "select_03_select",
+                "isVisible": false
+              },
+              {
+                "elementId": "Submit01",
+                "isVisible": false
+              },
+              {
+                "elementId": "Submit02",
+                "isVisible": true
+              },
+              {
+                "elementId": "Submit03",
+                "isVisible": false
+              }
+            ]
           }
         },
         {
           "type": "Column",
+          "id": "select_02_select",
+          "isVisible": false,
           "items": [
             {
               "type": "Image",
-              "url": "data:image/png;base64,${icon03}"
+              "url": "data:image/png;base64,${select_02_select}"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "id": "select_03_normal",
+          "isVisible": true,
+          "items": [
+            {
+              "type": "Image",
+              "url": "data:image/png;base64,${select_03_normal}"
             }
           ],
           "selectAction": {
-            "type": "Action.Submit",
-            "title": "열기",
-            "data": {
-              "messageType": "openRandomStore",
-              "iconId": 3,
-              "storeJson": "${store03}"
+            "type": "Action.ToggleVisibility",
+            "targetElements": [
+              {
+                "elementId": "select_01_normal",
+                "isVisible": true
+              },
+              {
+                "elementId": "select_02_normal",
+                "isVisible": true
+              },
+              {
+                "elementId": "select_03_normal",
+                "isVisible": false
+              },
+              {
+                "elementId": "select_01_select",
+                "isVisible": false
+              },
+              {
+                "elementId": "select_02_select",
+                "isVisible": false
+              },
+              {
+                "elementId": "select_03_select",
+                "isVisible": true
+              },
+              {
+                "elementId": "Submit01",
+                "isVisible": false
+              },
+              {
+                "elementId": "Submit02",
+                "isVisible": false
+              },
+              {
+                "elementId": "Submit03",
+                "isVisible": true
+              }
+            ]
+          }
+        },
+        {
+          "type": "Column",
+          "id": "select_03_select",
+          "isVisible": false,
+          "items": [
+            {
+              "type": "Image",
+              "url": "data:image/png;base64,${select_03_select}"
             }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ActionSet",
+      "isVisible": false,
+      "id": "Submit01",
+      "actions": [
+        {
+          "type": "Action.Submit",
+          "title": "1번 선택하기!",
+          "data": {
+            "messageType": "openRandomStore",
+            "iconId": 1,
+            "storeJson": "${store01}",
+            "LotId":"${LotId}",
+            "StoreId":"${StoreId01}"
+          }
+        }
+      ]
+    },
+    {
+      "type": "ActionSet",
+      "isVisible": false,
+      "id": "Submit02",
+      "actions": [
+        {
+          "type": "Action.Submit",
+          "title": "2번 선택하기!",
+          "data": {
+            "messageType": "openRandomStore",
+            "iconId": 2,
+            "storeJson": "${store02}",
+            "LotId":"${LotId}",
+            "StoreId":"${StoreId02}"
+          }
+        }
+      ]
+    },
+    {
+      "type": "ActionSet",
+      "isVisible": false,
+      "id": "Submit03",
+      "actions": [
+        {
+          "type": "Action.Submit",
+          "title": "3번 선택하기!",
+          "data": {
+            "messageType": "openRandomStore",
+            "iconId": 3,
+            "storeJson": "${store03}",
+            "LotId":"${LotId}",
+            "StoreId":"${StoreId03}"
           }
         }
       ]

@@ -86,6 +86,7 @@
                     {
                       "type": "TextBlock",
                       "weight": "bolder",
+                      "horizontalAlignment": "center",
                       "text": "링크",
                       "size": "small"
                     }

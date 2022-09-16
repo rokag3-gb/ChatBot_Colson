@@ -5,9 +5,10 @@ import sendBirthMessageTemplate from "../../adaptiveCards/sendBirthMessage.json"
 import { CardFactory } from "botbuilder";
 import { getBirthdayLink, getBirthdayUser, setSendBirth, setOpenBirth } from "./query";
 
-import { userMap, imgPath } from "../common";
-import imageToBase64 from "image-to-base64";
+import { userMap } from "../common";
 import { Logger } from "../../logger";
+
+import { birth_background } from "../../image"
 
 export const sendBirthdayCard = async () => {
   const userList = await getBirthdayUser();
@@ -48,7 +49,7 @@ export const openBirthMessage = async (context, messageId, username, birthDate) 
     });
   }
 
-  let background = await imageToBase64(imgPath + "birth_background.jpg");
+  let background = birth_background;
   await setOpenBirth(messageId);  
 
   const card = AdaptiveCards.declare(tmpTemplate).render({

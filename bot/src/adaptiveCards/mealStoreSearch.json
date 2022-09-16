@@ -12,7 +12,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "가맹점명 입력",
+      "text": "가맹점 검색",
       "wrap": true
     },
     {

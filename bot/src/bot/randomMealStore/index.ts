@@ -4,22 +4,18 @@ import { CardFactory } from "botbuilder";
 import randomMealStore from "../../adaptiveCards/randomMealStore.json";
 import randomMealStoreUpdate from "../../adaptiveCards/randomMealStoreUpdate.json";
 import randomMealStoreOpen from "../../adaptiveCards/randomMealStoreOpen.json";
-import imageToBase64 from "image-to-base64";
-import { imgPath, userMap } from "../common"
+import { userMap } from "../common"
+import { icon_normal_1,
+        icon_normal_2,
+        icon_normal_3,
+        icon_select_1,
+        icon_select_2,
+        icon_select_3,
+        icon_gray_1,
+        icon_gray_2,
+        icon_gray_3,} from "../../image"
 import { UspSetMealStoreLotsPick, UspLotMealStore } from "./query"
 import ACData = require("adaptivecards-templating");
-
-const icon01 = [
-  "random_01_01.png",
-  "random_01_02.png",
-  "random_01_03.png"
-]
-
-const icon02 = [
-  "random_02_01.png",
-  "random_02_02.png",
-  "random_02_03.png"
-]
 
 export const randomStoreSelect = async (context: TurnContext) => {
   const user = userMap[context.activity.from.id];
@@ -27,17 +23,20 @@ export const randomStoreSelect = async (context: TurnContext) => {
   const data = JSON.parse(row[0].LotData);
 
   const tmpTemplate = JSON.parse(JSON.stringify(randomMealStore));
-  const icon1 = await imageToBase64(imgPath + icon01[0]);
-  const icon2 = await imageToBase64(imgPath + icon01[1]);
-  const icon3 = await imageToBase64(imgPath + icon01[2]);
-
   const card = AdaptiveCards.declare(tmpTemplate).render({
-    icon01: icon1,
-    icon02: icon2,
-    icon03: icon3,
+    select_01_normal: icon_normal_1,
+    select_02_normal: icon_normal_2,
+    select_03_normal: icon_normal_3,
+    select_01_select: icon_select_1,
+    select_02_select: icon_select_2,
+    select_03_select: icon_select_3,
     store01: JSON.stringify({StoreName : data[0].StoreName, Category : data[0].Category, URL : data[0].URL}),
     store02: JSON.stringify({StoreName : data[1].StoreName, Category : data[1].Category, URL : data[1].URL}),
     store03: JSON.stringify({StoreName : data[2].StoreName, Category : data[2].Category, URL : data[2].URL}),
+    LotId: row[0].LotId,
+    StoreId01: data[0].StoreId,
+    StoreId02: data[1].StoreId,
+    StoreId03: data[2].StoreId,
   });
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
 }
@@ -49,21 +48,21 @@ const randomStoreSelectUpdate = async (context: TurnContext) => {
   let icon3 = "";
 
   if(context.activity.value.iconId === 1) {
-    icon1 = await imageToBase64(imgPath + icon02[0]);
+    icon1 = icon_select_1;
   } else {
-    icon1 = await imageToBase64(imgPath + icon01[0]);
+    icon1 = icon_gray_1;
   }
 
   if(context.activity.value.iconId === 2) {
-    icon2 = await imageToBase64(imgPath + icon02[1]);
+    icon2 = icon_select_2;
   } else {
-    icon2 = await imageToBase64(imgPath + icon01[1]);
+    icon2 = icon_gray_2;
   }
 
   if(context.activity.value.iconId === 3) {
-    icon3 = await imageToBase64(imgPath + icon02[2]);
+    icon3 = icon_select_3;
   } else {
-    icon3 = await imageToBase64(imgPath + icon01[2]);
+    icon3 = icon_gray_3;
   }
 
   const cardTemplate = new ACData.Template(tmpTemplate);
@@ -82,6 +81,8 @@ const randomStoreSelectUpdate = async (context: TurnContext) => {
 }
 
 export const openRandomStore = async (context: TurnContext) => {
+  await UspSetMealStoreLotsPick(Number(context.activity.value?.LotId), '', Number(context.activity.value.StoreId));
+
   const tmpTemplate = JSON.parse(JSON.stringify(randomMealStoreOpen));
   const row = JSON.parse(context.activity.value.storeJson);
   

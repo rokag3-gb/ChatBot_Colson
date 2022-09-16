@@ -4,12 +4,18 @@ import viewSecretMessageTemplate from "../../adaptiveCards/viewSecretMessage.jso
 import openSecretMessageTemplate from "../../adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "../../adaptiveCards/sendSecretMessage.json";
 import { CardFactory } from "botbuilder";
-import { imgPath, errorMessageForContext } from "../common"
+import { errorMessageForContext } from "../common"
 import ACData = require("adaptivecards-templating");
 
 import { userMap } from "../common";
-import imageToBase64 from "image-to-base64";
 import { UspSetSendMessage, UspGetSendMessage, UspSetSendMessageOpen, UspGetSendMessageChatid } from "./query";
+
+import { secretMessageIcon1,
+  secretMessageIcon2,
+  secretMessageIcon3,
+  secretMessageBackground1,
+  secretMessageBackground2,
+  secretMessageBackground3,} from "../../image"
          
 export const viewSecretMessage = async (context, id, receiverName) => {
   const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
@@ -90,10 +96,13 @@ export const openSecretMessage = async (context, id, messageId) => {
       return;
     }
     let background = '';
-    try {
-      background = await imageToBase64(imgPath + row.Background);
-    } catch {
-      background = await imageToBase64(imgPath + "background_01.jpg");
+
+    if (row.Background === 'green') {
+      background = secretMessageBackground2;
+    } else if (row.Background === 'brown') {
+      background = secretMessageBackground3;
+    } else {
+      background = secretMessageBackground1;
     }
 
     const replacer = new RegExp('\n', 'g');
@@ -146,14 +155,14 @@ export const sendMessageReaction = async (context, id, activityId, type) => {
 }
 
 const makeData = async (senderNick, receiver, message, background) => {
-  const icon1 = await imageToBase64(imgPath + "background_icon_01.jpg")
-  const icon2 = await imageToBase64(imgPath + "background_icon_02.jpg");
-  const icon3 = await imageToBase64(imgPath + "background_icon_03.jpg");
+  const icon1 = secretMessageIcon1;
+  const icon2 = secretMessageIcon2;
+  const icon3 = secretMessageIcon3
 
   let data: SecretSendCardData;
   let backgroundImage = background;
   if(!backgroundImage) {
-    backgroundImage = "background_01.jpg";
+    backgroundImage = "yellow";
   }
 
   data = {
@@ -164,9 +173,9 @@ const makeData = async (senderNick, receiver, message, background) => {
     IconName2: "green",
     IconName3: "brown",
     backgroundImage: backgroundImage,
-    backgroundImage01: "background_01.jpg",
-    backgroundImage02: "background_02.jpg",
-    backgroundImage03: "background_03.jpg",
+    backgroundImage01: "yellow",
+    backgroundImage02: "green",
+    backgroundImage03: "brown",
     senderNick: senderNick,
     receiver: receiver,
     contents: message,

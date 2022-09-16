@@ -8,11 +8,11 @@ export const UspLotMealStore = async (upn: string): Promise<any[]> => {
   return query(request, `EXEC [IAM].[bot].[Usp_Lot_Meal_Store] @UPN`);
 }
 
-export const UspSetMealStoreLotsPick = async (LotId: Int16Array, SaveId: string, PickedStoreId: Int16Array): Promise<any[]> => {
+export const UspSetMealStoreLotsPick = async (LotId: number, SaveId: string, PickedStoreId: number): Promise<any[]> => {
   const request = new sql.Request();
-  request.input('LotId', sql.VarChar, LotId);
+  request.input('LotId', sql.Int, LotId);
   request.input('SaveId', sql.VarChar, SaveId);
-  request.input('PickedStoreId', sql.VarChar, PickedStoreId);
+  request.input('PickedStoreId', sql.Int, PickedStoreId);
 
-  return query(request, `EXEC [IAM].[bot].[Usp_Set_Meal_Store_Lots_Pick] @StoreName, @SaveId, @CategoryCSV`);
+  return query(request, `EXEC [IAM].[bot].[Usp_Set_Meal_Store_Lots_Pick] @LotId, @SaveId, @PickedStoreId`);
 }

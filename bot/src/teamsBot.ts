@@ -65,7 +65,6 @@ export class TeamsBot extends TeamsActivityHandler {
             await sendBirthdayCard();
           } else {
             await checkConversation(context, txt);
-         //   await sorryMessage();
           }
         } else if(context.activity.value) {
           if (context.activity.value.messageType === "getWorkplaceForm") {
