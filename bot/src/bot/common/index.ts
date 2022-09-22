@@ -1,6 +1,7 @@
 import { bot } from "../../internal/initialize";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import sendCommandTemplate from "../../adaptiveCards/sendCommand.json";
+import sendCommandListTemplate from "../../adaptiveCards/sendCommandList.json";
 import { CardFactory } from "botbuilder";
 import { sql } from "../../mssql"
 import { Member } from "@microsoft/teamsfx"
@@ -165,47 +166,8 @@ export const sorryMessage = async (context) => {
 }
 
 export const viewCommandList = async(context) => {
-  await context.sendActivity( `콜슨은 버튼 클릭하는 방식 외에도, 명령어 입력 방식으로도 활용 가능합니다. 
-  
-  아래 명령어 예시를 참고하시기 바랍니다.
-
-  ㅤ
-
-  \`홈\`, \`HOME\` -> 홈 화면 표시
-
-  ㅤ
-  
-  \`/?\`, \`/help\` -> 명령어 목록 화면 표시
-
-  ㅤ
-  
-  \`근무지 홍길동\` -> 홍길동 님의 14일 간의 근무지 데이터 조회 (공휴일 제외)
-
-  ㅤ
-  
-  \`근무지 홍길동 10\` -> 홍길동 님의 10일 간의 근무지 데이터 조회 (공휴일 제외)
-
-  ㅤ
-  
-  \`근무지 등록\` -> 근무지 등록 화면 표시
-
-  ㅤ
-  
-  \`메시지\` -> 받는사람이 공백인 상태로 익명 메시지 발송 화면 표시
-
-  ㅤ
-  
-  \`메시지 홍길동\` -> 받는사람이 홍길동인 상태로 익명 메시지 발송 화면 표시
-
-  ㅤ
-  
-  \`비플식권페이\`, \`비식페\`, \`식사\`, \`점심\`, \`식당\` -> 비플식권페이 가맹점 조회 화면 표시
-  
-  *예시) 점심 순대, 식당 푸르지오, 식사 테크노10층*
-
-  ㅤ
-  
-  \`식사랜덤\`, \`점심랜덤\`, \`랜덤식사\` -> 식사 랜덤 뽑기 화면 표시`);
+  const card = AdaptiveCards.declare(sendCommandListTemplate).render();
+  await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
 }
       
 export const query = async (request: any, query: string): Promise<any[]> => {

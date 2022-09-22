@@ -39,7 +39,7 @@ export class TeamsBot extends TeamsActivityHandler {
             await setWorkplaceForm(context, context.activity.from.id, text[2], 'work', null, null);
           } else if (text[0] === '근무지') {
             await getWorkplace(context, text[1], Number(text[2]));
-          } else if (text[0] === '홈' || text[0].toLowerCase() === 'home' || text[0] === 'ㅎ') {
+          } else if (text[0] === '홈' || text[0].toLowerCase() === 'home' || text[0] === 'ㅎ' || text[0] === '콜슨' || text[0] === 'colson') {
             await sendCommand(context);
           } else if (text[0] === '메시지' || text[0] === '메세지') {
             await viewSecretMessage(context, context.activity.from.id, text[1]);
