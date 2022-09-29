@@ -27,18 +27,3 @@ export const UspSetAppLog = async (ts: string, upn: string, body: string): Promi
 
   return query(request, `EXEC [IAM].[bot].[Usp_Set_App_Log] @ts, @appId, @upn, @body`);
 }
-
-export const UspGetTeam = async (upn: string): Promise<any[]> => {
-  const request = new sql.Request();
-  request.input('UPN', sql.VarChar, upn);
-
-  return query(request, `EXEC [IAM].[bot].[Usp_Get_Teams] @UPN`);
-}
-
-export const UspGetWorkplaceTeam = async (startDate: string, endDate: string, team: string): Promise<any[]> => {
-  const request = new sql.Request();
-  request.input('startDate', sql.VarChar, startDate);
-  request.input('endDate', sql.VarChar, endDate);
-  request.input('team', sql.VarChar, team);
-  return query(request, `EXEC [IAM].[bot].[Usp_Get_Workplace_TeamUsers] @startDate, @endDate, @team`);
-}

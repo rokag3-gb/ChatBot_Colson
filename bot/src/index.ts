@@ -5,15 +5,11 @@ import { getUserList,
          insertLog,
          userCount,
          userMap } from "./bot/common";
-import { setWorkplaceForm } from "./bot/setWorkplace";
-import { sendBirthdayCard } from "./bot/birthMessage";
 import { connected } from "./mssql"
 import { TeamsBot } from "./teamsBot";
 import { Logger } from "./logger";
 
-import { UspGetWorkplaceTeam, UspGetTeam } from "./bot/common/query";
-
-const cron = require('node-cron');
+import { routerInstance } from "./bot/api";
 
 import { BotFrameworkAdapter, TurnContext } from "botbuilder";
 
@@ -55,9 +51,14 @@ server.listen(process.env.port || process.env.PORT || 3978, () => {
   console.log(`\nBot Started, ${server.name} listening to ${server.url}`);
 });
 
+server.use(restify.plugins.bodyParser());
+server.use(restify.plugins.queryParser());
+
+
+
+
+
 server.post("/api/messages", 
-restify.plugins.bodyParser(),
-restify.plugins.authorizationParser(),
 async (req, res) => {
   Logger.info(JSON.stringify(req.body));
 
@@ -103,55 +104,27 @@ server.use(
   }
 );
 
-server.get("/api/getWorkplace", 
-restify.plugins.queryParser(),
-async (req, res) => { 
-  const row = await UspGetWorkplaceTeam(req.query["startDate"], req.query["endDate"], req.query["team"]);
-  res.json(row);
-});
-
-server.get("/api/getTeam", 
-restify.plugins.queryParser(),
-async (req, res) => {  
-  const row = await UspGetTeam(req.query["UPN"]);
-  res.json(row);
-});
-
-//앱서비스의 기본 시간대가 UTC 기준이고 이게 생각보다 자주 초기화 되어서 UTC 기준으로 크론을 작성함
-//휴가자 제외한 전직원에게 근무지 입력 카드 전송
-cron.schedule('00 00 00 * * *', async () => {
-  Logger.info('setWorkplaceForm send 좋은 아침입니다!');
-  await setWorkplaceForm(null, null, null, 'send', '좋은 아침입니다!', 'am');
-});
-
-//근무지 입력 안한 사람들에게 카드 전송
-cron.schedule('00 00 1 * * *', async () => {  
-  Logger.info('setWorkplaceForm resend 좋은 아침입니다!');
-  await setWorkplaceForm(null, null, null, 'resend', '좋은 아침입니다!', 'am');
-});
-
-cron.schedule('00 00 05 * * *', async () => {
-  Logger.info('setWorkplaceForm resend 점심 식사 맛있게 하셨나요!');
-  await setWorkplaceForm(null, null, null, 'resend', '점심 식사 맛있게 하셨나요!', null);
-});
-
-cron.schedule('00 30 08 * * *', async () => {  
-  Logger.info('setWorkplaceForm send 오늘 하루도 고생많으셨습니다.');
-  await setWorkplaceForm(null, null, null, 'send', '오늘 하루도 고생많으셨습니다.', 'pm');
-});
-
-//생일자에게 카드 전송
-cron.schedule('00 30 01 * * *', async () => {  
-  Logger.info('sendBirthdayCard start');
-  await sendBirthdayCard();
-});
 
 
-/*테스트코드*/
-/*
-cron.schedule('00 50 06 * * *', async () => {
-  console.time('schedule');
-  await setWorkplaceFormTest(null, null, null, 'send', '좋은 아침입니다!', 'am');
-  console.timeEnd('schedule');
-});
-*/
+
+
+
+function unknownMethodHandler(req, res) {
+  if (req.method.toLowerCase() === 'options') {
+    var allowHeaders = ['Accept', 'Accept-Version', 'Content-Type', 'Api-Version', 'Origin', 'X-Requested-With', 'Authorization']; // added Origin & X-Requested-With & **Authorization**
+
+    if (res.methods.indexOf('OPTIONS') === -1) res.methods.push('OPTIONS');
+
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Headers', allowHeaders.join(', '));
+    res.header('Access-Control-Allow-Methods', res.methods.join(', '));
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
+
+    return res.send(200);
+ } else {
+ }
+}
+
+server.on('MethodNotAllowed', unknownMethodHandler);
+
+routerInstance.applyRoutes(server, '/api');
