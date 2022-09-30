@@ -10,6 +10,8 @@ import { Logger } from "./logger";
 
 import { routerInstance } from "./bot/api";
 
+import { initCron } from "./schedule";
+
 import { BotFrameworkAdapter, TurnContext } from "botbuilder";
 
 
@@ -17,6 +19,8 @@ const adapter = new BotFrameworkAdapter({
   appId: process.env.BOT_ID,
   appPassword: process.env.BOT_PASSWORD,
 });
+
+initCron();
 
 const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
   console.error(`\n [onTurnError] unhandled error: ${error}`);
