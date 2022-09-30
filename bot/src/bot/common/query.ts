@@ -1,29 +1,51 @@
-import { sql } from "../../mssql"
+import { getRequest } from "../../mssql"
+const sql = require('mssql');
 import { query } from "./index"
 
 export const UspSetAppUser = async (id: string, upn: string, userObject: string): Promise<any[]> => {
-  const request = new sql.Request();
+  const request = await getRequest();
   request.input('appId', sql.VarChar, process.env.BOT_ID);
   request.input('userId', sql.VarChar, id);
   request.input('upn', sql.VarChar, upn);
   request.input('userObject', sql.VarChar, userObject);
 
-  return query(request, `EXEC [IAM].[bot].[Usp_Set_App_User] @appId, @upn, @userId, @userObject`);
+  return query(request, `EXEC [IAM].[bot].[Usp_Set_App_User] @appId, @upn, @userId, @userObject`)
 }
 
 export const UspGetUsers = async (): Promise<any[]> => {
-  const request = new sql.Request();
+  const request = await getRequest();
   request.input('appId', sql.VarChar, process.env.BOT_ID);
 
   return query(request, `EXEC [IAM].[bot].[Usp_Get_Users] @appId`);
 }
 
 export const UspSetAppLog = async (ts: string, upn: string, body: string): Promise<any[]> => {
-  const request = new sql.Request();
+  const request = await getRequest();
   request.input("ts", sql.VarChar, ts) ;
   request.input('appId', sql.VarChar, process.env.BOT_ID);
   request.input('upn', sql.VarChar, upn);
   request.input('body', sql.VarChar, body);
 
   return query(request, `EXEC [IAM].[bot].[Usp_Set_App_Log] @ts, @appId, @upn, @body`);
+}
+
+export const UspGetGroupChat = async (): Promise<any[]> => {
+  const request = await getRequest();
+  request.input('appId', sql.VarChar, process.env.BOT_ID);
+
+  return query(request, `EXEC [IAM].[bot].[Usp_Get_GroupChat] @appId`);
+}
+
+export const UspSetGroupChat = async (id: string, name: string, object: string): Promise<any[]> => {
+  const request = await getRequest();
+  if(!name) {
+    name = '';
+  }
+
+  request.input('AppId', sql.VarChar, process.env.BOT_ID);
+  request.input('GroupId', sql.VarChar, id);
+  request.input('GroupName', sql.VarChar, name);
+  request.input('GroupChatObject', sql.VarChar, object);
+
+  return query(request, `EXEC [IAM].[bot].[Usp_Set_App_GroupChat] @AppId, @GroupId, @GroupName, @GroupChatObject`);
 }

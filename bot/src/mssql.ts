@@ -1,8 +1,4 @@
-export const sql = require('mssql');
-import { getUserList, insertLog, userRegister, } from "./bot/common"
-import { Logger }  from "./logger";
-
-export let connected = false;
+const sql = require('mssql');
 
 const config = {
     user: 'user_web',
@@ -13,23 +9,6 @@ const config = {
     stream: true
 };
 
-sql.connect(config, async function(err){
-    if(err){
-        return console.error('error : ', err);
-    }
-    console.log('MSSQL 연결 완료 초기설정 시작');
-    Logger.info('MSSQL 연결 완료 초기설정 시작');
-    connected = true;
-
-    try {
-        await userRegister(null);
-        await getUserList(null);
-    } catch(e) {
-        Logger.error(JSON.stringify(e));
-        insertLog('', JSON.stringify(e));
-        console.log(e);
-    }
-
-    Logger.info('초기설정 완료');
-    console.log('초기설정 완료');
-});
+export const getRequest = async () => {
+    return (await sql.connect(config)).request();
+}

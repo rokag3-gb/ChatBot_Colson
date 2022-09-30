@@ -1,8 +1,9 @@
-import { sql } from "../../mssql"
+import { getRequest } from "../../mssql"
+const sql = require('mssql');
 import { query } from "../common";
 
 export const UspSetSendMessage = async (UPN: string, senderNick: string, reciver: string, message: string, background: string): Promise<any[]> => {
-  const request = new sql.Request();
+  const request = await getRequest();
   request.input('AppId', sql.VarChar, process.env.BOT_ID);
   request.input('Sender', sql.VarChar, UPN);
   request.input('SenderNick', sql.NVarChar, senderNick);
@@ -14,14 +15,14 @@ export const UspSetSendMessage = async (UPN: string, senderNick: string, reciver
 }
 
 export const UspGetSendMessage = async (messageId: string): Promise<any[]> => {
-  const request = new sql.Request();
+  const request = await getRequest();
   request.input('MsgId', sql.BigInt, messageId);
 
   return query(request, `EXEC [IAM].[bot].[Usp_Get_Send_Message] @MsgId`);
 }
 
 export const UspSetSendMessageOpen = async (messageId: string, openedChatId: string): Promise<any[]> => {
-  const request = new sql.Request();
+  const request = await getRequest();
   request.input('MsgId', sql.BigInt, messageId);
   request.input('OpenedChatId', sql.VarChar, openedChatId);
 
@@ -29,7 +30,7 @@ export const UspSetSendMessageOpen = async (messageId: string, openedChatId: str
 }
 
 export const UspGetSendMessageChatid = async (activityId: string): Promise<any[]> => {
-  const request = new sql.Request();
+  const request = await getRequest();
   request.input('AppId', sql.VarChar, process.env.BOT_ID);
   request.input('OpenedChatId', sql.VarChar, activityId);
 

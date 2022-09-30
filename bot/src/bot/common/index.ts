@@ -3,15 +3,17 @@ import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import sendCommandTemplate from "../../adaptiveCards/sendCommand.json";
 import sendCommandListTemplate from "../../adaptiveCards/sendCommandList.json";
 import { CardFactory } from "botbuilder";
-import { sql } from "../../mssql"
-import { Member } from "@microsoft/teamsfx"
-import { UspSetAppUser, UspGetUsers, UspSetAppLog } from "./query"
+import { getRequest } from "../../mssql"
+const sql = require('mssql');
+import { Member, TeamsBotInstallation } from "@microsoft/teamsfx"
+import { UspSetAppUser, UspGetUsers, UspSetAppLog, UspSetGroupChat, UspGetGroupChat } from "./query"
 import { pushPeople } from "../conversation"
 import { Logger } from "../../logger";
 
 export const userMap = new Object();
+export const groupChatMap = new Object();
 export let userCount = 0;
-export let parent = null;
+export let parent:TeamsBotInstallation = null;
 
 export const getToday = (day) => {
   const now = new Date();
@@ -57,29 +59,36 @@ export const userRegister = async (userId) => {
 
   const installations = await bot.notification.installations();
   let first = true;
-  for (const target of installations) {
-    try {
-      const members = await target.members();
-      for(const member of members) {
-        if(member.account.id.indexOf(userId) >= 0 || userId === null) {
-          try {
-            if(first) {
-              first = false;
-              userCount = members.length;
-              parent = member.parent;
-            }
 
-            await UspSetAppUser(member.account.id, member.account.userPrincipalName, JSON.stringify(member));
-            userMap[member.account.id] = member;
-          } catch (e) {
-            Logger.error('userRegister ERROR!! ' + e);
-            console.log('userRegister ERROR!! ' + e);
+  for (const target of installations) {    
+    if(target.type === 'Person') {    
+      try {
+        const members = await target.members();
+        for(const member of members) {
+          if(member.account.id.indexOf(userId) >= 0 || userId === null) {
+            try {
+              if(first) {
+                first = false;
+                userCount = members.length;
+                parent = member.parent;
+              }
+
+              await UspSetAppUser(member.account.id, member.account.userPrincipalName, JSON.stringify(member));
+              userMap[member.account.id] = member;
+            } catch (e) {
+              Logger.error('userRegister ERROR!! ' + e);
+              console.log('userRegister ERROR!! ' + e);
+            }
           }
         }
+      } catch (e) {
+        Logger.error('userRegister ERROR!! ' + e);
+        console.log('userRegister ERROR2!! ' + e);
       }
-    } catch (e) {
-      Logger.error('userRegister ERROR!! ' + e);
-      console.log('userRegister ERROR2!! ' + e);
+    } else if (target.type === 'Group') {
+      await UspSetGroupChat(target.conversationReference.conversation.id, target.conversationReference.conversation.name, JSON.stringify(target));
+      groupChatMap[target.conversationReference.conversation.id] = target;
+      console.log('userRegister ' + target.conversationReference.conversation.id);
     }
   }
   Logger.info('userRegister complete');
@@ -110,8 +119,24 @@ export const getUserList = async (userId) => {
   console.log('getUserList complete');
 }
 
+export const getGroupChatList = async (groupChatId) => {
+  const rows = await UspGetGroupChat();
+  for(const row of rows) {
+    const groupChat = groupChatMap[row.groupChatId];
+    if(!groupChat && row.GroupChatObject) {
+      const tmpTarget = <TeamsBotInstallation>JSON.parse(row.GroupChatObject);
+      const groupTarget = <TeamsBotInstallation>new TeamsBotInstallation(parent.adapter, tmpTarget.conversationReference);
+      
+      groupChatMap[groupTarget.conversationReference.conversation.id] = groupTarget;
+      console.log('getGroupChatList ' + groupTarget.conversationReference.conversation.id);
+    }
+  }
+  Logger.info('getGroupChatList complete');
+  console.log('getGroupChatList complete');
+}
+
 export const insertLog = async (userId, body) => {
-  const request = new sql.Request();
+  const request = await getRequest();
   request.stream = true;
 
   let userPrincipalName = '';
@@ -192,3 +217,34 @@ export const query = async (request: any, query: string): Promise<any[]> => {
     }
   });
 }
+
+export const SendGroupChatMessage = async (id: string, message: string) => {
+  if(!id || !message) {
+    console.log(' id = ' + id);
+    console.log(' message = ' + message);
+    return "Invalid message";
+  }
+
+  const groupChat = <TeamsBotInstallation>groupChatMap[id];
+  if(!groupChat) {
+    return "Invalid chat Id";
+  }
+
+  return JSON.stringify(await groupChat.sendMessage(message));
+}
+
+const initialize = async () => {
+  try {
+    console.log(' Colson initialize Start! ');
+    await userRegister(null);
+    await getUserList(null);
+    await getGroupChatList(null);
+  } catch(e) {
+      Logger.error(JSON.stringify(e));
+      insertLog('', JSON.stringify(e));
+      console.log(e);
+  }
+  console.log(' Colson initialize Complete! ');
+}
+
+initialize();

@@ -5,7 +5,6 @@ import { getUserList,
          insertLog,
          userCount,
          userMap } from "./bot/common";
-import { connected } from "./mssql"
 import { TeamsBot } from "./teamsBot";
 import { Logger } from "./logger";
 
@@ -54,19 +53,10 @@ server.listen(process.env.port || process.env.PORT || 3978, () => {
 server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.queryParser());
 
-
-
-
-
 server.post("/api/messages", 
 async (req, res) => {
   Logger.info(JSON.stringify(req.body));
-
-  if(!connected) {
-    console.log('server not initialized');
-    await bot.requestHandler(req, res);
-    return;
-  }
+  
   insertLog(req.body.from.id, JSON.stringify(req.body));
   if(!req.body.from || !req.body.from.id) {
     await bot.requestHandler(req, res);
@@ -103,11 +93,6 @@ server.use(
     return next();
   }
 );
-
-
-
-
-
 
 function unknownMethodHandler(req, res) {
   if (req.method.toLowerCase() === 'options') {
