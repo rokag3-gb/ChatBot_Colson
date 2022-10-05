@@ -43,7 +43,7 @@ export class TeamsBot extends TeamsActivityHandler {
             await sendCommand(context);
           } else if (text[0] === '메시지' || text[0] === '메세지') {
             await viewSecretMessage(context, context.activity.from.id, text[1]);
-          } else if (txt === '식사 랜덤' || txt === '랜덤 식사' || txt === '식당 랜덤' || txt === '랜덤 식당' || 
+          } else if (txt === '식사 랜덤' || txt === '랜덤 식사' || txt === '식당 랜덤' || txt === '랜덤 식당' || txt === '점심 랜덤' || 
           text[0] === '랜덤' || text[0] === '식사랜덤' || text[0] === '랜덤식사' || 
           text[0] === '랜덤식당' || text[0] === '식당랜덤' || text[0] === '점심랜덤') {
             await randomStoreSelect(context);

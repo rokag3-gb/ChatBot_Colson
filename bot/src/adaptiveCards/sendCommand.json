@@ -68,7 +68,7 @@
       "actions": [
         {
           "type": "Action.Submit",
-          "title": "식사랜덤뽑기",
+          "title": "점심랜덤뽑기",
           "data": {
             "messageType": "randomStoreSelect"
           }
