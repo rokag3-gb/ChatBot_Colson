@@ -56,7 +56,6 @@ export const userRegister = async (userId) => {
   }
 
   const installations = await bot.notification.installations();
-  let first = true;
 
   for (const target of installations) {    
     if(target.type === 'Person') {    
@@ -65,10 +64,9 @@ export const userRegister = async (userId) => {
         for(const member of members) {
           if(member.account.id.indexOf(userId) >= 0 || userId === null) {
             try {
-              if(first) {
-                first = false;
-                userCount = members.length;
+              if(!parent) {
                 parent = member.parent;
+                userCount = members.length;
               }
 
               await UspSetAppUser(member.account.id, member.account.userPrincipalName, JSON.stringify(member));
@@ -83,14 +81,30 @@ export const userRegister = async (userId) => {
         Logger.error('userRegister ERROR!! ' + e);
         console.log('userRegister ERROR2!! ' + e);
       }
-    } else if (target.type === 'Group') {
+    }
+  }
+  Logger.info('userRegister complete');
+  console.log('userRegister complete');
+}
+
+export const groupRegister = async (groupId: string) => {
+  const installations = await bot.notification.installations();
+
+  for (const target of installations) {    
+    if (target.type === 'Group') {
+      if(!parent) {
+        const members = await target.members();
+        if(members.length >= 1) {
+          parent = members[0].parent;
+        }
+      }
       await UspSetGroupChat(target.conversationReference.conversation.id, target.conversationReference.conversation.name, JSON.stringify(target));
       groupChatMap[target.conversationReference.conversation.id] = target;
       console.log('userRegister ' + target.conversationReference.conversation.id);
     }
   }
-  Logger.info('userRegister complete');
-  console.log('userRegister complete');
+  Logger.info('groupRegister complete');
+  console.log('groupRegister complete');
 }
 
 export const getUserList = async (userId) => {
@@ -121,7 +135,7 @@ export const getGroupChatList = async () => {
   const rows = await UspGetGroupChat();
   for(const row of rows) {
     const groupChat = groupChatMap[row.groupChatId];
-    if(!groupChat && row.GroupChatObject) {
+    if(!groupChat && row.GroupChatObject && parent) {
       const tmpTarget = <TeamsBotInstallation>JSON.parse(row.GroupChatObject);
       const groupTarget = <TeamsBotInstallation>new TeamsBotInstallation(parent.adapter, tmpTarget.conversationReference);
       

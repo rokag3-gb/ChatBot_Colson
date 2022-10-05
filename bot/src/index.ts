@@ -2,33 +2,41 @@ import * as restify from "restify";
 import { bot } from "./internal/initialize";
 import { getUserList,
          userRegister,
+         groupRegister,
          getGroupChatList,
          insertLog,
          userCount,
-         userMap } from "./bot/common";
+         userMap,
+         groupChatMap, } from "./bot/common";
 import { TeamsBot } from "./teamsBot";
 import { Logger } from "./logger";
-
 import { routerInstance } from "./bot/api";
-
 import { initCron } from "./schedule";
-
 import { BotFrameworkAdapter, TurnContext } from "botbuilder";
-
 
 const adapter = new BotFrameworkAdapter({
   appId: process.env.BOT_ID,
   appPassword: process.env.BOT_PASSWORD,
 });
 
-const initServer = async () => {
-  await initCron();
-  await userRegister(null);
-  await getUserList(null);
-  await getGroupChatList();
+const initialize = async () => {
+  try {
+    console.log(' Colson initialize Start! ');
+    await userRegister(null);
+    await groupRegister(null);
+
+    await getUserList(null);
+    await getGroupChatList();
+    await initCron();
+  } catch(e) {
+      Logger.error(JSON.stringify(e));
+      insertLog('', JSON.stringify(e));
+      console.log(e);
+  }
+  console.log(' Colson initialize Complete! ');
 }
 
-initServer();
+initialize();
 
 const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
   console.error(`\n [onTurnError] unhandled error: ${error}`);
@@ -81,6 +89,8 @@ async (req, res) => {
       await bot.requestHandler(req, res);
       await userRegister(req.body.from.id);
       await getUserList(req.body.from.id);
+      await groupRegister(null);
+      await getGroupChatList();
     } catch(e) {
       Logger.error(JSON.stringify(e));
       insertLog(req.body.from.id, JSON.stringify(e));
@@ -90,6 +100,15 @@ async (req, res) => {
     await bot.requestHandler(req, res);
     await userRegister(null);
     await getUserList(null);
+    await groupRegister(null);
+    await getGroupChatList();
+  } else if(req.body.conversation && req.body.conversation.isGroup) {
+    await bot.requestHandler(req, res);
+    const group = groupChatMap[req.body.conversation.id];
+    if(!group) {
+      await groupRegister(null);
+      await getGroupChatList();
+    }
   }
 
   await adapter.processActivity(req, res, async (context) => {
