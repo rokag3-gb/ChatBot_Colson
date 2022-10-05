@@ -8,6 +8,10 @@ import {
   UspDeleteTag,
 } from "./query"
 
+import { TeamsBotInstallation } from "@microsoft/teamsfx"
+
+import { groupChatMap } from "../common"
+
 export const routerInstance = new Router();
 
 routerInstance.get('/getWorkplace', async (req, res) => {
@@ -39,3 +43,23 @@ routerInstance.del('/tag', async (req, res) => {
   const row = await UspDeleteTag(Number(req.query["storeId"]), req.query["tag"]);
   res.json(row);
 });
+
+routerInstance.post("/sendGroupMessage", 
+async (req, res) => {  
+  const row = await SendGroupMessage(req.body.id, req.body.message);
+  res.json(row);
+});
+
+export const SendGroupMessage = async (id: string, message: string) => {
+  if(!id || !message) {
+    return "Invalid request";
+  }
+
+  const groupChat = <TeamsBotInstallation>groupChatMap[id];
+  console.log(JSON.stringify(groupChatMap));
+  if(!groupChat) {
+    return "Invalid chat Id";
+  }
+
+  return JSON.stringify(await groupChat.sendMessage(message));
+}

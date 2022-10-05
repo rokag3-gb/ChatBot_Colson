@@ -2,6 +2,7 @@ import * as restify from "restify";
 import { bot } from "./internal/initialize";
 import { getUserList,
          userRegister,
+         getGroupChatList,
          insertLog,
          userCount,
          userMap } from "./bot/common";
@@ -20,7 +21,14 @@ const adapter = new BotFrameworkAdapter({
   appPassword: process.env.BOT_PASSWORD,
 });
 
-initCron();
+const initServer = async () => {
+  await initCron();
+  await userRegister(null);
+  await getUserList(null);
+  await getGroupChatList();
+}
+
+initServer();
 
 const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
   console.error(`\n [onTurnError] unhandled error: ${error}`);

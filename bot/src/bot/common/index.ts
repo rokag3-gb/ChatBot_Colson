@@ -3,8 +3,6 @@ import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import sendCommandTemplate from "../../adaptiveCards/sendCommand.json";
 import sendCommandListTemplate from "../../adaptiveCards/sendCommandList.json";
 import { CardFactory } from "botbuilder";
-import { getRequest } from "../../mssql"
-const sql = require('mssql');
 import { Member, TeamsBotInstallation } from "@microsoft/teamsfx"
 import { UspSetAppUser, UspGetUsers, UspSetAppLog, UspSetGroupChat, UspGetGroupChat } from "./query"
 import { pushPeople } from "../conversation"
@@ -119,7 +117,7 @@ export const getUserList = async (userId) => {
   console.log('getUserList complete');
 }
 
-export const getGroupChatList = async (groupChatId) => {
+export const getGroupChatList = async () => {
   const rows = await UspGetGroupChat();
   for(const row of rows) {
     const groupChat = groupChatMap[row.groupChatId];
@@ -136,9 +134,6 @@ export const getGroupChatList = async (groupChatId) => {
 }
 
 export const insertLog = async (userId, body) => {
-  const request = await getRequest();
-  request.stream = true;
-
   let userPrincipalName = '';
   const user = userMap[userId]
 
@@ -232,19 +227,3 @@ export const SendGroupChatMessage = async (id: string, message: string) => {
 
   return JSON.stringify(await groupChat.sendMessage(message));
 }
-
-const initialize = async () => {
-  try {
-    console.log(' Colson initialize Start! ');
-    await userRegister(null);
-    await getUserList(null);
-    await getGroupChatList(null);
-  } catch(e) {
-      Logger.error(JSON.stringify(e));
-      insertLog('', JSON.stringify(e));
-      console.log(e);
-  }
-  console.log(' Colson initialize Complete! ');
-}
-
-initialize();

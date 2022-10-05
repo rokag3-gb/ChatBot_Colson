@@ -27,14 +27,16 @@
         {
             "botId": "{{state.fx-resource-bot.botId}}",
             "scopes": [
-                "personal"
+                "personal",
+                "groupchat"
             ],
             "supportsFiles": false,
             "isNotificationOnly": false,
             "commandLists": [
                 {
                     "scopes": [
-                        "personal"
+                        "personal",
+                        "groupchat"
                     ],
                     "commands": [
                         {
