@@ -11,7 +11,7 @@ export const getBirthdayLink = async (): Promise<any[]> => {
 export const getBirthdayUser = async (): Promise<any[]> => {
   const request = await getRequest();
   request.input('appId', sql.VarChar, process.env.BOT_ID);
-  return query(request, `EXEC [IAM].[bot].[Usp_Get_Users_Birthday_Upcoming] @appId`);
+  return query(request, `EXEC [IAM].[bot].[Usp_Get_Users_Birthday_Upcoming] @appid = @appId`);
 }
 
 export const setSendBirth = async (receiver: string, birthDate: string): Promise<any[]> => {

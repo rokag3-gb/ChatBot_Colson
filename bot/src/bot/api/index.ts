@@ -35,12 +35,12 @@ routerInstance.get('/tag', async (req, res) => {
 });
 
 routerInstance.post('/tag', async (req, res) => {
-  const row = await UspSetTag(Number(req.body["storeId"]), req.body["tag"]);
+  const row = await UspSetTag(Number(req.body["storeId"]), req.body["tag"], req.body["UPN"]);
   res.json(row);
 });
 
 routerInstance.del('/tag', async (req, res) => {
-  const row = await UspDeleteTag(Number(req.query["storeId"]), req.query["tag"]);
+  const row = await UspDeleteTag(Number(req.query["storeId"]), req.query["tag"], req.query["UPN"]);
   res.json(row);
 });
 
