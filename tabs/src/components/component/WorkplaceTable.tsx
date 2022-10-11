@@ -1,7 +1,7 @@
 import "./WorkplaceTable.css";
 import { WorkplaceSelect } from './WorkplaceSelect'
 
-export const WorkplaceTable = ({tableData, date, name}: any) => {
+export const WorkplaceTable = ({tableData, userName, date, name}: any) => {
   if(!tableData || !date || !name) {
     return (<div></div>);
   }
@@ -54,7 +54,9 @@ export const WorkplaceTable = ({tableData, date, name}: any) => {
               {date?.map((d: string) => {
                 return (
                   <td> 
-                    <WorkplaceSelect workplaceData={tableData?.get(`${d}${n}오전`)?tableData?.get(`${d}${n}오전`):'ㅤ'} />
+                    {userName!==n?
+                    tableData?.get(`${d}${n}오전`)?tableData?.get(`${d}${n}오전`):'ㅤ':
+                    <WorkplaceSelect workplaceData={tableData?.get(`${d}${n}오전`)?tableData?.get(`${d}${n}오전`):'ㅤ'} />}
                   </td>
                 )
               })}
@@ -63,7 +65,9 @@ export const WorkplaceTable = ({tableData, date, name}: any) => {
               {date?.map((d: string) => {
                 return (
                   <td> 
-                    <WorkplaceSelect workplaceData={tableData?.get(`${d}${n}오후`)?tableData?.get(`${d}${n}오후`):'ㅤ'} /> 
+                    {userName!==n?
+                    tableData?.get(`${d}${n}오후`)?tableData?.get(`${d}${n}오후`):'ㅤ':
+                    <WorkplaceSelect workplaceData={tableData?.get(`${d}${n}오후`)?tableData?.get(`${d}${n}오후`):'ㅤ'} />}
                   </td>
                 )
               })}

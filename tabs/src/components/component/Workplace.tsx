@@ -40,6 +40,7 @@ export function Workplace(props: { environment?: string }) {
   const [team, setTeam] = useState('');
   
   const [tableData, setTableData] = useState<Map<string, string>>();
+  const [userName, setUserName] = useState<string>('');
   const [date, setDate] = useState<string[]>();
   const [name, setName] = useState<string[]>();
   const [options, setOptions] = useState<any[]>();
@@ -88,6 +89,10 @@ export function Workplace(props: { environment?: string }) {
         }
         nameSet.add(data.DisplayName);
         obj.set(dateText + data.DisplayName + data.WorkTimeKR, data.Workplace);
+
+        if(userName === '' && data.UPN === UPN) {
+          setUserName(data.DisplayName);
+        }
       }
       
       setDate(Array.from(dateSet).sort());
@@ -145,7 +150,7 @@ export function Workplace(props: { environment?: string }) {
               />
             </div>
           </div>
-          <WorkplaceTable tableData={tableData} date={date} name={name} />
+          <WorkplaceTable tableData={tableData} date={date} name={name} userName={userName}/>
         </div>
       </div>
     </div>
