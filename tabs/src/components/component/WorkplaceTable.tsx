@@ -1,4 +1,5 @@
 import "./WorkplaceTable.css";
+import { WorkplaceSelect } from './WorkplaceSelect'
 
 export const WorkplaceTable = ({tableData, date, name}: any) => {
   if(!tableData || !date || !name) {
@@ -52,14 +53,18 @@ export const WorkplaceTable = ({tableData, date, name}: any) => {
               <tr>
               {date?.map((d: string) => {
                 return (
-                  <td> {tableData?.get(`${d}${n}오전`)?tableData?.get(`${d}${n}오전`):'ㅤ'} </td>
+                  <td> 
+                    <WorkplaceSelect workplaceData={tableData?.get(`${d}${n}오전`)?tableData?.get(`${d}${n}오전`):'ㅤ'} />
+                  </td>
                 )
               })}
               </tr>
               <tr>
               {date?.map((d: string) => {
                 return (
-                  <td> {tableData?.get(`${d}${n}오후`)?tableData?.get(`${d}${n}오후`):'ㅤ'} </td>
+                  <td> 
+                    <WorkplaceSelect workplaceData={tableData?.get(`${d}${n}오후`)?tableData?.get(`${d}${n}오후`):'ㅤ'} /> 
+                  </td>
                 )
               })}
               </tr>
