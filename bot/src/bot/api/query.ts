@@ -44,3 +44,13 @@ export const UspDeleteTag = async (storeId: number, tag: string, UPN: string): P
   request.input('UPN', sql.VarChar, UPN);
   return query(request, `EXEC [IAM].[bot].[Usp_Set_Meal_Store_Tag_Delete] @StoreId, @Tag, @UPN`);
 }
+         
+export const UspSetWorkplace = async (workDate: string, upn: string, workCodeAM: string, workCodePM: string): Promise<any[]> => {
+  const request = await getRequest();
+  request.input("WorkDate", sql.VarChar, workDate) ;
+  request.input('UPN', sql.VarChar, upn);
+  request.input('WorkCodeAM', sql.VarChar, workCodeAM);
+  request.input('WorkCodePM', sql.VarChar, workCodePM);
+  request.input('SaverUPN', sql.VarChar, upn);
+  return query(request, `EXEC [IAM].[bot].[Usp_Set_Workplace] @WorkDate, @UPN, @WorkCodeAM, @WorkCodePM, @SaverUPN`);
+}

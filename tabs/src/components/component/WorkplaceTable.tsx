@@ -1,10 +1,11 @@
 import "./WorkplaceTable.css";
 import { WorkplaceSelect } from './WorkplaceSelect'
 
-export const WorkplaceTable = ({tableData, userName, date, name}: any) => {
+export const WorkplaceTable = ({tableData, userName, date, name, environment, UPN}: any) => {
   if(!tableData || !date || !name) {
     return (<div></div>);
   }
+
   return (
   <div style={{width: "100%", display: "flex"}}>
 
@@ -53,10 +54,17 @@ export const WorkplaceTable = ({tableData, userName, date, name}: any) => {
               <tr>
               {date?.map((d: string) => {
                 return (
-                  <td> 
+                  <td id={d+n+'am'}> 
                     {userName!==n?
                     tableData?.get(`${d}${n}오전`)?tableData?.get(`${d}${n}오전`):'ㅤ':
-                    <WorkplaceSelect workplaceData={tableData?.get(`${d}${n}오전`)?tableData?.get(`${d}${n}오전`):'ㅤ'} />}
+                    <WorkplaceSelect 
+                      environment={environment} 
+                      workplaceData={tableData?.get(`${d}${n}오전`)?tableData?.get(`${d}${n}오전`):' '} 
+                      date={d}
+                      name={n} 
+                      time='am'
+                      UPN={UPN}
+                      />}
                   </td>
                 )
               })}
@@ -64,10 +72,17 @@ export const WorkplaceTable = ({tableData, userName, date, name}: any) => {
               <tr>
               {date?.map((d: string) => {
                 return (
-                  <td> 
+                  <td id={d+n+'pm'}> 
                     {userName!==n?
                     tableData?.get(`${d}${n}오후`)?tableData?.get(`${d}${n}오후`):'ㅤ':
-                    <WorkplaceSelect workplaceData={tableData?.get(`${d}${n}오후`)?tableData?.get(`${d}${n}오후`):'ㅤ'} />}
+                    <WorkplaceSelect 
+                      environment={environment} 
+                      workplaceData={tableData?.get(`${d}${n}오후`)?tableData?.get(`${d}${n}오후`):' '} 
+                      date={d}
+                      name={n} 
+                      time='pm'
+                      upn={UPN}
+                    />}
                   </td>
                 )
               })}

@@ -6,6 +6,7 @@ import {
   UspGetTag,
   UspSetTag,
   UspDeleteTag,
+  UspSetWorkplace
 } from "./query"
 
 import { TeamsBotInstallation } from "@microsoft/teamsfx"
@@ -63,3 +64,12 @@ export const SendGroupMessage = async (id: string, message: string) => {
 
   return JSON.stringify(await groupChat.sendMessage(message));
 }
+
+routerInstance.post("/setWorkplace", 
+async (req, res) => {  
+  if(!req.body.workDate || !req.body.upn) {
+    return;
+  }
+  const row = await UspSetWorkplace(req.body.workDate, req.body.upn, req.body.workCodeAM===' '?null:req.body.workCodeAM, req.body.workCodePM===' '?null:req.body.workCodePM);
+  res.json(row);
+});
