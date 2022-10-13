@@ -3,13 +3,9 @@ import { useState, useEffect } from "react";
 import Select from 'react-select'
 import axios from 'axios'
 
-export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, time}: any) => {
-  const options = [{label: 'ㅤ', value: ' '}, 
-                  {label: '사무실', value: '사무실'},
-                  {label: '재택근무', value: '재택근무'},
-                  {label: '외부근무', value: '외부근무'},
-                  {label: '휴무', value: '휴무'}];
+export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, time, workCode}: any) => {
   const [workplace, setWrokplace] = useState(workplaceData);
+  const [options, setOptions] = useState<any>();
 
   const customStyles = {
     control: (base: any) => ({
@@ -20,23 +16,46 @@ export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, ti
     })
   };
 
+  useEffect(() => {
+    const arr = [];
+    arr.push({ label: 'ㅤ',  value: 'ㅤ'});
+    for(let item of workCode) {
+      arr.push({
+        label: item[0], 
+        value: item[0]
+      });
+    }
+    setOptions(arr);
+  }, []);
+
   const onChangeWorkplace = (workplaceValue: string) => {
     let amValue;
     let pmValue;
+    let amText;
+    let pmText;
 
     if(time === 'am') {
-      amValue = workplaceValue;
-      pmValue = document.getElementById(date+name+'pm')?.textContent;
+      amText = workplaceValue;
+      pmText = document.getElementById(date+name+'pm')?.textContent;
     } else {
-      amValue = document.getElementById(date+name+'am')?.textContent;
-      pmValue = workplaceValue;
+      amText = document.getElementById(date+name+'am')?.textContent;
+      pmText = workplaceValue;
     }
+
+    console.log(JSON.stringify(workCode));
+    amValue = workCode.get(amText);
+    pmValue = workCode.get(pmText);
+    console.log('amText = ' + amText);
+    console.log('amValue = ' + amValue);
+    console.log('pmText = ' + pmText);
+    console.log('pmValue = ' + pmValue);
+    console.log('UPN = ' + UPN);
 
     axios.post(`${environment}/api/setWorkplace`, {
       workDate: date.split('(')[0],
       upn: UPN,
-      workCodeAM: amValue,
-      workCodePM: pmValue
+      workCodeAM: !amValue?'':amValue,
+      workCodePM: !pmValue?'':pmValue,
     }).then(res => {
       setWrokplace(workplaceValue);
     });

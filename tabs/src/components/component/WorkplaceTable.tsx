@@ -1,7 +1,7 @@
 import "./WorkplaceTable.css";
 import { WorkplaceSelect } from './WorkplaceSelect'
 
-export const WorkplaceTable = ({tableData, userName, date, name, environment, UPN}: any) => {
+export const WorkplaceTable = ({tableData, userName, date, name, environment, UPN, workCode}: any) => {
   if(!tableData || !date || !name) {
     return (<div></div>);
   }
@@ -64,6 +64,7 @@ export const WorkplaceTable = ({tableData, userName, date, name, environment, UP
                       name={n} 
                       time='am'
                       UPN={UPN}
+                      workCode={workCode}
                       />}
                   </td>
                 )
@@ -81,7 +82,8 @@ export const WorkplaceTable = ({tableData, userName, date, name, environment, UP
                       date={d}
                       name={n} 
                       time='pm'
-                      upn={UPN}
+                      UPN={UPN}
+                      workCode={workCode}
                     />}
                   </td>
                 )

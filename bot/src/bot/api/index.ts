@@ -6,8 +6,12 @@ import {
   UspGetTag,
   UspSetTag,
   UspDeleteTag,
-  UspSetWorkplace
+  UspSetWorkplace,
 } from "./query"
+
+import {
+  UspGetWorkCode,
+} from "../setWorkplace/query"
 
 import { TeamsBotInstallation } from "@microsoft/teamsfx"
 
@@ -70,6 +74,11 @@ async (req, res) => {
   if(!req.body.workDate || !req.body.upn) {
     return;
   }
-  const row = await UspSetWorkplace(req.body.workDate, req.body.upn, req.body.workCodeAM===' '?null:req.body.workCodeAM, req.body.workCodePM===' '?null:req.body.workCodePM);
+  const row = await UspSetWorkplace(req.body.workDate, req.body.upn, req.body.workCodeAM===''?null:req.body.workCodeAM, req.body.workCodePM===''?null:req.body.workCodePM);
+  res.json(row);
+});
+
+routerInstance.get('/getWorkCode', async (req, res) => {
+  const row = await UspGetWorkCode();
   res.json(row);
 });

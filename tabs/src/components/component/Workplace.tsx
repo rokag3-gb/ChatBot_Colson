@@ -40,6 +40,7 @@ export function Workplace(props: { environment?: string }) {
   const [team, setTeam] = useState('');
   
   const [tableData, setTableData] = useState<Map<string, string>>();
+  const [workCode, setWorkCode] = useState<Map<string, string>>();
   const [userName, setUserName] = useState<string>('');
   const [date, setDate] = useState<string[]>();
   const [name, setName] = useState<string[]>();
@@ -66,6 +67,16 @@ export function Workplace(props: { environment?: string }) {
         }
       }
       setOptions(option);
+    });
+    
+    axios.get(`${environment}/api/getWorkCode`).then(res => {
+      console.log(JSON.stringify(res.data));
+      const obj = new Map<string, string>();
+      for (const data of res.data) {
+        obj.set(data.Name, data.Code);
+      }
+
+      setWorkCode(obj);
     });
   }, [UPN]);
 
@@ -150,7 +161,7 @@ export function Workplace(props: { environment?: string }) {
               />
             </div>
           </div>
-          <WorkplaceTable tableData={tableData} date={date} name={name} userName={userName} environment={environment} UPN={UPN}/>
+          <WorkplaceTable tableData={tableData} date={date} name={name} userName={userName} environment={environment} UPN={UPN} workCode={workCode}/>
         </div>
       </div>
     </div>
