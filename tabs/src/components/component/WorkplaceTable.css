@@ -33,5 +33,9 @@ td {
   vertical-align: inherit;
 }
 
+.userCell {
+  padding: 0;
+}
+
 tbody tr:nth-child(4n+1)  { background-color: #eee; }
 tbody tr:nth-child(4n+2)  { background-color: #eee; }

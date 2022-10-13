@@ -15,7 +15,7 @@ export function Workplace(props: { environment?: string }) {
 
 
   const { teamsfx } = useContext(TeamsFxContext);
-  const { loading, data, error } = useData(async () => {
+  const { data } = useData(async () => {
     if (teamsfx) {
       const userInfo = await teamsfx.getUserInfo();
       setUPN(userInfo!.preferredUserName);
@@ -78,7 +78,7 @@ export function Workplace(props: { environment?: string }) {
 
       setWorkCode(obj);
     });
-  }, [UPN]);
+  }, [UPN, environment]);
 
   useEffect(() => {
     if(team?.length === 0) {
@@ -111,7 +111,7 @@ export function Workplace(props: { environment?: string }) {
       setTableData(obj);
     });
 
-  }, [data, endDate, startDate, team]);
+  }, [data, endDate, startDate, team, UPN, environment]);
 
   //나중에 컴포넌트로 빼서 처리하기 쉽게 바꿔야겠다...
   useEffect(() => {
@@ -124,7 +124,7 @@ export function Workplace(props: { environment?: string }) {
         setDefaultTeam(i);
       }
     }
-  }, [team]);
+  }, [team, options]);
 
   return (
     <div className="welcome">

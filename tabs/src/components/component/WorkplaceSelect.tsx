@@ -26,7 +26,7 @@ export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, ti
       });
     }
     setOptions(arr);
-  }, []);
+  }, [workCode]);
 
   const onChangeWorkplace = (workplaceValue: string) => {
     let amValue;
@@ -42,14 +42,8 @@ export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, ti
       pmText = workplaceValue;
     }
 
-    console.log(JSON.stringify(workCode));
     amValue = workCode.get(amText);
     pmValue = workCode.get(pmText);
-    console.log('amText = ' + amText);
-    console.log('amValue = ' + amValue);
-    console.log('pmText = ' + pmText);
-    console.log('pmValue = ' + pmValue);
-    console.log('UPN = ' + UPN);
 
     axios.post(`${environment}/api/setWorkplace`, {
       workDate: date.split('(')[0],
@@ -65,6 +59,7 @@ export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, ti
     <Select
       value={{label: workplace, value: workplace}}
       hideSelectedOptions={true}
+      isSearchable={false}
       onChange={(event: any) => onChangeWorkplace(event.value)}
       options={options}
       components={{ DropdownIndicator:() => null, IndicatorSeparator:() => null }}

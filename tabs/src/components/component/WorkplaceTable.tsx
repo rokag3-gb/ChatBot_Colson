@@ -54,7 +54,7 @@ export const WorkplaceTable = ({tableData, userName, date, name, environment, UP
               <tr>
               {date?.map((d: string) => {
                 return (
-                  <td id={d+n+'am'}> 
+                  <td id={d+n+'am'} className={userName!==n?'':'userCell'}> 
                     {userName!==n?
                     tableData?.get(`${d}${n}오전`)?tableData?.get(`${d}${n}오전`):'ㅤ':
                     <WorkplaceSelect 
@@ -73,7 +73,7 @@ export const WorkplaceTable = ({tableData, userName, date, name, environment, UP
               <tr>
               {date?.map((d: string) => {
                 return (
-                  <td id={d+n+'pm'}> 
+                  <td id={d+n+'pm'} className={userName!==n?'':'userCell'}> 
                     {userName!==n?
                     tableData?.get(`${d}${n}오후`)?tableData?.get(`${d}${n}오후`):'ㅤ':
                     <WorkplaceSelect 
