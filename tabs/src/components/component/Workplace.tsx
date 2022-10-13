@@ -46,7 +46,7 @@ export function Workplace(props: { environment?: string }) {
   const [name, setName] = useState<string[]>();
   const [options, setOptions] = useState<any[]>();
   const [defaultTeam, setDefaultTeam] = useState(0);
-  const [UPN, setUPN] = useState('kwangseok.moon@cloudmt.co.kr');
+  const [UPN, setUPN] = useState('');
 
   useEffect(() => {
     if(UPN?.length === 0) {
