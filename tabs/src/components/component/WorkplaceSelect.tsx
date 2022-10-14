@@ -59,6 +59,8 @@ export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, ti
     <Select
       value={{label: workplace, value: workplace}}
       hideSelectedOptions={true}
+      menuPortalTarget={document.body} 
+      menuPosition={'fixed'}
       isSearchable={false}
       onChange={(event: any) => onChangeWorkplace(event.value)}
       options={options}
