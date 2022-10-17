@@ -48,7 +48,7 @@ export const sendSecretMessage = async (context, id, receiverId, senderNick, mes
   const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
 
   for (const user of Object.entries(userMap)) {
-    if(id === user[1].account.id)
+    if(id === user[1].account.id || !user[1].FullNameKR || typeof user[1].FullNameKR !== 'string')
       continue;
     tmpTemplate.body[3].columns[1].items[0].choices.push({
       "title": user[1].FullNameKR,
