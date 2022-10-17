@@ -28,6 +28,10 @@ export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, ti
     setOptions(arr);
   }, [workCode]);
 
+  useEffect(() => {
+    setWrokplace(workplaceData);
+  }, [workplaceData]);
+
   const onChangeWorkplace = (workplaceValue: string) => {
     let amValue;
     let pmValue;
