@@ -55,13 +55,13 @@ const initImages = async () => {
 
     birth_background = await imageToBase64(imgPath + "birth_background.jpg");
 
-    secretMessageIcon1 = await imageToBase64(imgPath + "background_icon_01.jpg");
-    secretMessageIcon2 = await imageToBase64(imgPath + "background_icon_02.jpg");
-    secretMessageIcon3 = await imageToBase64(imgPath + "background_icon_03.jpg");
+    secretMessageIcon1 = await imageToBase64(imgPath + "background_icon_01.png");
+    secretMessageIcon2 = await imageToBase64(imgPath + "background_icon_02.png");
+    secretMessageIcon3 = await imageToBase64(imgPath + "background_icon_03.png");
 
-    secretMessageBackground1 = await imageToBase64(imgPath + "background_01.jpg");
-    secretMessageBackground2 = await imageToBase64(imgPath + "background_02.jpg");
-    secretMessageBackground3 = await imageToBase64(imgPath + "background_03.jpg");
+    secretMessageBackground1 = await imageToBase64(imgPath + "background_01.png");
+    secretMessageBackground2 = await imageToBase64(imgPath + "background_02.png");
+    secretMessageBackground3 = await imageToBase64(imgPath + "background_03.png");
 }
 
 initImages();
