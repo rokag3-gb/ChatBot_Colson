@@ -1,6 +1,6 @@
 import "./WorkplaceTable.css";
 import { useState, useEffect } from "react";
-import Select from 'react-select'
+import Select, { components } from 'react-select'
 import axios from 'axios'
 
 export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, time, workCode}: any) => {
@@ -14,6 +14,14 @@ export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, ti
       fontSize: "0.75rem",
       fontWeight: "bold "
     })
+  };
+
+  const DropdownIndicator = (props:any) => {
+    return (
+      <components.DropdownIndicator {...props}>
+        ▿
+      </components.DropdownIndicator>
+    );
   };
 
   useEffect(() => {
@@ -46,9 +54,12 @@ export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, ti
       pmText = workplaceValue;
     }
 
+    amText = amText?.replace('▿', '');
+    pmText = pmText?.replace('▿', '');
+
     amValue = workCode.get(amText);
     pmValue = workCode.get(pmText);
-
+    
     axios.post(`${environment}/api/setWorkplace`, {
       workDate: date.split('(')[0],
       upn: UPN,
@@ -68,7 +79,7 @@ export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, ti
       isSearchable={false}
       onChange={(event: any) => onChangeWorkplace(event.value)}
       options={options}
-      components={{ DropdownIndicator:() => null, IndicatorSeparator:() => null }}
+      components={{ DropdownIndicator, IndicatorSeparator:() => null }}
       styles={customStyles}
     />
 
