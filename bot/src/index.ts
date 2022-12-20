@@ -30,8 +30,8 @@ const initialize = async () => {
     await initCron();
   } catch(e) {
       Logger.error(JSON.stringify(e));
-      insertLog('', JSON.stringify(e));
       console.log(e);
+      insertLog('initialize', "Error : " + JSON.stringify(e) + ", " + e.message);
   }
   console.log(' Colson initialize Complete! ');
 }
@@ -50,7 +50,7 @@ const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
   );
 
   Logger.error(JSON.stringify(error));
-  insertLog(context.activity.from.id, JSON.stringify(error));
+  insertLog(context.activity.from.id, "Error : " + JSON.stringify(error) + ', ' + error.message);
   console.log(`The bot encountered unhandled error:\n ${error.message}`);
   await context.sendActivity(`에러가 발생했습니다. 다시 시도해주세요.
   
@@ -93,7 +93,7 @@ async (req, res) => {
       await getGroupChatList();
     } catch(e) {
       Logger.error(JSON.stringify(e));
-      insertLog(req.body.from.id, JSON.stringify(e));
+      insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
       console.log(e);
     }
   } else if(userCount === 0) {

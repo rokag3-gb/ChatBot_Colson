@@ -61,15 +61,17 @@ const userWorkplace = async (context, userId, username, choiceList, message) => 
 //전체 유저의 근무지 등록을 위한 함수
 export const userWorkplaceSend = async (choiceList, message, ampm) => {
   const rows = await UspGetUserWorkplaceSend();
+  let curId = '';
   for(const row of rows) {
     try {
+      curId = row.AppUserId;
       if(!ampm || (row.WorkCodeAM !== 'WRK-OFF' && ampm === 'am') || (ampm && row.WorkCodePM !== 'WRK-OFF' && ampm === 'pm')) {
         await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
         Logger.info('userWorkplaceSend ' + row.AppUserId);
       }
     } catch(e) {
       Logger.error(JSON.stringify(e));
-      insertLog('', JSON.stringify(e));
+      insertLog(curId, "Error : " + JSON.stringify(e) + ", " + e.message);
       console.log(e);
     }
   }
@@ -78,15 +80,17 @@ export const userWorkplaceSend = async (choiceList, message, ampm) => {
 //근무지 등록을 하지 않은 유저의 근무지 등록을 위한 함수
 const userWorkplaceResend = async (choiceList, message, ampm) => {
   const rows = await UspGetUserWorkplaceResend();
+  let curId = '';
   for(const row of rows) {
     try {
+      curId = row.AppUserId;
       if(!ampm || (row.WorkCodeAM !== 'WRK-OFF' && ampm === 'am') || (ampm && row.WorkCodePM !== 'WRK-OFF' && ampm === 'pm')) {
         await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
         Logger.info('userWorkplaceResend ' + row.AppUserId);
       }
     } catch(e) {
       Logger.error(JSON.stringify(e));
-      insertLog('', JSON.stringify(e));
+      insertLog(curId, "Error : " + JSON.stringify(e) + ", " + e.message);
       console.log(e);
     }
   }

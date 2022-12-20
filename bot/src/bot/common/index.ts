@@ -148,14 +148,16 @@ export const getGroupChatList = async () => {
 }
 
 export const insertLog = async (userId, body) => {
-  let userPrincipalName = '';
+  let userInfo = '';
   const user = userMap[userId]
 
   if(user) {
-    userPrincipalName = user.account.userPrincipalName;
+    userInfo = user.account.userPrincipalName;
+  } else {
+    userInfo = userId
   }
 
-  await UspSetAppLog(getTodayTime(), userPrincipalName, body);
+  await UspSetAppLog(getTodayTime(), userInfo, body);
 }
 
 export const errorMessageForContext = async (context, err) => {
