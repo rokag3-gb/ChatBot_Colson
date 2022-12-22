@@ -125,7 +125,7 @@ export const openSecretMessage = async (context, id, messageId) => {
   }
 }
 
-export const sendMessageReaction = async (context, id, activityId, type) => {
+export const sendMessageReaction = async (context, id, activityId, type: string) => {
   const rows = await UspGetSendMessageChatid(activityId);
   for(const row of rows) {
     const user = userMap[id];
@@ -135,8 +135,11 @@ export const sendMessageReaction = async (context, id, activityId, type) => {
     }
 
     let icon = '';
-    
-    if(type === 'like') {
+
+    if(type.includes("_")) {
+      const code = type.split("_");
+      icon = String.fromCodePoint(parseInt(code[0], 16))
+    } else if(type === 'like') {
       icon = '👍';
     } else if(type === 'heart') {
       icon = '❤️';
@@ -150,8 +153,11 @@ export const sendMessageReaction = async (context, id, activityId, type) => {
       icon = '😡';
     }
 
-    await sender.sendMessage(`${user.FullNameKR} 님이 메시지에 '${icon}' 반응했습니다.`);
-    await context.sendActivity(`${row.SenderNick} 님에게 '${icon}' 반응이 전달되었습니다.`)
+    if(icon === '') {
+      icon = "(" + type + ")";
+    }
+    await sender.sendMessage(`${user.FullNameKR} 님이 메시지에 ${icon} 반응했습니다.`);
+    await context.sendActivity(`${row.SenderNick} 님에게 ${icon} 반응이 전달되었습니다.`);
   }
 }
 
