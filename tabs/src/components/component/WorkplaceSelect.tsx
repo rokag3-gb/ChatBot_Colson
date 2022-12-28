@@ -1,28 +1,9 @@
 import "./WorkplaceTable.css";
 import { useState, useEffect } from "react";
-import Select, { components } from 'react-select'
 import axios from 'axios'
 
 export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, time, workCode}: any) => {
-  const [workplace, setWrokplace] = useState(workplaceData);
   const [options, setOptions] = useState<any>();
-
-  const customStyles = {
-    control: (base: any) => ({
-      ...base,
-      background: "#0000",
-      fontSize: "0.75rem",
-      fontWeight: "bold "
-    })
-  };
-
-  const DropdownIndicator = (props:any) => {
-    return (
-      <components.DropdownIndicator {...props}>
-        ▿
-      </components.DropdownIndicator>
-    );
-  };
 
   useEffect(() => {
     const arr = [];
@@ -36,26 +17,19 @@ export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, ti
     setOptions(arr);
   }, [workCode]);
 
-  useEffect(() => {
-    setWrokplace(workplaceData);
-  }, [workplaceData]);
-
-  const onChangeWorkplace = (workplaceValue: string) => {
+  const onChangeWorkplace = (event: any) => {
     let amValue;
     let pmValue;
     let amText;
     let pmText;
 
     if(time === 'am') {
-      amText = workplaceValue;
-      pmText = document.getElementById(date+name+'pm')?.textContent;
+      amText = event.target.value;
+      pmText = (document.getElementById(date+name+'pm') as HTMLTextAreaElement).value;
     } else {
-      amText = document.getElementById(date+name+'am')?.textContent;
-      pmText = workplaceValue;
+      amText = (document.getElementById(date+name+'am') as HTMLTextAreaElement).value;
+      pmText = event.target.value;
     }
-
-    amText = amText?.replace('▿', '');
-    pmText = pmText?.replace('▿', '');
 
     amValue = workCode.get(amText);
     pmValue = workCode.get(pmText);
@@ -66,22 +40,21 @@ export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, ti
       workCodeAM: !amValue?'':amValue,
       workCodePM: !pmValue?'':pmValue,
     }).then(res => {
-      setWrokplace(workplaceValue);
+
     });
   }
 
   return (
-    <Select
-      value={{label: workplace, value: workplace}}
-      hideSelectedOptions={true}
-      menuPortalTarget={document.body} 
-      menuPosition={'fixed'}
-      isSearchable={false}
-      onChange={(event: any) => onChangeWorkplace(event.value)}
-      options={options}
-      components={{ DropdownIndicator, IndicatorSeparator:() => null }}
-      styles={customStyles}
-    />
-
+    <select id={date+name+time} onChange={onChangeWorkplace}>
+      {options?.map((d: any) => {
+        {
+          if(workplaceData===d.value) {
+            return (<option value={d.value} selected>{d.label}</option>)
+          } else {
+            return (<option value={d.value}>{d.label}</option>)
+          }
+        }
+      })}
+    </select>
   );
 }

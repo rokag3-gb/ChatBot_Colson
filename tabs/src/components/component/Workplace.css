@@ -159,3 +159,10 @@ input {
     padding-left: 1rem;
     padding-right: 1rem;
 }
+
+select {
+  padding: .5em; 
+  border: solid #0000;
+  background: #0000;
+  text-align: center;
+}

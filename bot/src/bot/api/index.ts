@@ -148,3 +148,41 @@ export const SendUserMessage = async (id: string, message: string) => {
 
   return JSON.stringify(await user.sendMessage(message));
 }
+
+routerInstance.post("/grafana/webhook/:groupid", 
+async (req, res) => {
+  const row = await GrafanaWebhook(req.body, req.params.groupid);
+  res.json(row);
+});
+
+export const GrafanaWebhook = async (body, groupid: string) => {
+  if(!groupid) {
+    return "Invalid request";
+  }
+
+  const groupChat = <TeamsBotInstallation>groupChatMap[groupid];
+  console.log(JSON.stringify(groupChatMap));
+  if(!groupChat) {
+    return "Invalid chat Id";
+  }
+
+  let message = "";
+  if(body.alerts[0].status === "resolved") {
+    message = "**알림 발생 상태가 해제되었습니다.**" + 
+    "\n\nalertname : " + body.alerts[0].labels.alertname + 
+    "\n\nsummary : " + body.alerts[0].annotations.summary + 
+    "\n\ndescription : " + body.alerts[0].annotations.description + 
+    "\n\nstatus : " + body.alerts[0].status;
+  } else {
+    message = "**그라파나 알림 발생!!**" + 
+    "\n\nalertname : " + body.alerts[0].labels.alertname + 
+    "\n\nsummary : " + body.alerts[0].annotations.summary + 
+    "\n\ndescription : " + body.alerts[0].annotations.description + 
+    "\n\nstatus : " + body.alerts[0].status + 
+    "\n\nvalue : " + body.alerts[0].valueString + 
+    "\n\ngeneratorURL : " + body.alerts[0].generatorURL + 
+    "\n\nsilenceURL : " + body.alerts[0].silenceURL;
+  }
+
+  return JSON.stringify(await groupChat.sendMessage(message));
+}
