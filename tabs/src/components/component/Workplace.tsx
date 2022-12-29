@@ -6,6 +6,18 @@ import axios from 'axios'
 import { WorkplaceTable } from './WorkplaceTable'
 
 import Select from 'react-select'
+  
+export const GetToday = (day: number) => {
+  const now = new Date();
+  const utcNow = now.getTime() + (now.getTimezoneOffset() * 60 * 1000); 
+  const koreaTimeDiff = 9 * 60 * 60 * 1000; 
+  const date = new Date(utcNow + koreaTimeDiff);
+
+  if(day) {
+    date.setDate(date.getDate() + day);
+  }
+  return date.getFullYear() + "-" + ("00" + (1 + date.getMonth())).slice(-2) + "-" + ("00" + date.getDate()).slice(-2);
+}
 
 export function Workplace(props: { environment?: string }) {
   const { environment } = {
@@ -22,21 +34,9 @@ export function Workplace(props: { environment?: string }) {
       return userInfo;
     }
   });
-  
-  const getToday = (day: number) => {
-    const now = new Date();
-    const utcNow = now.getTime() + (now.getTimezoneOffset() * 60 * 1000); 
-    const koreaTimeDiff = 9 * 60 * 60 * 1000; 
-    const date = new Date(utcNow + koreaTimeDiff);
 
-    if(day) {
-      date.setDate(date.getDate() + day);
-    }
-    return date.getFullYear() + "-" + ("00" + (1 + date.getMonth())).slice(-2) + "-" + ("00" + date.getDate()).slice(-2);
-  }
-
-  const [startDate, setStartDate] = useState(getToday(-1));
-  const [endDate, setEndDate] = useState(getToday(7));
+  const [startDate, setStartDate] = useState(GetToday(-1));
+  const [endDate, setEndDate] = useState(GetToday(7));
   const [team, setTeam] = useState('');
   
   const [tableData, setTableData] = useState<Map<string, string>>();

@@ -3,39 +3,56 @@ table {
   border-collapse: separate;
   box-sizing: border-box;
   text-indent: initial;
-  border-spacing: 2px;
-  border-color: grey;
+  border-spacing: 0px;
 }
+
 tr {
   display: table-row;
   vertical-align: inherit;
   border-color: inherit;
 }
 
-th, td {
-  padding: 10px;
-  font-size: 0.875rem;
-  font-weight: 400;
-  white-space: nowrap;
-  text-align: center;
-  vertical-align: middle;
-  font-size: small;
-}
-
 th {
     display: table-cell;
     font-weight: bold;
     text-align: -internal-center;
+    background-color: #ddd;
 }
 
 td {
   display: table-cell;
-  vertical-align: inherit;
+  vertical-align: middle;
 }
 
 .userCell {
   padding: 0;
 }
 
-tbody tr:nth-child(4n+1)  { background-color: #eee; }
-tbody tr:nth-child(4n+2)  { background-color: #eee; }
+.todayCell.userCell {
+  background-color: rgb(180, 230, 255);
+}
+
+.UserTable {
+  vertical-align: middle;
+  border-spacing: 0px;
+  font-weight: bold;
+  left:0;
+  border: 0px;
+  position: sticky;
+  border-right: solid 0.1px #fff;
+  border-top: solid #aaa;
+  border-bottom: solid #aaa;
+}
+
+.UserTable td{
+  font-weight: bold;
+}
+
+option {
+  font-size: 1.2rem;
+}
+
+table tr:nth-child(4n)    { background-color: #fff; }
+table tr:nth-child(4n+1)  { background-color: #fff; }
+table tr:nth-child(4n+2)  { background-color: #eee; }
+table tr:nth-child(4n+3)  { background-color: #eee; }

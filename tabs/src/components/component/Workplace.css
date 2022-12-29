@@ -114,6 +114,7 @@ code {
   color: black;
   padding-left: 5px;
   padding-right: 5px;
+  margin-bottom: 5px;
 }
 
 @media (max-width: 767px) {
@@ -151,7 +152,6 @@ code {
   }
 }
 
-
 input {
     border: none;
     width: 100%;
@@ -161,8 +161,37 @@ input {
 }
 
 select {
-  padding: .5em; 
+  height: 37px;
+  font-size: 0.875rem;
+  font-weight: 400;
   border: solid #0000;
   background: #0000;
   text-align: center;
-}
+  }
+
+  th {
+    height: 60px;
+    padding: 10px;
+    font-size: 0.875rem;
+    font-weight: 400;
+    white-space: nowrap;
+    text-align: center;
+    vertical-align: middle;
+    font-size: small;
+  }
+
+  td {
+    height: 40px;
+    padding: 10px;
+    font-size: 0.875rem;
+    font-weight: 400;
+    white-space: nowrap;
+    text-align: center;
+    vertical-align: middle;
+    font-size: small;
+  }
+
+  table {
+    border-top: solid #aaa;
+    border-bottom: solid #aaa;
+  }

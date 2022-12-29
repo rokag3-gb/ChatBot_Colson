@@ -1,15 +1,17 @@
 import "./WorkplaceTable.css";
 import { WorkplaceSelect } from './WorkplaceSelect'
+import { GetToday } from './Workplace'
 
 export const WorkplaceTable = ({tableData, userName, date, name, environment, UPN, workCode}: any) => {
+  const today = GetToday(0);
+
   if(!tableData || !date || !name) {
     return (<div></div>);
   }
 
   return (
   <div style={{width: "100%", display: "flex"}}>
-
-    <table style={{height: "100%", left:0}}>
+    <table className="UserTable">
       <tr>
         <th colSpan={2}>ㅤ<br/>ㅤ</th>
       </tr>
@@ -17,29 +19,30 @@ export const WorkplaceTable = ({tableData, userName, date, name, environment, UP
       return (
         <>
         <tr>
-        <th rowSpan={2}>
+        <td className="TableSticky" rowSpan={2}>
           {n}
-        </th>
-        <th>
-          오전
-        </th>
+        </td>
         </tr>
         <tr>
-        <th>
-          오후
-        </th>
         </tr>
         </>
       );
     })}
     </table>
 
-    <div style={{width: "100%", height: "100%", overflowX: "scroll"}}>
+    <div style={{width: "100%", height: "100%"}}>
       <table>
         <tr>
+        <th>
+        </th>
           {date?.map((d: string) => {
+            let c = '';
+            if(today===d.substring(0, d.indexOf('('))) {
+              c += 'todayCell ';
+            }
+
             return (
-              <th>
+              <th className={c}>
                 {d.substring(0, d.indexOf('('))}
                 <br/>
                 {d.substring(d.indexOf('('))}
@@ -47,52 +50,73 @@ export const WorkplaceTable = ({tableData, userName, date, name, environment, UP
             )
           })}
         </tr>
-        <tbody>
-          {name?.map((n: string) => {
-            return (
-              <>
-              <tr>
-              {date?.map((d: string) => {
-                return (
-                  <td className={userName!==n?'':'userCell'}> 
-                    {userName!==n?
-                    tableData?.get(`${d}${n}오전`)?tableData?.get(`${d}${n}오전`):'ㅤ':
-                    <WorkplaceSelect 
-                      environment={environment} 
-                      workplaceData={tableData?.get(`${d}${n}오전`)?tableData?.get(`${d}${n}오전`):' '} 
-                      date={d}
-                      name={n} 
-                      time='am'
-                      UPN={UPN}
-                      workCode={workCode}
-                      />}
-                  </td>
-                )
-              })}
-              </tr>
-              <tr>
-              {date?.map((d: string) => {
-                return (
-                  <td className={userName!==n?'':'userCell'}> 
-                    {userName!==n?
-                    tableData?.get(`${d}${n}오후`)?tableData?.get(`${d}${n}오후`):'ㅤ':
-                    <WorkplaceSelect 
-                      environment={environment} 
-                      workplaceData={tableData?.get(`${d}${n}오후`)?tableData?.get(`${d}${n}오후`):' '} 
-                      date={d}
-                      name={n} 
-                      time='pm'
-                      UPN={UPN}
-                      workCode={workCode}
+        {name?.map((n: string) => {
+          return (
+            <>
+            <tr>
+        <td>
+          <b>오전</b>
+        </td>
+            {date?.map((d: string) => {
+              const getText = `${d}${n}오전`;
+              let c = '';
+              if(userName===n) {
+                c += 'userCell ';
+              }
+              if(today===d.substring(0, d.indexOf('('))) {
+                c += 'todayCell ';
+              }
+
+              return (
+                <td className={c}> 
+                  {userName!==n?
+                  tableData?.get(getText)?tableData?.get(getText):'ㅤ':
+                  <WorkplaceSelect 
+                    environment={environment} 
+                    workplaceData={tableData?.get(getText)?tableData?.get(getText):' '} 
+                    date={d}
+                    name={n} 
+                    time='am'
+                    UPN={UPN}
+                    workCode={workCode}
                     />}
-                  </td>
-                )
-              })}
-              </tr>
-              </>
-            );
-          })}
-        </tbody>
+                </td>
+              )
+            })}
+            </tr>
+            <tr>
+        <td>
+          <b>오후</b>          
+        </td>
+            {date?.map((d: string) => {
+              const getText = `${d}${n}오후`;
+              let c = '';
+              if(userName===n) {
+                c += 'userCell ';
+              }
+              if(today===d.substring(0, d.indexOf('('))) {
+                c += 'todayCell ';
+              }
+              return (
+                <td className={c}> 
+                  {userName!==n?
+                  tableData?.get(getText)?tableData?.get(getText):'ㅤ':
+                  <WorkplaceSelect 
+                    environment={environment} 
+                    workplaceData={tableData?.get(getText)?tableData?.get(getText):' '} 
+                    date={d}
+                    name={n} 
+                    time='pm'
+                    UPN={UPN}
+                    workCode={workCode}
+                  />}
+                </td>
+              )
+            })}
+            </tr>
+            </>
+          );
+        })}
       </table>
     </div>
   </div>
