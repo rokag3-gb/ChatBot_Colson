@@ -14,11 +14,13 @@ export const UspGetUserWorkplace = async (UPN: string): Promise<any[]> => {
   return query(request, `EXEC [IAM].[bot].[Usp_Get_Users_Workplace] @date, @UPN`);
 }
 
-export const UspGetUserWorkplaceSend = async (): Promise<any[]> => {
+export const UspGetUserWorkplaceSend = async (time: string): Promise<any[]> => {
   const request = await getRequest();
+  const timeType = time?time:'';
   request.input('appId', sql.VarChar, process.env.BOT_ID);
   request.input('date', sql.VarChar, getToday(null));
-  return query(request, `EXEC [IAM].[bot].[Usp_Get_Users_Workplace_All] @date, @appId`);
+  request.input('timeType', sql.VarChar, timeType);
+  return query(request, `EXEC [IAM].[bot].[Usp_Get_Users_Workplace_All] @date, @appId, @timeType`);
 }
 
 export const UspGetUserWorkplaceResend = async (): Promise<any[]> => {

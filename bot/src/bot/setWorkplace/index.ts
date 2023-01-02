@@ -60,7 +60,7 @@ const userWorkplace = async (context, userId, username, choiceList, message) => 
 
 //전체 유저의 근무지 등록을 위한 함수
 export const userWorkplaceSend = async (choiceList, message, ampm) => {
-  const rows = await UspGetUserWorkplaceSend();
+  const rows = await UspGetUserWorkplaceSend(ampm);
   let curId = '';
   for(const row of rows) {
     try {
