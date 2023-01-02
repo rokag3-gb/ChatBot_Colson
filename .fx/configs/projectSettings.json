@@ -9,19 +9,19 @@
         "hostType": "Azure",
         "azureResources": [],
         "capabilities": [
-            "Bot",
             "Tab",
-            "TabSSO"
+            "TabSSO",
+            "Bot"
         ],
         "activeResourcePlugins": [
-            "fx-resource-frontend-hosting",
-            "fx-resource-aad-app-for-teams",
-            "fx-resource-identity",
-            "fx-resource-bot",
             "fx-resource-local-debug",
             "fx-resource-appstudio",
             "fx-resource-cicd",
-            "fx-resource-api-connector"
+            "fx-resource-api-connector",
+            "fx-resource-aad-app-for-teams",
+            "fx-resource-frontend-hosting",
+            "fx-resource-bot",
+            "fx-resource-identity"
         ]
     },
     "programmingLanguage": "typescript",
@@ -30,5 +30,58 @@
             "host-type": "app-service",
             "capabilities": []
         }
-    }
+    },
+    "components": [
+        {
+            "name": "aad-app",
+            "provision": true,
+            "deploy": true
+        },
+        {
+            "hosting": "azure-storage",
+            "name": "teams-tab",
+            "build": true,
+            "provision": true,
+            "folder": "tabs",
+            "sso": true,
+            "deploy": true,
+            "artifactFolder": "tabs\\build"
+        },
+        {
+            "name": "azure-storage",
+            "connections": [
+                "teams-tab"
+            ],
+            "provision": true
+        },
+        {
+            "hosting": "azure-web-app",
+            "name": "teams-bot",
+            "build": true,
+            "provision": true,
+            "folder": "bot",
+            "capabilities": [],
+            "sso": false,
+            "deploy": true,
+            "artifactFolder": "bot"
+        },
+        {
+            "name": "azure-web-app",
+            "connections": [
+                "identity",
+                "aad-app",
+                "teams-tab",
+                "teams-bot"
+            ],
+            "provision": true,
+            "scenario": "Bot"
+        },
+        {
+            "name": "bot-service",
+            "provision": true
+        },
+        {
+            "name": "identity"
+        }
+    ]
 }

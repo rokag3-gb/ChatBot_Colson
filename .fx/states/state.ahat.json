@@ -13,12 +13,12 @@
     "fx-resource-appstudio": {
         "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
         "teamsAppId": "19259581-d65c-4b83-8e6a-e2cdce7c7263",
-        "teamsAppUpdatedAt": 1662341109665
+        "teamsAppUpdatedAt": 1663204959069
     },
     "fx-resource-identity": {
         "identityName": "colsonahat86dfc5",
         "identityResourceId": "/subscriptions/dcb2540f-afb3-4b17-b928-2b081a8613b2/resourceGroups/colson-ahat-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/colsonahat86dfc5",
-        "identityClientId": "711ff74c-3f6b-43ea-8268-2072a7384142"
+        "identityClientId": "03c85f2f-e4fd-4503-9b2d-2f06cfc72fcf"
     },
     "fx-resource-bot": {
         "botId": "94145785-b123-4b17-808c-ef7d956c6fc8",
@@ -49,7 +49,5 @@
         "endpoint": "https://colsonahat86dfc5tab.z32.web.core.windows.net",
         "indexPath": "/index.html#",
         "storageResourceId": "/subscriptions/dcb2540f-afb3-4b17-b928-2b081a8613b2/resourceGroups/colson-ahat-rg/providers/Microsoft.Storage/storageAccounts/colsonahat86dfc5tab"
-    },
-    "fx-resource-cicd": {},
-    "fx-resource-api-connector": {}
+    }
 }

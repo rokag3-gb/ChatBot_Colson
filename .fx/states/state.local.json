@@ -1,21 +1,23 @@
 {
     "solution": {
-        "teamsAppTenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b"
+        "teamsAppTenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
+        "provisionSucceeded": true
     },
     "fx-resource-bot": {
         "botId": "311d3bbc-da0b-4949-8c07-57a3d3c7f2cf",
         "botPassword": "{{fx-resource-bot.botPassword}}",
         "objectId": "cf8a08a0-f3ec-4666-a238-d1a965505b43",
-        "siteEndpoint": "https://f36a-121-172-23-163.ngrok.io",
-        "validDomain": "f36a-121-172-23-163.ngrok.io"
+        "siteEndpoint": "https://a1e6-211-44-192-110.ngrok.io",
+        "validDomain": "a1e6-211-44-192-110.ngrok.io",
+        "domain": "a1e6-211-44-192-110.ngrok.io"
     },
     "fx-resource-simple-auth": {},
     "fx-resource-frontend-hosting": {
         "indexPath": "/index.html#",
         "endpoint": "https://localhost:53000",
         "domain": "localhost",
-        "sslCertFile": "C:/Users/ahata/.fx/certificate/localhost.crt",
-        "sslKeyFile": "C:/Users/ahata/.fx/certificate/localhost.key"
+        "sslCertFile": "C:/Users/Ahat/.fx/certificate/localhost.crt",
+        "sslKeyFile": "C:/Users/Ahat/.fx/certificate/localhost.key"
     },
     "fx-resource-aad-app-for-teams": {
         "clientId": "d036573c-1330-4b5c-aa6f-15e222a25878",
@@ -25,13 +27,14 @@
         "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
         "oauthHost": "https://login.microsoftonline.com",
         "oauthAuthority": "https://login.microsoftonline.com/6d5ac8ee-3862-4452-93e7-a836c2d9742b",
-        "applicationIdUris": "api://localhost/botid-311d3bbc-da0b-4949-8c07-57a3d3c7f2cf",
-        "botEndpoint": "https://f36a-121-172-23-163.ngrok.io",
+        "applicationIdUris": "api://localhost:53000/botid-311d3bbc-da0b-4949-8c07-57a3d3c7f2cf",
+        "botEndpoint": "https://a1e6-211-44-192-110.ngrok.io",
         "frontendEndpoint": "https://localhost",
         "botId": "311d3bbc-da0b-4949-8c07-57a3d3c7f2cf"
     },
     "fx-resource-appstudio": {
         "teamsAppUpdatedAt": 1662693733964,
-        "teamsAppId": "e9fa8d5c-9a07-4aa3-9229-f2951fc5318b"
+        "teamsAppId": "e9fa8d5c-9a07-4aa3-9229-f2951fc5318b",
+        "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b"
     }
 }
