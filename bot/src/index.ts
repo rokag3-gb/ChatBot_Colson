@@ -28,6 +28,8 @@ const initialize = async () => {
     await getUserList(null);
     await getGroupChatList();
     await initCron();
+
+    insertLog('initialize', 'Colson initialize Complete!');
   } catch(e) {
       Logger.error(JSON.stringify(e));
       console.log(e);

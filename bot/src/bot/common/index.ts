@@ -147,9 +147,22 @@ export const getGroupChatList = async () => {
   console.log('getGroupChatList complete');
 }
 
+const IsJsonString = (str) => {
+  try {
+    var json = JSON.parse(str);
+    return (typeof json === 'object');
+  } catch (e) {
+    return false;
+  }
+}
+
 export const insertLog = async (userId, body) => {
   let userInfo = '';
   const user = userMap[userId]
+
+  if(!IsJsonString(body)) {
+    body = JSON.stringify({Message: body});
+  }
 
   if(user) {
     userInfo = user.account.userPrincipalName;
