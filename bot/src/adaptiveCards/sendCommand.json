@@ -89,6 +89,18 @@
           }
         }
       ]
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Submit",
+          "title": "테스트 기능",
+          "data": {
+            "messageType": "makeGroupChat"
+          }
+        }
+      ]
     }
   ],
   "actions": [

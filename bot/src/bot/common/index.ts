@@ -2,11 +2,12 @@ import { bot } from "../../internal/initialize";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import sendCommandTemplate from "../../adaptiveCards/sendCommand.json";
 import sendCommandListTemplate from "../../adaptiveCards/sendCommandList.json";
-import { CardFactory } from "botbuilder";
+import { CardFactory, TurnContext } from "botbuilder";
 import { Member, TeamsBotInstallation } from "@microsoft/teamsfx"
 import { UspSetAppUser, UspGetUsers, UspSetAppLog, UspSetGroupChat, UspGetGroupChat } from "./query"
 import { pushPeople } from "../conversation"
 import { Logger } from "../../logger";
+import axios from 'axios'
 
 export const userMap = new Object();
 export const groupChatMap = new Object();
@@ -217,6 +218,41 @@ export const sorryMessage = async (context) => {
 export const viewCommandList = async(context) => {
   const card = AdaptiveCards.declare(sendCommandListTemplate).render();
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
+}
+
+export const makeGroupChat = async(context: TurnContext) => {
+  const headers = {
+    'authentication': 'skypetoken=eyJhbGciOiJSUzI1NiIsImtpZCI6IjEwNiIsIng1dCI6Im9QMWFxQnlfR3hZU3pSaXhuQ25zdE5PU2p2cyIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzM4NTU2NjQsImV4cCI6MTY3MzkzMTA0MCwic2t5cGVpZCI6Im9yZ2lkOjJjZGJlZWQ1LTk3NjgtNDdmNC04NDBkLTVhYzhlN2NiMmE2ZCIsInNjcCI6NzgwLCJjc2kiOiIxNjczODU1MzYyIiwidGlkIjoiNmQ1YWM4ZWUtMzg2Mi00NDUyLTkzZTctYTgzNmMyZDk3NDJiIiwicmduIjoiYXBhYyJ9.h8S36wipyLOElBuGJ0m00mbDkeZU-xzi88z32YG9K0Lr80s7Ha0MNV1iSswlkN1arSfJwQq5USE79oPyrcotUCgk8AEonyX3g-qjtRyUoNl0rQVsxIM52SAJLJWOKRnakbnphFlgWYFlNSHSmZ-5D03MwgHeF2TnBFAxF1sQNPhqZDtkSSqVvPtLOn7-9w3TX_unuUHr97auRMRS17dqApn8FD7sa7PiTmY1Yhj1x9TAGzwJHyKylXMcXCCoOFqHTM7b4M7UFh_8nY1MT8R3kv5-16SM1cXHX0U82YSJyQlmDV1HRMDJoIyfL2HdC8NMJVRy6AkWdNtbOT4EierXLA'
+  }
+
+  await context.sendActivity('test');
+
+  axios.post(`https://graph.microsoft.com/v1.0/chats`, {
+    chatType: 'group',
+    topic: 'test group chat',
+    members: [
+      {
+        '@odata.type': '#microsoft.graph.aadUserConversationMember',
+        roles: ["owner"],
+        'user@odata.bind': "https://graph.microsoft.com/v1.0/users('kwangseok.moon@cloudmt.co.kr')"
+      },
+      {
+        '@odata.type': '#microsoft.graph.aadUserConversationMember',
+        roles: ["owner"],
+        'user@odata.bind': "https://graph.microsoft.com/v1.0/users('jungwoo.kim@cloudmt.co.kr')"
+      },
+      {
+        '@odata.type': '#microsoft.graph.aadUserConversationMember',
+        roles: ["owner"],
+        'user@odata.bind': "https://graph.microsoft.com/v1.0/users('jinho.kim@cloudmt.co.kr')"
+      }
+    ]
+  }, {headers}).then(res => {
+
+  }).catch(async (err) => {
+    console.log(JSON.stringify(err.message));
+    await context.sendActivity(JSON.stringify(err.message));
+  });
 }
       
 export const query = async (request: any, query: string): Promise<any[]> => {

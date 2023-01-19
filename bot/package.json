@@ -21,6 +21,7 @@
         "@microsoft/teamsfx": "^1.0.0",
         "botbuilder": "~4.16.0",
         "image-to-base64": "^2.2.0",
+        "isomorphic-fetch": "^3.0.0",
         "mssql": "^8.1.2",
         "node-cache": "^5.1.2",
         "node-cron": "^3.0.1",

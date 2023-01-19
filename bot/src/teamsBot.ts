@@ -1,7 +1,7 @@
 import { TeamsActivityHandler, MessageFactory, ActivityTypes, CardFactory, TurnContext } from "botbuilder";
 import sendCommandTemplate from "./adaptiveCards/sendCommand.json";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
-import { viewCommandList, sendCommand, userMap, sorryMessage } from "./bot/common";
+import { viewCommandList, sendCommand, userMap, sorryMessage, makeGroupChat } from "./bot/common";
 import { setWorkplaceForm, setWorkplace } from "./bot/setWorkplace";
 import { getWorkplaceForm, getWorkplace } from "./bot/getWorkplace";
 import { viewSecretMessage, sendSecretMessage, openSecretMessage, sendMessageReaction } from "./bot/secretMessage";
@@ -95,6 +95,8 @@ export class TeamsBot extends TeamsActivityHandler {
             await openBirthMessage(context, context.activity.value.messageId, context.activity.value.username, context.activity.value.birthDate);
           } else if (context.activity.value.messageType === "viewCommandList") {  
             await viewCommandList(context);
+          } else if (context.activity.value.messageType === "makeGroupChat") {  
+            await makeGroupChat(context);
           } else {
             await sorryMessage(context);
           }
