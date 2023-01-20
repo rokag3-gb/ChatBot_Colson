@@ -4,7 +4,6 @@ import { CardFactory } from "botbuilder";
 import { getToday, checkWeekday, userMap, insertLog } from "../common";
 import { UspGetWorkCode, UspGetUserWorkplace, UspGetUserWorkplaceSend, UspGetUserWorkplaceResend, UspSetWorkplace } from "./query";
 import workplaceTemplate from "../../adaptiveCards/insertWorkplace.json";
-import { Logger } from "../../logger";
     
 export const setWorkplaceForm = async (context, userId, username, type, message, ampm) => {
   if(!userId && checkWeekday(new Date())) {
@@ -67,11 +66,9 @@ export const userWorkplaceSend = async (choiceList, message, ampm) => {
       curId = row.AppUserId;
       if(!ampm || (row.WorkCodeAM !== 'WRK-OFF' && ampm === 'am') || (ampm && row.WorkCodePM !== 'WRK-OFF' && ampm === 'pm')) {
         await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
-        Logger.info('userWorkplaceSend ' + row.AppUserId);
       }
     } catch(e) {
-      Logger.error(JSON.stringify(e));
-      insertLog(curId, "Error : " + JSON.stringify(e) + ", " + e.message);
+      insertLog('userWorkplaceSend ' + curId, "Error : " + JSON.stringify(e) + ", " + e.message);
       console.log(e);
     }
   }
@@ -86,11 +83,9 @@ const userWorkplaceResend = async (choiceList, message, ampm) => {
       curId = row.AppUserId;
       if(!ampm || (row.WorkCodeAM !== 'WRK-OFF' && ampm === 'am') || (ampm && row.WorkCodePM !== 'WRK-OFF' && ampm === 'pm')) {
         await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
-        Logger.info('userWorkplaceResend ' + row.AppUserId);
       }
     } catch(e) {
-      Logger.error(JSON.stringify(e));
-      insertLog(curId, "Error : " + JSON.stringify(e) + ", " + e.message);
+      insertLog('userWorkplaceResend ' + curId, "Error : " + JSON.stringify(e) + ", " + e.message);
       console.log(e);
     }
   }
@@ -181,7 +176,6 @@ const sendWorkplaceCardUserId = async (userId, choiceList, WorkCodeAM, WorkCodeP
   } else {
     bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 근무지를 등록해주세요`
   }
-  //console.timeLog('sendWorkplaceCardUserId'); 
   await fromUser.sendAdaptiveCard(
     AdaptiveCards.declare<WorkplaceCardData>(tmpTemplate).render({
       title: title,
@@ -190,7 +184,6 @@ const sendWorkplaceCardUserId = async (userId, choiceList, WorkCodeAM, WorkCodeP
       button: button
     })
   );
-  //console.timeEnd('sendWorkplaceCardUserId');
 }
 
 
@@ -206,96 +199,3 @@ export const setWorkplace = async (context, id, upn, workDate, workCodeAM, workC
     await context.sendActivity(`${user.FullNameKR}님의 ${workDate} 일자 근무지가 입력되었습니다. (${row.WorkNameAM}${workCodePM?'/'+row.WorkNamePM:''})`);
   }
 }
-
-/*
-export const setWorkplaceFormTest = async (context, userId, username, type, message, ampm) => {
-  console.time('setWorkplaceFormTest');
-  if(!userId && checkWeekday(new Date())) {
-    return;
-  }
-  if(userId) {
-    await context.sendActivity(`근무지 등록을 선택하셨습니다.`);
-  }
-
-  console.time('UspGetWorkCode');
-  const choiceList = [];
-  const rows = await UspGetWorkCode();
-  for(const row of rows) {
-    choiceList.push({"title" : row.Name, "value" : row.Code});
-  }
-  console.timeEnd('UspGetWorkCode');
-
-  if(type === 'send') {
-    await userWorkplaceSendTest(choiceList, message, ampm);
-    console.timeLog('setWorkplaceFormTest');
-  }
-  console.timeEnd('setWorkplaceFormTest');
-}
-
-//테스트용 함수
-export const userWorkplaceSendTest = async (choiceList, message, ampm) => {
-  console.time('userWorkplaceSendTest');
-  const rows = await UspGetUserWorkplaceSend();
-  console.timeLog('userWorkplaceSendTest');
-  for(const row of rows) {
-    try {
-      if(!ampm || (row.WorkCodeAM !== 'WRK-OFF' && ampm === 'am') || (ampm && row.WorkCodePM !== 'WRK-OFF' && ampm === 'pm')) {
-        console.time('userWorkplaceSendTestRow');
-  //      await sendWorkplaceCardUserId('29:1LnRJK0IwwvSZmRGrpOvIeHFilkpqp51wiSb1v6s36lj5ngm4AD8hUiVFYY-ptncI9U5LgN9P9uP18vLq7dl6NA', choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
-        await sendWorkplaceCardUserId('29:1gPlk-cHhpy2B8lS63c0RQbM4Fix8lO5kk2SyOZbY6CswUWlcTc7VN2z1K8cenPc9MPfVgjqxhjVrj5z43VkvEA', choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
-        console.timeEnd('userWorkplaceSendTestRow');
-      }
-    } catch(e) {
-      console.log(e);
-    }
-  }
-  console.timeEnd('userWorkplaceSendTest');
-}
-
-const sendWorkplaceCardUserIdTest = async (userId, choiceList, WorkCodeAM, WorkCodePM, user, message, ampm) => {
-  const fromUser = userMap[userId];
-  const day1 = getToday(null);
-  const tmpTemplate = JSON.parse(JSON.stringify(workplaceTemplate));
-
-  if(!user) {
-    tmpTemplate.body[3].value = fromUser.account.userPrincipalName;
-    tmpTemplate.body[3].choices.push({
-      "title": fromUser.FullNameKR,
-      "value": fromUser.account.userPrincipalName
-    });
-  } else {
-    tmpTemplate.body[3].value = user.account.userPrincipalName;
-    tmpTemplate.body[3].choices.push({
-      "title": user.FullNameKR,
-      "value": user.account.userPrincipalName
-    });
-  }
-
-  tmpTemplate.body[4].value = day1;
-  tmpTemplate.body[5].choices = choiceList;
-  tmpTemplate.body[5].value = WorkCodeAM;
-  tmpTemplate.body[6].choices = choiceList;
-  tmpTemplate.body[6].value = WorkCodePM;
-
-  let title = '근무지 등록';
-  let button = '등록';
-  let bodyMessage = '';
-  if(!message) {
-    bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 근무지를 등록합니다.`
-  } else if(WorkCodeAM && WorkCodePM) {
-    title = '근무지 확인';
-    button = '수정';
-    bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 오늘 근무지가 맞나요?`
-  } else {
-    bodyMessage = `${tmpTemplate.body[3].choices[0].title} 님의 근무지를 등록해주세요`
-  }      
-  await fromUser.sendAdaptiveCard(
-    AdaptiveCards.declare<WorkplaceCardData>(tmpTemplate).render({
-      title: title,
-      subtitle: message,
-      body: bodyMessage,
-      button: button
-    })
-  );
-}
-*/

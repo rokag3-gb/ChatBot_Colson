@@ -5,8 +5,6 @@ import sendCommandListTemplate from "../../adaptiveCards/sendCommandList.json";
 import { CardFactory } from "botbuilder";
 import { Member, TeamsBotInstallation } from "@microsoft/teamsfx"
 import { UspSetAppUser, UspGetUsers, UspSetAppLog, UspSetGroupChat, UspGetGroupChat } from "./query"
-import { pushPeople } from "../conversation"
-import { Logger } from "../../logger";
 
 export const userMap = new Object();
 export const groupChatMap = new Object();
@@ -72,18 +70,18 @@ export const userRegister = async (userId) => {
               await UspSetAppUser(member.account.id, member.account.userPrincipalName, JSON.stringify(member));
               userMap[member.account.id] = member;
             } catch (e) {
-              Logger.error('userRegister ERROR!! ' + e);
+              insertLog('userRegister ' + member.account.id, "Error : " + JSON.stringify(e) + ", " + e.message);
               console.log('userRegister ERROR!! ' + e);
             }
           }
         }
       } catch (e) {
-        Logger.error('userRegister ERROR!! ' + e);
+        insertLog('userRegister', "Error : " + JSON.stringify(e) + ", " + e.message);
         console.log('userRegister ERROR2!! ' + e);
       }
     }
   }
-  Logger.info('userRegister complete');
+  insertLog('userRegister', 'userRegister complete');
   console.log('userRegister complete');
 }
 
@@ -103,47 +101,54 @@ export const groupRegister = async (groupId: string) => {
       console.log('userRegister ' + target.conversationReference.conversation.id);
     }
   }
-  Logger.info('groupRegister complete');
+  insertLog('groupRegister', 'groupRegister complete');
   console.log('groupRegister complete');
 }
 
 export const getUserList = async (userId) => {
   const rows = await UspGetUsers();
   for(const row of rows) {
-    pushPeople(row.DisplayName);
-    if(row.AppUserId !== null && (userId === row.AppUserId || userId === null)) {
-      const user = userMap[row.AppUserId];
-      if(user) {
-        userMap[row.AppUserId].FullNameKR = row.DisplayName;
-        userMap[row.AppUserId].LastNameKR = row.LastNameKR;
-        userMap[row.AppUserId].FirstNameKR = row.FirstNameKR;
-      } else if (row.AppUserObject) {
-        const userObj = <Member>JSON.parse(row.AppUserObject);
-        const member = <any>new Member(parent, userObj.account);
-        member.FullNameKR = row.DisplayName;
-        member.LastNameKR = row.LastNameKR;
-        member.FirstNameKR = row.FirstNameKR;
-        userMap[row.AppUserId] = member;
+    try {
+      if(row.AppUserId && (userId === row.AppUserId || userId === null)) {
+        const user = userMap[row.AppUserId];
+        if(user) {
+          userMap[row.AppUserId].FullNameKR = row.DisplayName;
+          userMap[row.AppUserId].LastNameKR = row.LastNameKR;
+          userMap[row.AppUserId].FirstNameKR = row.FirstNameKR;
+        } else if (row.AppUserObject) {
+          const userObj = <Member>JSON.parse(row.AppUserObject);
+          const member = <any>new Member(parent, userObj.account);
+          member.FullNameKR = row.DisplayName;
+          member.LastNameKR = row.LastNameKR;
+          member.FirstNameKR = row.FirstNameKR;
+          userMap[row.AppUserId] = member;
+        }
       }
+    } catch (e) {
+      insertLog('getUserList ' + row.AppUserId, "Error : " + JSON.stringify(e) + ', ' + e.message);
     }
   }
-  Logger.info('getUserList complete');
+  insertLog('getUserList', 'getUserList complete');
   console.log('getUserList complete');
 }
 
 export const getGroupChatList = async () => {
   const rows = await UspGetGroupChat();
   for(const row of rows) {
-    const groupChat = groupChatMap[row.groupChatId];
-    if(!groupChat && row.GroupChatObject && parent) {
-      const tmpTarget = <TeamsBotInstallation>JSON.parse(row.GroupChatObject);
-      const groupTarget = <TeamsBotInstallation>new TeamsBotInstallation(parent.adapter, tmpTarget.conversationReference);
-      
-      groupChatMap[groupTarget.conversationReference.conversation.id] = groupTarget;
-      console.log('getGroupChatList ' + groupTarget.conversationReference.conversation.id);
+    try {
+      const groupChat = groupChatMap[row.groupChatId];
+      if(!groupChat && row.GroupChatObject && parent) {
+        const tmpTarget = <TeamsBotInstallation>JSON.parse(row.GroupChatObject);
+        const groupTarget = <TeamsBotInstallation>new TeamsBotInstallation(parent.adapter, tmpTarget.conversationReference);
+        
+        groupChatMap[groupTarget.conversationReference.conversation.id] = groupTarget;
+        console.log('getGroupChatList ' + groupTarget.conversationReference.conversation.id);
+      }
+    } catch(e) {
+      insertLog('getGroupChatList ' + row.AppUserId, "Error : " + JSON.stringify(e) + ', ' + e.message);
     }
   }
-  Logger.info('getGroupChatList complete');
+  insertLog('getGroupChatList', 'getGroupChatList complete');
   console.log('getGroupChatList complete');
 }
 
@@ -183,7 +188,7 @@ export const errorMessageForContext = async (context, err) => {
 (${err.message})`);
       resolve(true);
     } catch (e) {
-      Logger.error('errorMessageForContext ' + e);
+      insertLog('errorMessageForContext', "Error : " + JSON.stringify(e) + ", " + e.message);
       console.log('errorMessageForContext ' + e);
       reject(e);
     }
@@ -203,7 +208,7 @@ export const errorMessageForId = async (id, err) => {
       }
       resolve(true);
     } catch (e) {
-      Logger.error('errorMessageForId ' + e);
+      insertLog('errorMessageForId', "Error : " + JSON.stringify(e) + ", " + e.message);
       console.log('errorMessageForId ' + e);
       reject(e);
     }

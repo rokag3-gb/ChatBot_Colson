@@ -9,7 +9,6 @@ import { getUserList,
          userMap,
          groupChatMap, } from "./bot/common";
 import { TeamsBot } from "./teamsBot";
-import { Logger } from "./logger";
 import { routerInstance } from "./bot/api";
 import { initCron } from "./schedule";
 import { BotFrameworkAdapter, TurnContext } from "botbuilder";
@@ -31,7 +30,6 @@ const initialize = async () => {
 
     insertLog('initialize', 'Colson initialize Complete!');
   } catch(e) {
-      Logger.error(JSON.stringify(e));
       console.log(e);
       insertLog('initialize', "Error : " + JSON.stringify(e) + ", " + e.message);
   }
@@ -51,7 +49,6 @@ const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
     "TurnError"
   );
 
-  Logger.error(JSON.stringify(error));
   insertLog(context.activity.from.id, "Error : " + JSON.stringify(error) + ', ' + error.message);
   console.log(`The bot encountered unhandled error:\n ${error.message}`);
   await context.sendActivity(`에러가 발생했습니다. 다시 시도해주세요.
@@ -68,7 +65,7 @@ const teamsBot = new TeamsBot();
 
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
-  Logger.info(`\nBot Started, ${server.name} listening to ${server.url}`);
+  insertLog('Bot Started', `${server.name} listening to ${server.url}`);
   console.log(`\nBot Started, ${server.name} listening to ${server.url}`);
 });
 
@@ -76,9 +73,7 @@ server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.queryParser());
 
 server.post("/api/messages", 
-async (req, res) => {
-  Logger.info(JSON.stringify(req.body));
-  
+async (req, res) => {  
   insertLog(req.body.from.id, JSON.stringify(req.body));
   if(!req.body.from || !req.body.from.id) {
     await bot.requestHandler(req, res);
@@ -94,7 +89,6 @@ async (req, res) => {
       await groupRegister(null);
       await getGroupChatList();
     } catch(e) {
-      Logger.error(JSON.stringify(e));
       insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
       console.log(e);
     }

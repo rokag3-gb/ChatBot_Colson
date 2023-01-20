@@ -1,6 +1,6 @@
 import { setWorkplaceForm } from "./bot/setWorkplace";
 import { sendBirthdayCard } from "./bot/birthMessage";
-import { Logger } from "./logger";
+import { insertLog } from "./bot/common";
 
 const cron = require('node-cron');
 
@@ -9,39 +9,39 @@ export const initCron = () => {
   //휴가자 제외한 전직원에게 근무지 입력 카드 전송
 
   cron.schedule('00 00 1 * * 1', async () => {
-    Logger.info('setWorkplaceForm send 좋은 아침입니다!');
+    insertLog('setWorkplaceForm send', `좋은 아침입니다!`);
     await setWorkplaceForm(null, null, null, 'send', '좋은 아침입니다!', 'am');
   });
   cron.schedule('00 00 2 * * 1', async () => {  
-    Logger.info('setWorkplaceForm resend 좋은 아침입니다!');
+    insertLog('setWorkplaceForm resend', `좋은 아침입니다!`);
     await setWorkplaceForm(null, null, null, 'resend', '좋은 아침입니다!', 'am');
   });
 
 
   cron.schedule('00 00 00 * * 2-5', async () => {
-    Logger.info('setWorkplaceForm send 좋은 아침입니다!');
+    insertLog('setWorkplaceForm send', `좋은 아침입니다!`);
     await setWorkplaceForm(null, null, null, 'send', '좋은 아침입니다!', 'am');
   });
   //근무지 입력 안한 사람들에게 카드 전송
   cron.schedule('00 00 1 * * 2-5', async () => {  
-    Logger.info('setWorkplaceForm resend 좋은 아침입니다!');
+    insertLog('setWorkplaceForm resend', `좋은 아침입니다!`);
     await setWorkplaceForm(null, null, null, 'resend', '좋은 아침입니다!', 'am');
   });
   
 
   cron.schedule('00 00 05 * * *', async () => {
-    Logger.info('setWorkplaceForm resend 점심 식사 맛있게 하셨나요!');
+    insertLog('setWorkplaceForm resend', `점심 식사 맛있게 하셨나요!`);
     await setWorkplaceForm(null, null, null, 'resend', '점심 식사 맛있게 하셨나요!', null);
   });
   
   cron.schedule('00 30 08 * * *', async () => {  
-    Logger.info('setWorkplaceForm send 오늘 하루도 고생많으셨습니다.');
+    insertLog('setWorkplaceForm send', `오늘 하루도 고생많으셨습니다.`);
     await setWorkplaceForm(null, null, null, 'send', '오늘 하루도 고생많으셨습니다.', 'pm');
   });
   
   //생일자에게 카드 전송
   cron.schedule('00 30 01 * * *', async () => {  
-    Logger.info('sendBirthdayCard start');
+    insertLog('sendBirthdayCard', `start`);
     await sendBirthdayCard();
   });
 }

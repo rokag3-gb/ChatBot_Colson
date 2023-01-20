@@ -2,22 +2,14 @@ import { TurnContext } from "botbuilder";
 import { getWorkplace } from "../getWorkplace";
 
 const greetingText = ["안녕", "hi", "hello", "콜슨", "반가워", "어이", "여어"];
-const peopleText = [];
 const getWorkplaceText = ["나오니", "출근", "근무", "일정"];
 const getMealStoreText = ["밥", "점심", "먹을거", "먹을까"];
 const weatherText = ["날씨", "비오", "비내"];
 const dateText = ["오늘", "내일", "모레", "어제", "지금"];
 const placeText = ["구로", "서울", "회사", "신도림"];
 
-const textArray = [greetingText, peopleText, getWorkplaceText, getMealStoreText, weatherText, dateText, placeText];
+const textArray = [greetingText, getWorkplaceText, getMealStoreText, weatherText, dateText, placeText];
 
-export const pushPeople = async (name: string) => {
-    if(peopleText.indexOf(name) === -1) {
-        peopleText.push(name);
-    }
-}
-
-//export const checkConversation = async (context: TurnContext, text: string[]) => {
 export const checkConversation = async (context: TurnContext, text: string) => {
     const textContainArray = wordSplitCheck(text);
     await wordProcess(context, textContainArray);

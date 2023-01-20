@@ -6,7 +6,6 @@ import { CardFactory } from "botbuilder";
 import { getBirthdayLink, getBirthdayUser, setSendBirth, setOpenBirth } from "./query";
 
 import { userMap } from "../common";
-import { Logger } from "../../logger";
 
 import { birth_background } from "../../image"
 
@@ -30,7 +29,6 @@ export const sendBirthdayCard = async () => {
         username: userInfo.DisplayName
       })
     );
-    Logger.info('sendBirthdayCard ' + userInfo.AppUserId);
   }
 }
 
