@@ -101,6 +101,18 @@
           }
         }
       ]
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Submit",
+          "title": "방만들기",
+          "data": {
+            "messageType": "createParty"
+          }
+        }
+      ]
     }
   ],
   "actions": [

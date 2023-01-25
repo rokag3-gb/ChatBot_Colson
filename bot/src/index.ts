@@ -242,6 +242,7 @@ async (req, res) => {
 
  console.log(req.authorization.credentials);
 
+  /*
   const token = await GetToken();
 
   console.log('token', token);
@@ -272,7 +273,7 @@ async (req, res) => {
   await client.api('/chats').post(chatdata);
 
 
-
+*/
 /*
   const headers = {
     'authorization': 'Bearer ' + req.authorization.credentials,

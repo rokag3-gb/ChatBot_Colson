@@ -5,19 +5,19 @@
     },
     "fx-resource-appstudio": {
         "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
-        "teamsAppId": "6840b6c3-b890-439b-ae06-315f69606b24"
+        "teamsAppId": "d712e501-0c6c-4f8d-94fe-445bd93d7386"
     },
     "fx-resource-aad-app-for-teams": {
-        "clientId": "4f0cec4b-da57-4ea0-bf70-c9cdcabe25d9",
+        "clientId": "0735306a-96d1-4285-b519-fbc7e34aae5f",
         "clientSecret": "{{fx-resource-aad-app-for-teams.clientSecret}}",
-        "objectId": "802f0533-9f1f-49aa-8d5f-febfa5655de0",
-        "oauth2PermissionScopeId": "4c9bfc44-dc41-4b16-8b44-e4a625ba7b4c",
+        "objectId": "b3b93499-aaf2-46c8-ac55-3506baaa0c5f",
+        "oauth2PermissionScopeId": "f0595a85-e241-40ff-87ce-37c05489581e",
         "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
         "oauthHost": "https://login.microsoftonline.com",
         "oauthAuthority": "https://login.microsoftonline.com/6d5ac8ee-3862-4452-93e7-a836c2d9742b",
-        "applicationIdUris": "api://localhost:53000/botid-afdc2a2f-4231-49b5-930d-decafe3d2edc",
-        "botId": "afdc2a2f-4231-49b5-930d-decafe3d2edc",
-        "botEndpoint": "https://dab9-211-44-192-110.ngrok.io",
+        "applicationIdUris": "api://localhost:53000/botid-749e3824-8046-41a4-a525-d1b635617fbb",
+        "botId": "749e3824-8046-41a4-a525-d1b635617fbb",
+        "botEndpoint": "https://dca6-211-44-192-110.ngrok.io",
         "frontendEndpoint": "https://localhost"
     },
     "fx-resource-frontend-hosting": {
@@ -28,11 +28,11 @@
         "sslKeyFile": "C:/Users/Ahat/.fx/certificate/localhost.key"
     },
     "fx-resource-bot": {
-        "botId": "afdc2a2f-4231-49b5-930d-decafe3d2edc",
+        "botId": "749e3824-8046-41a4-a525-d1b635617fbb",
         "botPassword": "{{fx-resource-bot.botPassword}}",
-        "siteEndpoint": "https://dab9-211-44-192-110.ngrok.io",
-        "validDomain": "dab9-211-44-192-110.ngrok.io",
-        "domain": "dab9-211-44-192-110.ngrok.io"
+        "siteEndpoint": "https://dca6-211-44-192-110.ngrok.io",
+        "validDomain": "dca6-211-44-192-110.ngrok.io",
+        "domain": "dca6-211-44-192-110.ngrok.io"
     },
     "fx-resource-simple-auth": {}
 }

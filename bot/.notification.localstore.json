@@ -1,19 +1,39 @@
 {
-  "_6d5ac8ee-3862-4452-93e7-a836c2d9742b_a:18rCiYnird2wgZhXZUp7253d2yU18XdDIHR2sGKJEOCjOX-9ju35KgBqhpK6Pg8ctJR4XasPb9ikiLxE7AoZle0-ug2geBfMY-Amc3mq_JwHDENU_yKlwnNN6RLdZNxP4": {
-    "activityId": "1674005547694",
+  "_6d5ac8ee-3862-4452-93e7-a836c2d9742b_a:1ebk3bJ1MSYloOo14UEDieWTZukEGjUMFf8tgo15GR_tqLYajpq3NrS1U1tA0womEJmiucEf1ZFPEWPunLZUhNPQHKPc2YZVc0U6dsl8Isb6z0UhTUhUGW8d7kHdyj3WB": {
+    "activityId": "f:ca3a6ed6-d922-a45f-9637-a325f3cd4478",
     "user": {
-      "id": "29:1PsdOLtjwYRsW-KqfKiWlAJi76Ob0bThEXxMR7OOBEt66M61kjKJCWJIwq8eWZoQKkeVTrmrKL5xzngkDrgYb7Q",
-      "name": "Kwangseok Moon",
+      "id": "29:1R7jIrA83axBqpd686ifQdieQEd_GlL6V5B275M3S7WC2b76pAUMPMFUyNFITn7lGAimupB4efTwquhraxwkI5Q",
       "aadObjectId": "2cdbeed5-9768-47f4-840d-5ac8e7cb2a6d"
     },
     "bot": {
-      "id": "28:afdc2a2f-4231-49b5-930d-decafe3d2edc",
+      "id": "28:749e3824-8046-41a4-a525-d1b635617fbb",
       "name": "colson-local-debug"
     },
     "conversation": {
       "conversationType": "personal",
       "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
-      "id": "a:18rCiYnird2wgZhXZUp7253d2yU18XdDIHR2sGKJEOCjOX-9ju35KgBqhpK6Pg8ctJR4XasPb9ikiLxE7AoZle0-ug2geBfMY-Amc3mq_JwHDENU_yKlwnNN6RLdZNxP4"
+      "id": "a:1ebk3bJ1MSYloOo14UEDieWTZukEGjUMFf8tgo15GR_tqLYajpq3NrS1U1tA0womEJmiucEf1ZFPEWPunLZUhNPQHKPc2YZVc0U6dsl8Isb6z0UhTUhUGW8d7kHdyj3WB"
+    },
+    "channelId": "msteams",
+    "locale": "ko-KR",
+    "serviceUrl": "https://smba.trafficmanager.net/apac/"
+  },
+  "_6d5ac8ee-3862-4452-93e7-a836c2d9742b_19:38eedc23cf5b48d9aaff7f0aceac0fc6@thread.v2": {
+    "activityId": "f:368d4f95-8fdf-0865-7708-4d1f55c6d231",
+    "user": {
+      "id": "29:1R7jIrA83axBqpd686ifQdieQEd_GlL6V5B275M3S7WC2b76pAUMPMFUyNFITn7lGAimupB4efTwquhraxwkI5Q",
+      "aadObjectId": "2cdbeed5-9768-47f4-840d-5ac8e7cb2a6d"
+    },
+    "bot": {
+      "id": "28:749e3824-8046-41a4-a525-d1b635617fbb",
+      "name": "colson-local-debug"
+    },
+    "conversation": {
+      "isGroup": true,
+      "conversationType": "groupChat",
+      "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
+      "id": "19:38eedc23cf5b48d9aaff7f0aceac0fc6@thread.v2",
+      "name": "test 그룹채팅방"
     },
     "channelId": "msteams",
     "locale": "ko-KR",

@@ -1,0 +1,143 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "식사 모집을 위한 정보를 입력해주세요",
+      "size": "Medium",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "콜슨이 대신 전해드립니다!",
+      "wrap": true
+    },
+    {
+      "type": "ColumnSet",
+      "spacing": "Medium",
+      "columns": [
+        {
+          "type": "Column",
+          "width": 2,
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "제목",
+              "size": "small",
+              "weight": "Bolder"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": 5,
+          "items": [
+            {
+              "type": "Input.Text",
+              "style": "text",
+              "id": "partyName",
+              "isRequired": true,
+              "value": "",
+              "errorMessage": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "spacing": "Medium",
+      "columns": [
+        {
+          "type": "Column",
+          "width": 2,
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "최대 인원 수(자신포함)",
+              "size": "small",
+              "weight": "Bolder"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": 5,
+          "items": [
+            {
+              "type": "Input.Text",
+              "style": "text",
+              "id": "numberOfPeaple",
+              "isRequired": true,
+              "value": "",
+              "errorMessage": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "spacing": "Medium",
+      "columns": [
+        {
+          "type": "Column",
+          "width": 2,
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "닉네임",
+              "size": "small",
+              "weight": "Bolder"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": 5,
+          "items": [
+            {
+              "type": "Input.Text",
+              "style": "text",
+              "id": "nickname",
+              "isRequired": true,
+              "value": "",
+              "errorMessage": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "spacing": "large",
+      "text": "설명(최대 150자)",
+      "size": "small",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "style": "text",
+      "isMultiline": true,
+      "id": "message",
+      "value": "",
+      "maxLength": 150
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "메시지 전송",
+      "data": {
+        "messageType": "requestCreateParty"
+      }
+    }
+  ]
+}

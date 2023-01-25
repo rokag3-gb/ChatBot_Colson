@@ -7,6 +7,7 @@ import { getWorkplaceForm, getWorkplace } from "./bot/getWorkplace";
 import { viewSecretMessage, sendSecretMessage, openSecretMessage, sendMessageReaction } from "./bot/secretMessage";
 import { sendBirthdayCard, openBirthMessage } from "./bot/birthMessage";
 import { viewMealStoreSearch, viewMealStoreSearchResult, redirectMealStoreSearchResult } from "./bot/mealStore";
+import { requestCreatePartyCard, requestCreateParty } from "./bot/mealParty";
 import { randomStoreSelect, openRandomStore } from "./bot/randomMealStore";
 import { checkConversation } from "./bot/conversation";
 
@@ -97,6 +98,10 @@ export class TeamsBot extends TeamsActivityHandler {
             await viewCommandList(context);
           } else if (context.activity.value.messageType === "makeGroupChat") {  
             await makeGroupChat(context);
+          } else if (context.activity.value.messageType === "createParty") {  
+            await requestCreatePartyCard(context);
+          } else if (context.activity.value.messageType === "requestCreateParty") {  
+            await requestCreateParty(context);
           } else {
             await sorryMessage(context);
           }
