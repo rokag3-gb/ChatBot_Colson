@@ -261,3 +261,30 @@ export const SendGroupChatMessage = async (id: string, message: string) => {
 
   return JSON.stringify(await groupChat.sendMessage(message));
 }
+
+export const memberSend = async(context) => {
+  let emp = "";
+  const installations = await bot.notification.installations();
+
+  for (const target of installations) {    
+    if(target.type === 'Person') {    
+      try {
+        const members = await target.members();
+        for(const member of members) {
+          try {
+            emp += member.account.userPrincipalName + ",";
+
+          } catch (e) {
+            insertLog('memberSend ' + member.account.id, "Error : " + JSON.stringify(e) + ", " + e.message);
+            console.log('memberSend ERROR!! ' + e);
+          }
+        }
+      } catch (e) {
+        insertLog('memberSend', "Error : " + JSON.stringify(e) + "," + e.message);
+        console.log('memberSend ERROR2!! ' + e);
+      }
+    }
+  }
+
+  await context.sendActivity(emp);
+}

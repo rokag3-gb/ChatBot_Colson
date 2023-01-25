@@ -4,7 +4,7 @@ import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { viewCommandList, sendCommand, userMap, sorryMessage } from "./bot/common";
 import { setWorkplaceForm, setWorkplace } from "./bot/setWorkplace";
 import { getWorkplaceForm, getWorkplace } from "./bot/getWorkplace";
-import { viewSecretMessage, sendSecretMessage, openSecretMessage, sendMessageReaction } from "./bot/secretMessage";
+import { viewSecretMessage, sendSecretMessage, openSecretMessage, sendMessageReaction, empTest } from "./bot/secretMessage";
 import { sendBirthdayCard, openBirthMessage } from "./bot/birthMessage";
 import { viewMealStoreSearch, viewMealStoreSearchResult, redirectMealStoreSearchResult } from "./bot/mealStore";
 import { randomStoreSelect, openRandomStore } from "./bot/randomMealStore";
@@ -65,6 +65,8 @@ export class TeamsBot extends TeamsActivityHandler {
             await setWorkplaceForm(null, null, null, 'send', '오늘 하루도 고생많으셨습니다.', 'pm');
           } else if (text[0] === 'birthtest') {
             await sendBirthdayCard();
+          } else if (text[0] === 'emptest') {
+            await empTest(context);
           } else {
             await checkConversation(context, txt);
           }

@@ -4,7 +4,7 @@ import viewSecretMessageTemplate from "../../adaptiveCards/viewSecretMessage.jso
 import openSecretMessageTemplate from "../../adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "../../adaptiveCards/sendSecretMessage.json";
 import { CardFactory } from "botbuilder";
-import { errorMessageForContext } from "../common"
+import { errorMessageForContext, memberSend } from "../common"
 import ACData = require("adaptivecards-templating");
 
 import { userMap } from "../common";
@@ -189,4 +189,13 @@ const makeData = async (senderNick, receiver, message, background) => {
   };
   
   return data;
+}
+
+export const empTest = async (context) => {
+  let userText = "";
+  for (const user of Object.entries(userMap)) {
+    userText += user[1].FullNameKR + ","
+  }
+  await context.sendActivity(userText);
+  await memberSend(context);
 }
