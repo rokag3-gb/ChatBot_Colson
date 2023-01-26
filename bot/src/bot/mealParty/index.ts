@@ -1,33 +1,57 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import createpartyCard from "../../adaptiveCards/createParty.json";
 import joinParty from "../../adaptiveCards/joinParty.json";
-import { CardFactory } from "botbuilder";
-import { groupChatMap, } from "../common"
-import { TeamsBotInstallation, } from "@microsoft/teamsfx"
+import { CardFactory, TurnContext } from "botbuilder";
+import { groupChatMap, userMap, } from "../common"
+import { UspSetMealParty, } from "./query"
+import { TeamsBotInstallation, Member, } from "@microsoft/teamsfx"
+import { v1 } from 'uuid';
          
-export const requestCreatePartyCard = async (context) => {
+export const requestCreatePartyCard = async (context: TurnContext) => {
   const tmpTemplate = JSON.parse(JSON.stringify(createpartyCard));
 
   const card = AdaptiveCards.declare(tmpTemplate).render();
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
 }
          
-export const requestCreateParty = async (context) => {
-  const tmpTemplate = JSON.parse(JSON.stringify(joinParty));
-
-  const groupChat = <TeamsBotInstallation>groupChatMap['19:38eedc23cf5b48d9aaff7f0aceac0fc6@thread.v2'];
-  console.log(JSON.stringify(groupChatMap));
-  if(!groupChat) {
-    return "Invalid chat Id";
+export const requestCreateParty = async (context: TurnContext) => {
+  try {
+    const tmpTemplate = JSON.parse(JSON.stringify(joinParty));
+  
+    // 여기에 이미 방에 참가되어있는지 체크하는 부분
+  
+    
+    const user = <Member>userMap[context.activity.from.id];
+    if(!user) {
+      return "Invalid user";
+    }
+  
+    const groupChat = <TeamsBotInstallation>groupChatMap['19:38eedc23cf5b48d9aaff7f0aceac0fc6@thread.v2'];
+    if(!groupChat) {
+      return "Invalid chat Id";
+    }
+  
+    const uuid = v1();
+    await UspSetMealParty(uuid, context.activity.value.partyName, context.activity.value.numberOfPeaple, user.account.userPrincipalName);
+  
+    const card = AdaptiveCards.declare(tmpTemplate).render({
+      partyTitle: context.activity.value.partyName,
+      numberOfPeaple: '1/' + context.activity.value.numberOfPeaple,
+      nickname: context.activity.value.nickname,
+      message: context.activity.value.message,
+      partyId: uuid
+    });
+  
+    return JSON.stringify(await groupChat.sendAdaptiveCard(card));
+  } catch(e) {
+    console.log(e);
   }
-
-  const card = AdaptiveCards.declare(tmpTemplate).render({
-    partyTitle: `테스트 방`,
-    numberOfPeaple: `3/6`,
-    nickname: `아핫`,
-    message: `미역줄기볶음 먹으러 갈 사람 구합니다.`,
-  });
-//  await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)]});
-
-  return JSON.stringify(await groupChat.sendAdaptiveCard(card));
+}
+         
+export const requestJoinParty = async (context: TurnContext) => {
+  try {
+    console.log(JSON.stringify(context.activity.value));
+  } catch(e) {
+    console.log(e);
+  }
 }

@@ -2,37 +2,23 @@ import { getRequest } from "../../mssql"
 const sql = require('mssql');
 import { query } from "../common";
 
-export const UspSetSendMessage = async (UPN: string, senderNick: string, reciver: string, message: string, background: string): Promise<any[]> => {
-  const request = await getRequest();
-  request.input('AppId', sql.VarChar, process.env.BOT_ID);
-  request.input('Sender', sql.VarChar, UPN);
-  request.input('SenderNick', sql.NVarChar, senderNick);
-  request.input('Receiver', sql.VarChar, reciver);
-  request.input('Contents', sql.NVarChar, message);
-  request.input('Background', sql.VarChar, background);
+export const UspSetMealParty = async (partyId: string, title: string, maxNumberOfPeople: string, createId: string) => {
+    const request = await getRequest();
+    request.input('AppId', sql.VarChar, process.env.BOT_ID);
+    request.input('partyId', sql.VarChar, partyId);
+    request.input('title', sql.VarChar, title);
+    request.input('maxNumberOfPeople', sql.VarChar, maxNumberOfPeople);
+    request.input('createId', sql.VarChar, createId);
+  
+    const result = await query(request, `INSERT INTO [IAM].[bot].[MealParty]
+               ([AppId]
+               ,[partyId]
+               ,[title]
+               ,[maxNumberOfPeople]
+               ,[createId])
+         VALUES
+               (@AppId, @partyId, @title, @maxNumberOfPeople, @createId)`);
 
-  return query(request, `EXEC [IAM].[bot].[Usp_Set_Send_Message] @AppId, @Sender, @SenderNick, @Receiver, @Contents, @Background`);
-}
-
-export const UspGetSendMessage = async (messageId: string): Promise<any[]> => {
-  const request = await getRequest();
-  request.input('MsgId', sql.BigInt, messageId);
-
-  return query(request, `EXEC [IAM].[bot].[Usp_Get_Send_Message] @MsgId`);
-}
-
-export const UspSetSendMessageOpen = async (messageId: string, openedChatId: string): Promise<any[]> => {
-  const request = await getRequest();
-  request.input('MsgId', sql.BigInt, messageId);
-  request.input('OpenedChatId', sql.VarChar, openedChatId);
-
-  return query(request, `EXEC [IAM].[bot].[Usp_Set_Send_Message_Open] @MsgId, @OpenedChatId`);
-}
-
-export const UspGetSendMessageChatid = async (activityId: string): Promise<any[]> => {
-  const request = await getRequest();
-  request.input('AppId', sql.VarChar, process.env.BOT_ID);
-  request.input('OpenedChatId', sql.VarChar, activityId);
-
-  return query(request, `EXEC [IAM].[bot].[Usp_Get_Send_Message_Chat_Id] @OpenedChatId, @AppId`);
+    console.log('result = ' + result);
+    return result;
 }

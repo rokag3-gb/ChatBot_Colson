@@ -129,6 +129,14 @@
       "id": "message",
       "value": "",
       "maxLength": 150
+    },
+    {
+      "type": "Input.Text",
+      "style": "text",
+      "isMultiline": false,
+      "isVisible": false,
+      "id": "partyId",
+      "value": ""
     }
   ],
   "actions": [

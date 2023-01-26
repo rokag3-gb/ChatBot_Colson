@@ -118,6 +118,14 @@
       "color": "dark",
       "text": "${message}",
       "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "style": "text",
+      "isMultiline": false,
+      "isVisible": false,
+      "id": "partyId",
+      "value": "${partyId}"
     }
   ],
   "actions": [
@@ -125,7 +133,7 @@
       "type": "Action.Submit",
       "title": "참가",
       "data": {
-        "messageType": "requestCreateParty"
+        "messageType": "requestJoinParty"
       }
     }
   ]

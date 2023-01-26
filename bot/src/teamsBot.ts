@@ -7,7 +7,7 @@ import { getWorkplaceForm, getWorkplace } from "./bot/getWorkplace";
 import { viewSecretMessage, sendSecretMessage, openSecretMessage, sendMessageReaction } from "./bot/secretMessage";
 import { sendBirthdayCard, openBirthMessage } from "./bot/birthMessage";
 import { viewMealStoreSearch, viewMealStoreSearchResult, redirectMealStoreSearchResult } from "./bot/mealStore";
-import { requestCreatePartyCard, requestCreateParty } from "./bot/mealParty";
+import { requestCreatePartyCard, requestCreateParty, requestJoinParty } from "./bot/mealParty";
 import { randomStoreSelect, openRandomStore } from "./bot/randomMealStore";
 import { checkConversation } from "./bot/conversation";
 
@@ -16,9 +16,11 @@ export class TeamsBot extends TeamsActivityHandler {
     super();
 
     this.onMessage(async (context: TurnContext, next) => {
-        const message = MessageFactory.text('');
-        message.type = ActivityTypes.Typing;
-        await context.sendActivity(message);
+        if (context.activity.value && context.activity.value.messageType && context.activity.value.messageType !== "requestJoinParty") {  
+          const message = MessageFactory.text('');
+          message.type = ActivityTypes.Typing;
+          await context.sendActivity(message);
+        }
   
         const user = userMap[context.activity.from.id];
         if(!user) {
@@ -102,6 +104,8 @@ export class TeamsBot extends TeamsActivityHandler {
             await requestCreatePartyCard(context);
           } else if (context.activity.value.messageType === "requestCreateParty") {  
             await requestCreateParty(context);
+          } else if (context.activity.value.messageType === "requestJoinParty") {  
+            await requestJoinParty(context);
           } else {
             await sorryMessage(context);
           }
