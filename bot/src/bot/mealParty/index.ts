@@ -3,9 +3,12 @@ import createpartyCard from "../../adaptiveCards/createParty.json";
 import joinParty from "../../adaptiveCards/joinParty.json";
 import { CardFactory, TurnContext } from "botbuilder";
 import { groupChatMap, userMap, } from "../common"
-import { UspSetMealParty, } from "./query"
+import { UspSetMealParty, UspSetMealPartyMember, CheckUser, CheckParty } from "./query"
 import { TeamsBotInstallation, Member, } from "@microsoft/teamsfx"
 import { v1 } from 'uuid';
+import { Mutex } from 'async-mutex'
+
+const mutex = new Mutex();
          
 export const requestCreatePartyCard = async (context: TurnContext) => {
   const tmpTemplate = JSON.parse(JSON.stringify(createpartyCard));
@@ -50,6 +53,25 @@ export const requestCreateParty = async (context: TurnContext) => {
          
 export const requestJoinParty = async (context: TurnContext) => {
   try {
+    /*
+    const checkUser = await CheckUser(context.activity.from.id)
+    if(!checkUser) {
+      console.log("이미 다른 파티에 가입되어있음");
+      return "이미 다른 파티에 가입되어있음";
+    }
+    */
+
+    await mutex.runExclusive(async () => {
+      const checkParty = await CheckParty(context.activity.value.partyId);
+      if(!checkParty) {
+
+        console.log("파티가 이미 가득 참");
+        return "파티가 이미 가득 참";
+      }
+
+      await UspSetMealPartyMember(context.activity.value.partyId, context.activity.from.id);
+    });
+    
     console.log(JSON.stringify(context.activity.value));
   } catch(e) {
     console.log(e);
