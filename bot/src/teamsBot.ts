@@ -98,14 +98,14 @@ export class TeamsBot extends TeamsActivityHandler {
             await openBirthMessage(context, context.activity.value.messageId, context.activity.value.username, context.activity.value.birthDate);
           } else if (context.activity.value.messageType === "viewCommandList") {  
             await viewCommandList(context);
-          } else if (context.activity.value.messageType === "makeGroupChat") {  
-            await makeGroupChat(context);
           } else if (context.activity.value.messageType === "createParty") {  
             await requestCreatePartyCard(context);
           } else if (context.activity.value.messageType === "requestCreateParty") {  
             await requestCreateParty(context);
           } else if (context.activity.value.messageType === "requestJoinParty") {  
             await requestJoinParty(context);
+          } else if (context.activity.value.messageType === "makeGroupChat") {  
+            await makeGroupChat(context);
           } else {
             await sorryMessage(context);
           }

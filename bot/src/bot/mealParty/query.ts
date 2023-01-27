@@ -23,16 +23,18 @@ export const UspSetMealParty = async (partyId: string, title: string, maxNumberO
     return result;
 }
 
-export const UspSetMealPartyMember = async (partyId: string, AppUserId: string): Promise<any[]> => {
+export const UspSetMealPartyMember = async (partyId: string, appUserId: string, aadObjectId: string): Promise<any[]> => {
     const request = await getRequest();
     request.input('partyId', sql.VarChar, partyId);
-    request.input('AppUserId', sql.VarChar, AppUserId);
+    request.input('appUserId', sql.VarChar, appUserId);
+    request.input('aadObjectId', sql.VarChar, aadObjectId);
   
     const result = await query(request, `INSERT INTO [IAM].[bot].[MealPartyMember]
                ([partyId]
-               ,[AppUserId])
+                ,[appUserId]
+                ,[aadObjectId])
          VALUES
-               (@partyId, @AppUserId)`);
+               (@partyId, @appUserId, @aadObjectId)`);
 
     console.log('result = ' + result);
     return result;
@@ -74,4 +76,21 @@ export const CheckParty = async (partyId: string): Promise<boolean> => {
     } 
 
     return false;
+}
+
+export const GetPartyMember = async (partyId: string) => {
+    const request = await getRequest();
+    request.input('partyId', sql.VarChar, partyId);
+  
+    return await query(request, `SELECT aadObjectId FROM [IAM].[bot].[MealPartyMember] WHERE partyId = @partyId`);
+}
+
+export const UspSetPartyClose = async (partyId: string): Promise<any[]> => {
+    const request = await getRequest();
+    request.input('partyId', sql.VarChar, partyId);
+  
+    const result = await query(request, `UPDATE [IAM].[bot].[MealParty] SET isClose = 1 WHERE partyId = @partyId`);
+
+    console.log('result = ' + result);
+    return result;
 }

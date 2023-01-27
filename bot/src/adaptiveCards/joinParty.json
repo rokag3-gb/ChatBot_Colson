@@ -126,6 +126,38 @@
       "isVisible": false,
       "id": "partyId",
       "value": "${partyId}"
+    },
+    {
+      "type": "Input.Text",
+      "style": "text",
+      "isMultiline": false,
+      "isVisible": false,
+      "id": "partyTitle",
+      "value": "${partyTitle}"
+    },
+    {
+      "type": "Input.Text",
+      "style": "text",
+      "isMultiline": false,
+      "isVisible": false,
+      "id": "nickname",
+      "value": "${nickname}"
+    },
+    {
+      "type": "Input.Text",
+      "style": "text",
+      "isMultiline": true,
+      "isVisible": false,
+      "id": "message",
+      "value": "${message}"
+    },
+    {
+      "type": "Input.Text",
+      "style": "text",
+      "isMultiline": false,
+      "isVisible": false,
+      "id": "numberOfPeaple",
+      "value": "${numberOfPeaple}"
     }
   ],
   "actions": [
