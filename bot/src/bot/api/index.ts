@@ -1,4 +1,5 @@
 import { Router } from "restify-router"
+import { bot } from "../../internal/initialize";
 import {
   UspGetWorkplaceTeam,
   UspGetTeam,
@@ -59,7 +60,13 @@ async (req, res) => {
 
 routerInstance.post("/sendGroupMentionMessage", 
 async (req, res) => {  
-  const row = await SendGroupMentionMessage(req.body.id, req.body.user, req.body.message);
+  const groupChat = <TeamsBotInstallation>groupChatMap[req.body.id];
+  if(!groupChat) {
+    res.json("Invalid chat Id");
+    return "Invalid chat Id";
+  }
+
+  const row = await SendMentionMessage(groupChat, req.body.user, req.body.message);
   res.json(row);
 });
 
@@ -95,44 +102,6 @@ export const SendGroupMessage = async (id: string, message: string) => {
   }
 
   return JSON.stringify(await groupChat.sendMessage(message));
-}
-
-export const SendGroupMentionMessage = async (id: string, username: string, messageText: string) => {
-  if(!id || !messageText || !username) {
-    return "Invalid request";
-  }
-
-  const groupChat = <TeamsBotInstallation>groupChatMap[id];
-  console.log(JSON.stringify(groupChatMap));
-  if(!groupChat) {
-    return "Invalid chat Id";
-  }
-
-  let user = <Member>null;
-  for (const u of Object.entries(userMap)) {
-    if(u[1].FullNameKR === username) {
-      user = <Member>u[1];
-      break;
-    }
-  }
-  
-  if(!user) {
-    return SendGroupMessage(id, messageText);
-  }
-
-  const mention: Mention = {
-      mentioned: user.account,
-      text: `<at>${user.account.name}</at>`,
-      type: 'mention'
-  };
-
-  const message: Partial<Activity> = {
-      entities: [mention],
-      text: messageText.replace(username, mention.text),
-      type: ActivityTypes.Message
-  };
-
-  return JSON.stringify(await groupChat.sendMessage(<string>message));
 }
 
 export const SendUserMessage = async (id: string, message: string) => {
@@ -185,4 +154,62 @@ export const GrafanaWebhook = async (body, groupid: string) => {
   }
 
   return JSON.stringify(await groupChat.sendMessage(message));
+}
+
+routerInstance.post("/sendTeamMessage", 
+async (req, res) => {  
+  const installations = await bot.notification.installations();
+
+  let ret = null;
+  for (const target of installations) {    
+    if (target.type === 'Channel' && target.conversationReference.conversation.id === req.body.id) {
+      ret = await target.sendMessage(req.body.message);
+    }
+  }
+  return res.json(ret);
+});
+
+routerInstance.post("/sendTeamMentionMessage", 
+async (req, res) => {  
+  const installations = await bot.notification.installations();
+
+  let ret = null;
+  for (const target of installations) {    
+    if (target.type === 'Channel' && target.conversationReference.conversation.id === req.body.id) {
+      ret = await SendMentionMessage(target, req.body.user, req.body.message);
+    }
+  }
+  return res.json(ret);
+});
+
+export const SendMentionMessage = async (target: TeamsBotInstallation, username: string, messageText: string) => {
+  if(!messageText || !username) {
+    return "Invalid request";
+  }
+
+  let user = <Member>null;
+  for (const u of Object.entries(userMap)) {
+    if(u[1].FullNameKR === username) {
+      user = <Member>u[1];
+      break;
+    }
+  }
+  
+  if(!user) {
+    return "Id not found";
+  }
+
+  const mention: Mention = {
+      mentioned: user.account,
+      text: `<at>${user.account.name}</at>`,
+      type: 'mention'
+  };
+
+  const message: Partial<Activity> = {
+      entities: [mention],
+      text: messageText.replace(username, mention.text),
+      type: ActivityTypes.Message
+  };
+
+  return JSON.stringify(await target.sendMessage(<string>message));
 }
