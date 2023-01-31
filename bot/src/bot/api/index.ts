@@ -182,6 +182,19 @@ async (req, res) => {
   return res.json(ret);
 });
 
+routerInstance.post("/sendAllTeamMentionMessage", 
+async (req, res) => {  
+  const installations = await bot.notification.installations();
+
+  let ret = null;
+  for (const target of installations) {    
+    if (target.type === 'Channel' && target.conversationReference.conversation.id === req.body.id) {
+      ret = await SendAllMentionMessage(target, req.body.message);
+    }
+  }
+  return res.json(ret);
+});
+
 export const SendMentionMessage = async (target: TeamsBotInstallation, username: string, messageText: string) => {
   if(!messageText || !username) {
     return "Invalid request";
@@ -201,7 +214,7 @@ export const SendMentionMessage = async (target: TeamsBotInstallation, username:
 
   const mention: Mention = {
       mentioned: user.account,
-      text: `<at>${user.account.name}</at>`,
+      text: `<at> </at>`,
       type: 'mention'
   };
 
@@ -210,6 +223,30 @@ export const SendMentionMessage = async (target: TeamsBotInstallation, username:
       text: messageText.replace(username, mention.text),
       type: ActivityTypes.Message
   };
+
+  return JSON.stringify(await target.sendMessage(<string>message));
+}
+
+export const SendAllMentionMessage = async (target: TeamsBotInstallation, messageText: string) => {
+  const members = await target.members();
+  const arr = [];
+
+  for(const member of members) {
+    const mention: Mention = {
+        mentioned: member.account,
+        text: `<at>테</at>`,
+        type: 'mention'
+    };
+
+    arr.push(mention);
+  }
+
+  const message: Partial<Activity> = {
+    entities: arr,
+    text: messageText + `<at>테</at>`,
+    type: ActivityTypes.Message
+};
+
 
   return JSON.stringify(await target.sendMessage(<string>message));
 }
