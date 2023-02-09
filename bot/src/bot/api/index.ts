@@ -33,7 +33,7 @@ routerInstance.get('/getTeam', async (req, res) => {
 });
 
 routerInstance.get('/getStore', async (req, res) => {
-  const row = await UspGetStore(req.query["search"]);
+  const row = await UspGetStore(req.query["search"], req.query["category"]);
   res.json(row);
 });
 
@@ -90,6 +90,38 @@ routerInstance.get('/getWorkCode', async (req, res) => {
   res.json(row);
 });
 
+routerInstance.post("/grafana/webhook/:groupid", 
+async (req, res) => {
+  const row = await GrafanaWebhook(req.body, req.params.groupid);
+  res.json(row);
+});
+
+routerInstance.post("/sendTeamMessage", 
+async (req, res) => {  
+  const installations = await bot.notification.installations();
+
+  let ret = null;
+  for (const target of installations) {    
+    if (target.type === 'Channel' && target.conversationReference.conversation.id === req.body.id) {
+      ret = await target.sendMessage(req.body.message);
+    }
+  }
+  return res.json(ret);
+});
+
+routerInstance.post("/sendTeamMentionMessage", 
+async (req, res) => {  
+  const installations = await bot.notification.installations();
+
+  let ret = null;
+  for (const target of installations) {    
+    if (target.type === 'Channel' && target.conversationReference.conversation.id === req.body.id) {
+      ret = await SendMentionMessage(target, req.body.user, req.body.message);
+    }
+  }
+  return res.json(ret);
+});
+
 export const SendGroupMessage = async (id: string, message: string) => {
   if(!id || !message) {
     return "Invalid request";
@@ -117,12 +149,6 @@ export const SendUserMessage = async (id: string, message: string) => {
 
   return JSON.stringify(await user.sendMessage(message));
 }
-
-routerInstance.post("/grafana/webhook/:groupid", 
-async (req, res) => {
-  const row = await GrafanaWebhook(req.body, req.params.groupid);
-  res.json(row);
-});
 
 export const GrafanaWebhook = async (body, groupid: string) => {
   if(!groupid) {
@@ -156,45 +182,6 @@ export const GrafanaWebhook = async (body, groupid: string) => {
   return JSON.stringify(await groupChat.sendMessage(message));
 }
 
-routerInstance.post("/sendTeamMessage", 
-async (req, res) => {  
-  const installations = await bot.notification.installations();
-
-  let ret = null;
-  for (const target of installations) {    
-    if (target.type === 'Channel' && target.conversationReference.conversation.id === req.body.id) {
-      ret = await target.sendMessage(req.body.message);
-    }
-  }
-  return res.json(ret);
-});
-
-routerInstance.post("/sendTeamMentionMessage", 
-async (req, res) => {  
-  const installations = await bot.notification.installations();
-
-  let ret = null;
-  for (const target of installations) {    
-    if (target.type === 'Channel' && target.conversationReference.conversation.id === req.body.id) {
-      ret = await SendMentionMessage(target, req.body.user, req.body.message);
-    }
-  }
-  return res.json(ret);
-});
-
-routerInstance.post("/sendAllTeamMentionMessage", 
-async (req, res) => {  
-  const installations = await bot.notification.installations();
-
-  let ret = null;
-  for (const target of installations) {    
-    if (target.type === 'Channel' && target.conversationReference.conversation.id === req.body.id) {
-      ret = await SendAllMentionMessage(target, req.body.message);
-    }
-  }
-  return res.json(ret);
-});
-
 export const SendMentionMessage = async (target: TeamsBotInstallation, username: string, messageText: string) => {
   if(!messageText || !username) {
     return "Invalid request";
@@ -209,7 +196,7 @@ export const SendMentionMessage = async (target: TeamsBotInstallation, username:
   }
   
   if(!user) {
-    return "Id not found";
+    return JSON.stringify("Id not found change sendMessage => " + await target.sendMessage(<string>messageText));
   }
 
   const mention: Mention = {
@@ -223,30 +210,6 @@ export const SendMentionMessage = async (target: TeamsBotInstallation, username:
       text: messageText.replace(username, mention.text),
       type: ActivityTypes.Message
   };
-
-  return JSON.stringify(await target.sendMessage(<string>message));
-}
-
-export const SendAllMentionMessage = async (target: TeamsBotInstallation, messageText: string) => {
-  const members = await target.members();
-  const arr = [];
-
-  for(const member of members) {
-    const mention: Mention = {
-        mentioned: member.account,
-        text: `<at>테</at>`,
-        type: 'mention'
-    };
-
-    arr.push(mention);
-  }
-
-  const message: Partial<Activity> = {
-    entities: arr,
-    text: messageText + `<at>테</at>`,
-    type: ActivityTypes.Message
-};
-
 
   return JSON.stringify(await target.sendMessage(<string>message));
 }

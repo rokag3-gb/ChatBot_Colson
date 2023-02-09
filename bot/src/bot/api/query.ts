@@ -17,10 +17,11 @@ export const UspGetTeam = async (upn: string): Promise<any[]> => {
   return query(request, `EXEC [IAM].[bot].[Usp_Get_Teams] @UPN`)
 }
 
-export const UspGetStore = async (search: string): Promise<any[]> => {
+export const UspGetStore = async (search: string, category: string): Promise<any[]> => {
   const request = await getRequest();
   request.input('Search', sql.VarChar, search);
-  return query(request, `EXEC [IAM].[bot].[Usp_Get_Meal_Store_Tab] @Search, 1`);
+  request.input('Category', sql.VarChar, category);
+  return query(request, `EXEC [IAM].[bot].[Usp_Get_Meal_Store_Tab] @Search, 1, @Category`);
 }
 
 export const UspGetTag = async (storeId: number): Promise<any[]> => {
