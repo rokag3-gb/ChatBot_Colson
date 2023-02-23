@@ -98,9 +98,9 @@ export const openSecretMessage = async (context, id, messageId) => {
     }
     let background = '';
 
-    if (row.Background === 'green' || row.Background === 'White Snow') {
+    if (row.Background === 'Animal Friends' || row.Background === 'White Snow') {
       background = secretMessageBackground2;
-    } else if (row.Background === 'brown' || row.Background === 'Twinkle Orange') {
+    } else if (row.Background === 'Bubble Bubble' || row.Background === 'Twinkle Orange') {
       background = secretMessageBackground3;
     } else {
       background = secretMessageBackground1;
@@ -169,20 +169,20 @@ const makeData = async (senderNick, receiver, message, background) => {
   let data: SecretSendCardData;
   let backgroundImage = background;
   if(!backgroundImage) {
-    backgroundImage = "Yellow Tree";
+    backgroundImage = "Yellow Alpaca";
   }
 
   data = {
     Icon1: icon1,
     Icon2: icon2,
     Icon3: icon3,
-    IconName1: "Yellow Tree",
-    IconName2: "White Snow",
-    IconName3: "Twinkle Orange",
+    IconName1: "Yellow Alpaca",
+    IconName2: "Animal Friends",
+    IconName3: "Bubble Bubble",
     backgroundImage: backgroundImage,
-    backgroundImage01: "Yellow Tree",
-    backgroundImage02: "White Snow",
-    backgroundImage03: "Twinkle Orange",
+    backgroundImage01: "Yellow Alpaca",
+    backgroundImage02: "Animal Friends",
+    backgroundImage03: "Bubble Bubble",
     senderNick: senderNick,
     receiver: receiver,
     contents: message,
