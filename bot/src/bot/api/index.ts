@@ -96,6 +96,7 @@ async (req, res) => {
   res.json(row);
 });
 
+//이 부분 나중에 삭제하기!!
 routerInstance.post("/sendTeamMessage", 
 async (req, res) => {  
   const installations = await bot.notification.installations();
@@ -121,6 +122,7 @@ async (req, res) => {
   }
   return res.json(ret);
 });
+//이 부분 나중에 삭제하기!!
 
 export const SendGroupMessage = async (id: string, message: string) => {
   if(!id || !message) {

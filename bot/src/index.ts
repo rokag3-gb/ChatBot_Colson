@@ -1,7 +1,7 @@
 import * as restify from "restify";
 import { bot } from "./internal/initialize";
 import { getUserList,
-         userRegister,
+         conversationRegister,
          groupRegister,
          getGroupChatList,
          insertLog,
@@ -21,8 +21,7 @@ const adapter = new BotFrameworkAdapter({
 const initialize = async () => {
   try {
     console.log(' Colson initialize Start! ');
-    await userRegister(null);
-    await groupRegister(null);
+    await conversationRegister(null);
 
     await getUserList(null);
     await getGroupChatList();
@@ -84,9 +83,8 @@ async (req, res) => {
   if(!user) {
     try {
       await bot.requestHandler(req, res);
-      await userRegister(req.body.from.id);
+      await conversationRegister(req.body.from.id)
       await getUserList(req.body.from.id);
-      await groupRegister(null);
       await getGroupChatList();
     } catch(e) {
       insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
@@ -94,15 +92,15 @@ async (req, res) => {
     }
   } else if(userCount === 0) {
     await bot.requestHandler(req, res);
-    await userRegister(null);
+    await conversationRegister(null);
     await getUserList(null);
-    await groupRegister(null);
     await getGroupChatList();
   } else if(req.body.conversation && req.body.conversation.isGroup) {
     await bot.requestHandler(req, res);
     const group = groupChatMap[req.body.conversation.id];
     if(!group) {
-      await groupRegister(null);
+      const installations = await bot.notification.installations();
+      await groupRegister(installations);
       await getGroupChatList();
     }
   }

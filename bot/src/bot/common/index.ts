@@ -46,14 +46,19 @@ export const sendCommand = async (context) => {
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
 }
 
-export const userRegister = async (userId) => {
+export const conversationRegister = async (id: string) => {
+  const installations = await bot.notification.installations();
+
+  await userRegister(id, installations);
+  await groupRegister(installations);
+}
+
+export const userRegister = async (userId: string, installations: TeamsBotInstallation[]) => {
   if(userCount === 0) {
     Object.keys(userMap).forEach(key => {
       delete userMap[key];
     });
   }
-
-  const installations = await bot.notification.installations();
 
   for (const target of installations) {    
     if(target.type === 'Person') {    
@@ -85,11 +90,21 @@ export const userRegister = async (userId) => {
   console.log('userRegister complete');
 }
 
-export const groupRegister = async (groupId: string) => {
-  const installations = await bot.notification.installations();
-
+export const groupRegister = async (installations: TeamsBotInstallation[]) => {
   for (const target of installations) {    
     if (target.type === 'Group') {
+      if(!parent) {
+        const members = await target.members();
+        if(members.length >= 1) {
+          parent = members[0].parent;
+        }
+      }
+      await UspSetGroupChat(target.conversationReference.conversation.id, target.conversationReference.conversation.name, JSON.stringify(target));
+      groupChatMap[target.conversationReference.conversation.id] = target;
+      console.log('userRegister ' + target.conversationReference.conversation.id);
+    }
+    
+    if (target.type === 'Channel') {
       if(!parent) {
         const members = await target.members();
         if(members.length >= 1) {
