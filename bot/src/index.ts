@@ -70,6 +70,7 @@ server.listen(process.env.port || process.env.PORT || 3978, () => {
 
 server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.queryParser());
+server.use(restify.plugins.authorizationParser());
 
 server.post("/api/messages", 
 async (req, res) => {  

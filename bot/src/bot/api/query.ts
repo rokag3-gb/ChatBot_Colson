@@ -55,3 +55,12 @@ export const UspSetWorkplace = async (workDate: string, upn: string, workCodeAM:
   request.input('SaverUPN', sql.VarChar, upn);
   return query(request, `EXEC [IAM].[bot].[Usp_Set_Workplace] @WorkDate, @UPN, @WorkCodeAM, @WorkCodePM, @SaverUPN`);
 }
+         
+export const UspSetWorkplaceUsername = async (workDate: string, username: string, workCodeAM: string, workCodePM: string): Promise<any[]> => {
+  const request = await getRequest();
+  request.input("WorkDate", sql.VarChar, workDate) ;
+  request.input('Username', sql.VarChar, username);
+  request.input('WorkCodeAM', sql.VarChar, workCodeAM);
+  request.input('WorkCodePM', sql.VarChar, workCodePM);
+  return query(request, `EXEC [IAM].[bot].[Usp_Set_WorkplaceUsername] @WorkDate, @Username, @WorkCodeAM, @WorkCodePM`);
+}

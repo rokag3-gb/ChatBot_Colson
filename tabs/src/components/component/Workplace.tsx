@@ -13,19 +13,18 @@ export const GetToday = (day: number) => {
   const koreaTimeDiff = 9 * 60 * 60 * 1000; 
   const date = new Date(utcNow + koreaTimeDiff);
 
+
   if(day) {
     date.setDate(date.getDate() + day);
   }
   return date.getFullYear() + "-" + ("00" + (1 + date.getMonth())).slice(-2) + "-" + ("00" + date.getDate()).slice(-2);
 }
-
 export function Workplace(props: { environment?: string }) {
   const { environment } = {
     environment: window.location.hostname === "localhost" ? "http://localhost:3978" : "https://cloudmtbotdev2ecceebot.azurewebsites.net",
     ...props,
   };
-
-
+  
   const { teamsfx } = useContext(TeamsFxContext);
   const { data } = useData(async () => {
     if (teamsfx) {
@@ -38,6 +37,7 @@ export function Workplace(props: { environment?: string }) {
   const [startDate, setStartDate] = useState(GetToday(-1));
   const [endDate, setEndDate] = useState(GetToday(7));
   const [team, setTeam] = useState('');
+  const [test, setTest] = useState('1');
   
   const [tableData, setTableData] = useState<Map<string, string>>();
   const [workCode, setWorkCode] = useState<Map<string, string>>();
@@ -53,30 +53,45 @@ export function Workplace(props: { environment?: string }) {
       return;
     }
 
-    axios.get(`${environment}/api/getTeam?UPN=${UPN}`).then(res => {
-      const option = [];
-      for(let i = 0; i < res.data.length; i++) {
-        const data  = res.data[i];
-        option.push({
-          label: data.TeamName,
-          value: data.TeamAbbrName
+    try {
+      teamsfx.getCredential().getToken('').then(token => {
+        axios.get(`${environment}/api/getTeam?UPN=${UPN}`,{
+          headers: {
+            authorization: 'Bearer ' + token.token,
+          },
+        }).then(res => {
+          const option = [];
+          for(let i = 0; i < res.data.length; i++) {
+            const data  = res.data[i];
+            option.push({
+              label: data.TeamName,
+              value: data.TeamAbbrName
+            });
+            if(data.userTeam === 1) {
+              setDefaultTeam(i);
+              setTeam(data.TeamAbbrName);
+            }
+          }
+          setOptions(option);
         });
-        if(data.userTeam === 1) {
-          setDefaultTeam(i);
-          setTeam(data.TeamAbbrName);
-        }
-      }
-      setOptions(option);
-    });
+      });
+    } catch(e) {
+      console.log(e);
+    }
     
-    axios.get(`${environment}/api/getWorkCode`).then(res => {
-      console.log(JSON.stringify(res.data));
-      const obj = new Map<string, string>();
-      for (const data of res.data) {
-        obj.set(data.Name, data.Code);
-      }
-
-      setWorkCode(obj);
+    teamsfx.getCredential().getToken('').then(token => {
+      axios.get(`${environment}/api/getWorkCode`,{
+        headers: {
+          authorization: 'Bearer ' + token.token,
+        },
+      }).then(res => {
+        console.log(JSON.stringify(res.data));
+        const obj = new Map<string, string>();
+        for (const data of res.data) {
+          obj.set(data.Name, data.Code);
+        }
+        setWorkCode(obj);
+      })
     });
   }, [UPN, environment]);
 
@@ -85,30 +100,36 @@ export function Workplace(props: { environment?: string }) {
       return;
     }
 
-    axios.get(`${environment}/api/getWorkplace?startDate=${startDate}&endDate=${endDate}&team=${team}`).then(res => {
-      const obj = new Map<string, string>();
-      const dateSet = new Set<string>();
-      const nameSet = new Set<string>();
+    teamsfx.getCredential().getToken('').then(token => {
+      axios.get(`${environment}/api/getWorkplace?startDate=${startDate}&endDate=${endDate}&team=${team}`,{
+        headers: {
+          authorization: 'Bearer ' + token.token,
+        },
+      }).then(res => {
+        const obj = new Map<string, string>();
+        const dateSet = new Set<string>();
+        const nameSet = new Set<string>();
 
-      for (const data of res.data) {
-        const dateText = data.Date + '(' + data.Weekname + ')';
-        if(data.Date !== null && data.Weekname !== null) {
-          dateSet.add(dateText);
-        }
-        if(data.DisplayName === undefined || data.DisplayName === null) {
-          continue;
-        }
-        nameSet.add(data.DisplayName);
-        obj.set(dateText + data.DisplayName + data.WorkTimeKR, data.Workplace);
+        for (const data of res.data) {
+          const dateText = data.Date + '(' + data.Weekname + ')';
+          if(data.Date !== null && data.Weekname !== null) {
+            dateSet.add(dateText);
+          }
+          if(data.DisplayName === undefined || data.DisplayName === null) {
+            continue;
+          }
+          nameSet.add(data.DisplayName);
+          obj.set(dateText + data.DisplayName + data.WorkTimeKR, data.Workplace);
 
-        if(userName === '' && data.UPN === UPN) {
-          setUserName(data.DisplayName);
+          if(userName === '' && data.UPN === UPN) {
+            setUserName(data.DisplayName);
+          }
         }
-      }
-      
-      setDate(Array.from(dateSet).sort());
-      setName(Array.from(nameSet).sort());
-      setTableData(obj);
+        
+        setDate(Array.from(dateSet).sort());
+        setName(Array.from(nameSet).sort());
+        setTableData(obj);
+      })
     });
 
   }, [data, endDate, startDate, team, UPN, environment]);
@@ -129,7 +150,7 @@ export function Workplace(props: { environment?: string }) {
   return (
     <div className="welcome">
       <div className="page-padding">
-        <h1>팀 근무지 조회</h1>
+        <h1>팀 근무지 조회{test}</h1>
         <div className="workspaceBox">
           <div className="headerBox">
               <div className="virticalBox">

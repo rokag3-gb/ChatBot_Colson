@@ -1,5 +1,14 @@
 import { Router } from "restify-router"
 import { bot } from "../../internal/initialize";
+import { verify } from 'jsonwebtoken';
+import * as forge from 'node-forge';
+import { promisify } from 'util';
+import jwt from 'jsonwebtoken';
+import jwksClient from 'jwks-rsa';
+
+
+
+
 import {
   UspGetWorkplaceTeam,
   UspGetTeam,
@@ -27,7 +36,54 @@ routerInstance.get('/getWorkplace', async (req, res) => {
   res.json(row);
 });
 
+async function verifyToken(token: string, publicKey: string, audience: string): Promise<boolean> {
+  let ret = false;
+
+  await jwt.verify(token, publicKey, { audience }, (err) => {
+    if (err) {
+      console.error('Invalid token:', err);
+      ret = false;
+    } else {
+      console.log('Valid token');
+      ret = true
+    }
+  });
+
+  return ret;
+}
+
+const validationToken = async (token: string): Promise<boolean> => {
+  const [header, payload] = token.split('.');
+
+  const headerObj = JSON.parse(Buffer.from(header, 'base64').toString());
+  const payloadObj = JSON.parse(Buffer.from(payload, 'base64').toString());
+
+  const jwksUri = 'https://login.microsoftonline.com/6d5ac8ee-3862-4452-93e7-a836c2d9742b/discovery/v2.0/keys';
+  const kid = headerObj.kid;
+  const audience = payloadObj.aud;
+
+  const client = jwksClient({
+    jwksUri,
+    cache: true,
+    cacheMaxAge: 60 * 60,
+  });
+
+  const getSigningKey = promisify(client.getSigningKey);
+
+  const  publicKey  = await getSigningKey(kid);
+
+  console.log(publicKey.getPublicKey());
+
+  return await verifyToken(token, publicKey.getPublicKey(), audience);
+}
+
 routerInstance.get('/getTeam', async (req, res) => {
+  if (!await validationToken(req.authorization.credentials)) {
+    console.log('인증실패했으니까 API 실패해야지');
+  } else {
+    console.log('인증성공함');
+  }
+
   const row = await UspGetTeam(req.query["UPN"]);
   res.json(row);
 });
