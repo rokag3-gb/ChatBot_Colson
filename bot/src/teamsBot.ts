@@ -9,7 +9,6 @@ import { sendBirthdayCard, openBirthMessage } from "./bot/birthMessage";
 import { viewMealStoreSearch, viewMealStoreSearchResult, redirectMealStoreSearchResult } from "./bot/mealStore";
 import { randomStoreSelect, openRandomStore } from "./bot/randomMealStore";
 import { checkConversation } from "./bot/conversation";
-import { testFunction, testFunction2 } from "./test";
 
 export class TeamsBot extends TeamsActivityHandler {
   constructor() {
@@ -54,8 +53,6 @@ export class TeamsBot extends TeamsActivityHandler {
             } else {
               await redirectMealStoreSearchResult(context, text);
             }
-          } else if (text[0] === '테스트') {
-            await testFunction();
           } else if (text[0] === '/?' || text[0] === '/h' || text[0] === '/help') {
             await viewCommandList(context);
           } else if (text[0] === 'workamsendtest') {

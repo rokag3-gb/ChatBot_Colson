@@ -27,10 +27,10 @@ const initialize = async () => {
     await getGroupChatList();
     await initCron();
 
-    insertLog('initialize', 'Colson initialize Complete!');
+    await insertLog('initialize', 'Colson initialize Complete!');
   } catch(e) {
       console.log(e);
-      insertLog('initialize', "Error : " + JSON.stringify(e) + ", " + e.message);
+      await insertLog('initialize', "Error : " + JSON.stringify(e) + ", " + e.message);
   }
   console.log(' Colson initialize Complete! ');
 }
@@ -48,7 +48,7 @@ const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
     "TurnError"
   );
 
-  insertLog(context.activity.from.id, "Error : " + JSON.stringify(error) + ', ' + error.message);
+  await insertLog(context.activity.from.id, "Error : " + JSON.stringify(error) + ', ' + error.message);
   console.log(`The bot encountered unhandled error:\n ${error.message}`);
   await context.sendActivity(`에러가 발생했습니다. 다시 시도해주세요.
   
@@ -63,8 +63,8 @@ adapter.onTurnError = onTurnErrorHandler;
 const teamsBot = new TeamsBot();
 
 const server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, () => {
-  insertLog('Bot Started', `${server.name} listening to ${server.url}`);
+server.listen(process.env.port || process.env.PORT || 3978, async () => {
+  await insertLog('Bot Started', `${server.name} listening to ${server.url}`);
   console.log(`\nBot Started, ${server.name} listening to ${server.url}`);
 });
 
@@ -74,7 +74,7 @@ server.use(restify.plugins.authorizationParser());
 
 server.post("/api/messages", 
 async (req, res) => {  
-  insertLog(req.body.from.id, JSON.stringify(req.body));
+  await insertLog(req.body.from.id, JSON.stringify(req.body));
   if(!req.body.from || !req.body.from.id) {
     await bot.requestHandler(req, res);
     return;
@@ -88,7 +88,7 @@ async (req, res) => {
       await getUserList(req.body.from.id);
       await getGroupChatList();
     } catch(e) {
-      insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
+      await insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
       console.log(e);
     }
   } else if(userCount === 0) {

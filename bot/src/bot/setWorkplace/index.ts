@@ -68,7 +68,7 @@ export const userWorkplaceSend = async (choiceList, message, ampm) => {
         await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
       }
     } catch(e) {
-      insertLog('userWorkplaceSend ' + curId, "Error : " + JSON.stringify(e) + ", " + e.message);
+      await insertLog('userWorkplaceSend ' + curId, "Error : " + JSON.stringify(e) + ", " + e.message);
       console.log(e);
     }
   }
@@ -85,7 +85,7 @@ const userWorkplaceResend = async (choiceList, message, ampm) => {
         await sendWorkplaceCardUserId(row.AppUserId, choiceList, row.WorkCodeAM, row.WorkCodePM, null, message);
       }
     } catch(e) {
-      insertLog('userWorkplaceResend ' + curId, "Error : " + JSON.stringify(e) + ", " + e.message);
+      await insertLog('userWorkplaceResend ' + curId, "Error : " + JSON.stringify(e) + ", " + e.message);
       console.log(e);
     }
   }

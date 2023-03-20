@@ -1,13 +1,13 @@
-import { Router } from "restify-router"
 import { bot } from "../../internal/initialize";
-import { verify } from 'jsonwebtoken';
-import * as forge from 'node-forge';
+import {  UspGetWorkCode,} from "../setWorkplace/query"
+import { groupChatMap, userMap, insertLog, } from "../common"
+
+import { Router } from "restify-router"
+import { ActivityTypes, Mention, Activity } from "botbuilder";
+import { TeamsBotInstallation, Member } from "@microsoft/teamsfx"
 import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
-
-
-
 
 import {
   UspGetWorkplaceTeam,
@@ -19,40 +19,38 @@ import {
   UspSetWorkplace,
 } from "./query"
 
-import { ActivityTypes, Mention, Activity } from "botbuilder";
-
-import {
-  UspGetWorkCode,
-} from "../setWorkplace/query"
-
-import { TeamsBotInstallation, Member } from "@microsoft/teamsfx"
-
-import { groupChatMap, userMap } from "../common"
-
 export const routerInstance = new Router();
 
-routerInstance.get('/getWorkplace', async (req, res) => {
-  const row = await UspGetWorkplaceTeam(req.query["startDate"], req.query["endDate"], req.query["team"]);
-  res.json(row);
-});
-
-async function verifyToken(token: string, publicKey: string, audience: string): Promise<boolean> {
+async function verifyToken(token: string, publicKey: string, audience: string, path: string): Promise<boolean> {
   let ret = false;
-
-  await jwt.verify(token, publicKey, { audience }, (err) => {
-    if (err) {
-      console.error('Invalid token:', err);
-      ret = false;
-    } else {
-      console.log('Valid token');
-      ret = true
-    }
-  });
+  try {
+    const decoded = jwt.decode(token, {complete: true});
+    const payload = (<any>decoded).payload;
+    const preferred_username = payload.preferred_username;
+  
+    await jwt.verify(token, publicKey, { audience }, async (err) => {
+      if (err) {
+        console.log(preferred_username, 'Invalid token '+ path + ' token : ' + JSON.stringify(payload));
+        await insertLog(preferred_username, 'Invalid token '+ path + ' token : ' + JSON.stringify(payload));
+        ret = false;
+      } else {
+        console.log(preferred_username, 'Valid token '+ path + ' token : ' + JSON.stringify(payload));
+        await insertLog(preferred_username, 'Valid token '+ path + ' token : ' + JSON.stringify(payload));
+        ret = true
+      }
+    });
+  } catch(e) {
+    await insertLog('verifyToken', "Error : " + JSON.stringify(e) + ", " + e.message);
+  }
 
   return ret;
 }
 
-const validationToken = async (token: string): Promise<boolean> => {
+const validationToken = async (token: string, path: string): Promise<boolean> => {
+  if(!token) {
+    await insertLog('', 'token is null '+ path)
+    return false;
+  }
   const [header, payload] = token.split('.');
 
   const headerObj = JSON.parse(Buffer.from(header, 'base64').toString());
@@ -69,19 +67,22 @@ const validationToken = async (token: string): Promise<boolean> => {
   });
 
   const getSigningKey = promisify(client.getSigningKey);
-
   const  publicKey  = await getSigningKey(kid);
-
-  console.log(publicKey.getPublicKey());
-
-  return await verifyToken(token, publicKey.getPublicKey(), audience);
+  return await verifyToken(token, publicKey.getPublicKey(), audience, path);
 }
 
-routerInstance.get('/getTeam', async (req, res) => {
-  if (!await validationToken(req.authorization.credentials)) {
+routerInstance.get('/getWorkplace', async (req, res) => {
+  if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
     console.log('인증실패했으니까 API 실패해야지');
-  } else {
-    console.log('인증성공함');
+  }
+
+  const row = await UspGetWorkplaceTeam(req.query["startDate"], req.query["endDate"], req.query["team"]);
+  res.json(row);
+});
+
+routerInstance.get('/getTeam', async (req, res) => {
+  if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
+    console.log('인증실패했으니까 API 실패해야지');
   }
 
   const row = await UspGetTeam(req.query["UPN"]);
@@ -89,51 +90,55 @@ routerInstance.get('/getTeam', async (req, res) => {
 });
 
 routerInstance.get('/getStore', async (req, res) => {
+  if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
+    console.log('인증실패했으니까 API 실패해야지');
+  }
+
   const row = await UspGetStore(req.query["search"], req.query["category"]);
   res.json(row);
 });
 
 routerInstance.get('/tag', async (req, res) => {
+  if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
+    console.log('인증실패했으니까 API 실패해야지');
+  }
+
   const row = await UspGetTag(Number(req.query["storeId"]));
   res.json(row);
 });
 
 routerInstance.post('/tag', async (req, res) => {
+  if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
+    console.log('인증실패했으니까 API 실패해야지');
+  }
+  
   const row = await UspSetTag(Number(req.body["storeId"]), req.body["tag"], req.body["UPN"]);
   res.json(row);
 });
 
 routerInstance.del('/tag', async (req, res) => {
+  if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
+    console.log('인증실패했으니까 API 실패해야지');
+  }
+  
   const row = await UspDeleteTag(Number(req.query["storeId"]), req.query["tag"], req.query["UPN"]);
   res.json(row);
 });
 
-routerInstance.post("/sendGroupMessage", 
-async (req, res) => {  
-  const row = await SendGroupMessage(req.body.id, req.body.message);
-  res.json(row);
-});
-
-routerInstance.post("/sendGroupMentionMessage", 
-async (req, res) => {  
-  const groupChat = <TeamsBotInstallation>groupChatMap[req.body.id];
-  if(!groupChat) {
-    res.json("Invalid chat Id");
-    return "Invalid chat Id";
+routerInstance.post("/sendUserMessage", async (req, res) => {  
+  if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
+    console.log('인증실패했으니까 API 실패해야지');
   }
-
-  const row = await SendMentionMessage(groupChat, req.body.user, req.body.message);
-  res.json(row);
-});
-
-routerInstance.post("/sendUserMessage", 
-async (req, res) => {  
+  
   const row = await SendUserMessage(req.body.id, req.body.message);
   res.json(row);
 });
 
-routerInstance.post("/setWorkplace", 
-async (req, res) => {  
+routerInstance.post("/setWorkplace", async (req, res) => {  
+  if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
+    console.log('인증실패했으니까 API 실패해야지');
+  }
+  
   if(!req.body.workDate || !req.body.upn) {
     return;
   }
@@ -142,6 +147,10 @@ async (req, res) => {
 });
 
 routerInstance.get('/getWorkCode', async (req, res) => {
+  if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
+    console.log('인증실패했으니까 API 실패해야지');
+  }
+  
   const row = await UspGetWorkCode();
   res.json(row);
 });
@@ -149,6 +158,26 @@ routerInstance.get('/getWorkCode', async (req, res) => {
 routerInstance.post("/grafana/webhook/:groupid", 
 async (req, res) => {
   const row = await GrafanaWebhook(req.body, req.params.groupid);
+  res.json(row);
+});
+
+
+// Message
+
+routerInstance.post("/sendGroupMessage", 
+async (req, res) => {  
+  const row = await SendGroupMessage(req.body.id, req.body.message);
+  res.json(row);
+});
+
+routerInstance.post("/sendGroupMentionMessage", async (req, res) => {  
+  const groupChat = <TeamsBotInstallation>groupChatMap[req.body.id];
+  if(!groupChat) {
+    res.json("Invalid chat Id");
+    return "Invalid chat Id";
+  }
+
+  const row = await SendMentionMessage(groupChat, req.body.user, req.body.message);
   res.json(row);
 });
 

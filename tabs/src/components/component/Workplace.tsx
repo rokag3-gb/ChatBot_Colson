@@ -54,10 +54,10 @@ export function Workplace(props: { environment?: string }) {
     }
 
     try {
-      teamsfx.getCredential().getToken('').then(token => {
+      teamsfx?.getCredential().getToken('').then(token => {
         axios.get(`${environment}/api/getTeam?UPN=${UPN}`,{
           headers: {
-            authorization: 'Bearer ' + token.token,
+            authorization: 'Bearer ' + token?.token,
           },
         }).then(res => {
           const option = [];
@@ -79,10 +79,10 @@ export function Workplace(props: { environment?: string }) {
       console.log(e);
     }
     
-    teamsfx.getCredential().getToken('').then(token => {
+    teamsfx?.getCredential().getToken('').then(token => {
       axios.get(`${environment}/api/getWorkCode`,{
         headers: {
-          authorization: 'Bearer ' + token.token,
+          authorization: 'Bearer ' + token?.token,
         },
       }).then(res => {
         console.log(JSON.stringify(res.data));
@@ -100,10 +100,10 @@ export function Workplace(props: { environment?: string }) {
       return;
     }
 
-    teamsfx.getCredential().getToken('').then(token => {
+    teamsfx?.getCredential().getToken('').then(token => {
       axios.get(`${environment}/api/getWorkplace?startDate=${startDate}&endDate=${endDate}&team=${team}`,{
         headers: {
-          authorization: 'Bearer ' + token.token,
+          authorization: 'Bearer ' + token?.token,
         },
       }).then(res => {
         const obj = new Map<string, string>();

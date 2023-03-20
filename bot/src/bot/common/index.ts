@@ -75,18 +75,18 @@ export const userRegister = async (userId: string, installations: TeamsBotInstal
               await UspSetAppUser(member.account.id, member.account.userPrincipalName, JSON.stringify(member));
               userMap[member.account.id] = member;
             } catch (e) {
-              insertLog('userRegister ' + member.account.id, "Error : " + JSON.stringify(e) + ", " + e.message);
+              await insertLog('userRegister ' + member.account.id, "Error : " + JSON.stringify(e) + ", " + e.message);
               console.log('userRegister ERROR!! ' + e);
             }
           }
         }
       } catch (e) {
-        insertLog('userRegister', "Error : " + JSON.stringify(e) + ", " + e.message);
+        await insertLog('userRegister', "Error : " + JSON.stringify(e) + ", " + e.message);
         console.log('userRegister ERROR2!! ' + e);
       }
     }
   }
-  insertLog('userRegister', 'userRegister complete');
+  await insertLog('userRegister', 'userRegister complete');
   console.log('userRegister complete');
 }
 
@@ -116,7 +116,7 @@ export const groupRegister = async (installations: TeamsBotInstallation[]) => {
       console.log('userRegister ' + target.conversationReference.conversation.id);
     }
   }
-  insertLog('groupRegister', 'groupRegister complete');
+  await insertLog('groupRegister', 'groupRegister complete');
   console.log('groupRegister complete');
 }
 
@@ -140,10 +140,10 @@ export const getUserList = async (userId) => {
         }
       }
     } catch (e) {
-      insertLog('getUserList ' + row.AppUserId, "Error : " + JSON.stringify(e) + ', ' + e.message);
+      await insertLog('getUserList ' + row.AppUserId, "Error : " + JSON.stringify(e) + ', ' + e.message);
     }
   }
-  insertLog('getUserList', 'getUserList complete');
+  await insertLog('getUserList', 'getUserList complete');
   console.log('getUserList complete');
 }
 
@@ -160,10 +160,10 @@ export const getGroupChatList = async () => {
         console.log('getGroupChatList ' + groupTarget.conversationReference.conversation.id);
       }
     } catch(e) {
-      insertLog('getGroupChatList ' + row.AppUserId, "Error : " + JSON.stringify(e) + ', ' + e.message);
+      await insertLog('getGroupChatList ' + row.AppUserId, "Error : " + JSON.stringify(e) + ', ' + e.message);
     }
   }
-  insertLog('getGroupChatList', 'getGroupChatList complete');
+  await insertLog('getGroupChatList', 'getGroupChatList complete');
   console.log('getGroupChatList complete');
 }
 
@@ -203,7 +203,7 @@ export const errorMessageForContext = async (context, err) => {
 (${err.message})`);
       resolve(true);
     } catch (e) {
-      insertLog('errorMessageForContext', "Error : " + JSON.stringify(e) + ", " + e.message);
+      await insertLog('errorMessageForContext', "Error : " + JSON.stringify(e) + ", " + e.message);
       console.log('errorMessageForContext ' + e);
       reject(e);
     }
@@ -223,7 +223,7 @@ export const errorMessageForId = async (id, err) => {
       }
       resolve(true);
     } catch (e) {
-      insertLog('errorMessageForId', "Error : " + JSON.stringify(e) + ", " + e.message);
+      await insertLog('errorMessageForId', "Error : " + JSON.stringify(e) + ", " + e.message);
       console.log('errorMessageForId ' + e);
       reject(e);
     }
@@ -290,12 +290,12 @@ export const memberSend = async(context) => {
             emp += member.account.userPrincipalName + ",";
 
           } catch (e) {
-            insertLog('memberSend ' + member.account.id, "Error : " + JSON.stringify(e) + ", " + e.message);
+            await insertLog('memberSend ' + member.account.id, "Error : " + JSON.stringify(e) + ", " + e.message);
             console.log('memberSend ERROR!! ' + e);
           }
         }
       } catch (e) {
-        insertLog('memberSend', "Error : " + JSON.stringify(e) + "," + e.message);
+        await insertLog('memberSend', "Error : " + JSON.stringify(e) + "," + e.message);
         console.log('memberSend ERROR2!! ' + e);
       }
     }
