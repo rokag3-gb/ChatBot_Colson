@@ -73,7 +73,7 @@ const validationToken = async (token: string, path: string): Promise<boolean> =>
 
 routerInstance.get('/getWorkplace', async (req, res) => {
   if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
-    console.log('인증실패했으니까 API 실패해야지');
+    console.log('인증실패');
   }
 
   const row = await UspGetWorkplaceTeam(req.query["startDate"], req.query["endDate"], req.query["team"]);
@@ -82,7 +82,7 @@ routerInstance.get('/getWorkplace', async (req, res) => {
 
 routerInstance.get('/getTeam', async (req, res) => {
   if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
-    console.log('인증실패했으니까 API 실패해야지');
+    console.log('인증실패');
   }
 
   const row = await UspGetTeam(req.query["UPN"]);
@@ -91,7 +91,7 @@ routerInstance.get('/getTeam', async (req, res) => {
 
 routerInstance.get('/getStore', async (req, res) => {
   if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
-    console.log('인증실패했으니까 API 실패해야지');
+    console.log('인증실패');
   }
 
   const row = await UspGetStore(req.query["search"], req.query["category"]);
@@ -100,7 +100,7 @@ routerInstance.get('/getStore', async (req, res) => {
 
 routerInstance.get('/tag', async (req, res) => {
   if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
-    console.log('인증실패했으니까 API 실패해야지');
+    console.log('인증실패');
   }
 
   const row = await UspGetTag(Number(req.query["storeId"]));
@@ -109,7 +109,7 @@ routerInstance.get('/tag', async (req, res) => {
 
 routerInstance.post('/tag', async (req, res) => {
   if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
-    console.log('인증실패했으니까 API 실패해야지');
+    console.log('인증실패');
   }
   
   const row = await UspSetTag(Number(req.body["storeId"]), req.body["tag"], req.body["UPN"]);
@@ -118,7 +118,7 @@ routerInstance.post('/tag', async (req, res) => {
 
 routerInstance.del('/tag', async (req, res) => {
   if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
-    console.log('인증실패했으니까 API 실패해야지');
+    console.log('인증실패');
   }
   
   const row = await UspDeleteTag(Number(req.query["storeId"]), req.query["tag"], req.query["UPN"]);
@@ -127,7 +127,7 @@ routerInstance.del('/tag', async (req, res) => {
 
 routerInstance.post("/sendUserMessage", async (req, res) => {  
   if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
-    console.log('인증실패했으니까 API 실패해야지');
+    console.log('인증실패');
   }
   
   const row = await SendUserMessage(req.body.id, req.body.message);
@@ -136,7 +136,7 @@ routerInstance.post("/sendUserMessage", async (req, res) => {
 
 routerInstance.post("/setWorkplace", async (req, res) => {  
   if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
-    console.log('인증실패했으니까 API 실패해야지');
+    console.log('인증실패');
   }
   
   if(!req.body.workDate || !req.body.upn) {
@@ -148,7 +148,7 @@ routerInstance.post("/setWorkplace", async (req, res) => {
 
 routerInstance.get('/getWorkCode', async (req, res) => {
   if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
-    console.log('인증실패했으니까 API 실패해야지');
+    console.log('인증실패');
   }
   
   const row = await UspGetWorkCode();
@@ -164,13 +164,20 @@ async (req, res) => {
 
 // Message
 
-routerInstance.post("/sendGroupMessage", 
-async (req, res) => {  
+routerInstance.post("/sendGroupMessage", async (req, res) => {  
+  if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
+    console.log('인증실패');
+  }
+
   const row = await SendGroupMessage(req.body.id, req.body.message);
   res.json(row);
 });
 
 routerInstance.post("/sendGroupMentionMessage", async (req, res) => {  
+  if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
+    console.log('인증실패');
+  }
+
   const groupChat = <TeamsBotInstallation>groupChatMap[req.body.id];
   if(!groupChat) {
     res.json("Invalid chat Id");
@@ -182,8 +189,11 @@ routerInstance.post("/sendGroupMentionMessage", async (req, res) => {
 });
 
 //이 부분 나중에 삭제하기!!
-routerInstance.post("/sendTeamMessage", 
-async (req, res) => {  
+routerInstance.post("/sendTeamMessage", async (req, res) => {  
+  if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
+    console.log('인증실패');
+  }
+
   const installations = await bot.notification.installations();
 
   let ret = null;
@@ -195,8 +205,11 @@ async (req, res) => {
   return res.json(ret);
 });
 
-routerInstance.post("/sendTeamMentionMessage", 
-async (req, res) => {  
+routerInstance.post("/sendTeamMentionMessage", async (req, res) => {  
+  if (!await validationToken(req.authorization.credentials, req.getUrl().path)) {
+    console.log('인증실패');
+  }
+
   const installations = await bot.notification.installations();
 
   let ret = null;
