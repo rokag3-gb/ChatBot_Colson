@@ -1,5 +1,6 @@
 import { TurnContext } from "botbuilder";
 import { getWorkplace } from "../getWorkplace";
+import fetch from 'node-fetch';
 
 const greetingText = ["안녕", "hi", "hello", "콜슨", "반가워", "어이", "여어"];
 const getWorkplaceText = ["나오니", "출근", "근무", "일정"];

@@ -1,9 +1,11 @@
 import "./WorkplaceTable.css";
-import { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
+import { TeamsFxContext } from "../Context";
 import axios from 'axios'
 
 export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, time, workCode}: any) => {
   const [options, setOptions] = useState<any>();
+  const { teamsfx } = useContext(TeamsFxContext);
 
   useEffect(() => {
     const arr = [];
@@ -17,31 +19,39 @@ export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, ti
     setOptions(arr);
   }, [workCode]);
 
-  const onChangeWorkplace = (event: any) => {
+  const onChangeWorkplace = async (event: any) => {
     let amValue;
     let pmValue;
     let amText;
     let pmText;
 
-    if(time === 'am') {
-      amText = event.target.value;
-      pmText = (document.getElementById(date+name+'pm') as HTMLTextAreaElement).value;
-    } else {
-      amText = (document.getElementById(date+name+'am') as HTMLTextAreaElement).value;
-      pmText = event.target.value;
+    try {
+      if(time === 'am') {
+        amText = event.target.value;
+        pmText = (document.getElementById(date+name+'pm') as HTMLTextAreaElement).value;
+      } else {
+        amText = (document.getElementById(date+name+'am') as HTMLTextAreaElement).value;
+        pmText = event.target.value;
+      }
+  
+      amValue = workCode.get(amText);
+      pmValue = workCode.get(pmText);
+      
+      const token = await teamsfx?.getCredential().getToken('');
+  
+      await axios.post(`${environment}/api/setWorkplace`, {
+        workDate: date.split('(')[0],
+        upn: UPN,
+        workCodeAM: !amValue?'':amValue,
+        workCodePM: !pmValue?'':pmValue,
+      }, {
+        headers: {
+          authorization: 'Bearer ' + token?.token,
+        },
+      });
+    } catch (e) {
+      console.log(e);
     }
-
-    amValue = workCode.get(amText);
-    pmValue = workCode.get(pmText);
-    
-    axios.post(`${environment}/api/setWorkplace`, {
-      workDate: date.split('(')[0],
-      upn: UPN,
-      workCodeAM: !amValue?'':amValue,
-      workCodePM: !pmValue?'':pmValue,
-    }).then(res => {
-
-    });
   }
 
   return (
