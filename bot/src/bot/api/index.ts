@@ -1,6 +1,6 @@
 import {  UspGetWorkCode,} from "../setWorkplace/query"
 import { groupChatMap, userMap, insertLog, } from "../common"
-import { ValidationToken, } from "./token"
+import { ValidationToken, ValidationTokenGateway } from "./token"
 
 import { Router } from "restify-router"
 import { ActivityTypes, Mention, Activity } from "botbuilder";
@@ -20,7 +20,7 @@ export const routerInstance = new Router();
 
 routerInstance.get('/getWorkplace', async (req, res) => {
   if (!await ValidationToken(req.authorization.credentials, req.getUrl().path)) {
-    await insertLog('', '인증실패')
+    await insertLog('', '인증실패');
   }
 
   const row = await UspGetWorkplaceTeam(req.query["startDate"], req.query["endDate"], req.query["team"]);
@@ -29,7 +29,7 @@ routerInstance.get('/getWorkplace', async (req, res) => {
 
 routerInstance.get('/getTeam', async (req, res) => {
   if (!await ValidationToken(req.authorization.credentials, req.getUrl().path)) {
-    await insertLog('', '인증실패')
+    await insertLog('', '인증실패');
   }
 
   const row = await UspGetTeam(req.query["UPN"]);
@@ -38,7 +38,7 @@ routerInstance.get('/getTeam', async (req, res) => {
 
 routerInstance.get('/getStore', async (req, res) => {
   if (!await ValidationToken(req.authorization.credentials, req.getUrl().path)) {
-    await insertLog('', '인증실패')
+    await insertLog('', '인증실패');
   }
 
   const row = await UspGetStore(req.query["search"], req.query["category"]);
@@ -47,7 +47,7 @@ routerInstance.get('/getStore', async (req, res) => {
 
 routerInstance.get('/tag', async (req, res) => {
   if (!await ValidationToken(req.authorization.credentials, req.getUrl().path)) {
-    await insertLog('', '인증실패')
+    await insertLog('', '인증실패');
   }
 
   const row = await UspGetTag(Number(req.query["storeId"]));
@@ -56,7 +56,7 @@ routerInstance.get('/tag', async (req, res) => {
 
 routerInstance.post('/tag', async (req, res) => {
   if (!await ValidationToken(req.authorization.credentials, req.getUrl().path)) {
-    await insertLog('', '인증실패')
+    await insertLog('', '인증실패');
   }
   
   const row = await UspSetTag(Number(req.body["storeId"]), req.body["tag"], req.body["UPN"]);
@@ -65,7 +65,7 @@ routerInstance.post('/tag', async (req, res) => {
 
 routerInstance.del('/tag', async (req, res) => {
   if (!await ValidationToken(req.authorization.credentials, req.getUrl().path)) {
-    await insertLog('', '인증실패')
+    await insertLog('', '인증실패');
   }
   
   const row = await UspDeleteTag(Number(req.query["storeId"]), req.query["tag"], req.query["UPN"]);
@@ -74,7 +74,7 @@ routerInstance.del('/tag', async (req, res) => {
 
 routerInstance.post("/sendUserMessage", async (req, res) => {  
   if (!await ValidationToken(req.authorization.credentials, req.getUrl().path)) {
-    await insertLog('', '인증실패')
+    await insertLog('', '인증실패');
   }
   
   const row = await SendUserMessage(req.body.id, req.body.message);
@@ -83,7 +83,7 @@ routerInstance.post("/sendUserMessage", async (req, res) => {
 
 routerInstance.post("/setWorkplace", async (req, res) => {  
   if (!await ValidationToken(req.authorization.credentials, req.getUrl().path)) {
-    await insertLog('', '인증실패')
+    await insertLog('', '인증실패');
   }
   
   if(!req.body.workDate || !req.body.upn) {
@@ -95,7 +95,7 @@ routerInstance.post("/setWorkplace", async (req, res) => {
 
 routerInstance.get('/getWorkCode', async (req, res) => {
   if (!await ValidationToken(req.authorization.credentials, req.getUrl().path)) {
-    await insertLog('', '인증실패')
+    await insertLog('', '인증실패');
   }
   
   const row = await UspGetWorkCode();
@@ -105,8 +105,8 @@ routerInstance.get('/getWorkCode', async (req, res) => {
 // Message
 
 routerInstance.get("/getGroupChat", async (req, res) => {  
-  if (!await ValidationToken(req.authorization.credentials, req.getUrl().path)) {
-    await insertLog('', '인증실패')
+  if (!await ValidationTokenGateway(req.authorization.credentials)) {
+    await insertLog('', '인증실패');
   }
 
   const arr = [];
@@ -123,8 +123,8 @@ routerInstance.get("/getGroupChat", async (req, res) => {
 });
 
 routerInstance.post("/sendGroupMessage", async (req, res) => {  
-  if (!await ValidationToken(req.authorization.credentials, req.getUrl().path)) {
-    await insertLog('', '인증실패')
+  if (!await ValidationTokenGateway(req.authorization.credentials)) {
+    await insertLog('', '인증실패');
   }
 
   const row = await SendGroupMessage(req.body.id, req.body.message);
@@ -132,14 +132,13 @@ routerInstance.post("/sendGroupMessage", async (req, res) => {
 });
 
 routerInstance.post("/sendGroupMentionMessage", async (req, res) => {  
-  if (!await ValidationToken(req.authorization.credentials, req.getUrl().path)) {
-    await insertLog('', '인증실패')
+  if (!await ValidationTokenGateway(req.authorization.credentials)) {
+    await insertLog('', '인증실패');
   }
 
   const groupChat = <TeamsBotInstallation>groupChatMap[req.body.id];
   if(!groupChat) {
-    res.json("Invalid chat Id");
-    return "Invalid chat Id";
+    res.json({message: "Invalid chat Id"});
   }
 
   const row = await SendMentionMessage(groupChat, req.body.user, req.body.message);
@@ -151,13 +150,13 @@ routerInstance.post("/sendGroupMentionMessage", async (req, res) => {
 
 const SendUserMessage = async (id: string, message: string) => {
   if(!id || !message) {
-    return "Invalid request";
+    return {message: "Invalid request"};
   }
 
   const user = <Member>userMap[id];
   console.log(JSON.stringify(groupChatMap));
   if(!user) {
-    return "Invalid chat Id";
+    return {message: "Invalid chat Id"};
   }
 
   
@@ -165,36 +164,81 @@ const SendUserMessage = async (id: string, message: string) => {
     mentioned: user.account,
     text: `<at> </at>`,
     type: 'mention'
-};
+  };
 
-const message2: Partial<Activity> = {
-    entities: [mention],
-    text: message.replace('문광석', mention.text),
-    type: ActivityTypes.Message
-};
+  const message2: Partial<Activity> = {
+      entities: [mention],
+      text: message.replace('문광석', mention.text),
+      type: ActivityTypes.Message
+  };
 
-return await user.sendMessage(<string>message2);
-
-  //return await user.sendMessage(message);
+  return await user.sendMessage(<string>message2);
 }
 
 const SendGroupMessage = async (id: string, message: string) => {
   if(!id || !message) {
-    return "Invalid request";
+    return {message: "Invalid request"};
   }
 
-  const groupChat = <TeamsBotInstallation>groupChatMap[id];
-  console.log(JSON.stringify(groupChatMap));
-  if(!groupChat) {
-    return "Invalid chat Id";
+  try {
+    const groupChat = <TeamsBotInstallation>groupChatMap[id];
+    if(!groupChat) {
+      return {message: "Invalid chat Id"};
+    }
+  
+    const mentionArr = [];
+    let text = message;
+    for(let i = 0;;i++) {
+      const start = text.indexOf('<mention>');
+      const end = text.indexOf('</mention>');
+  
+      if(start === -1 || end === -1) {
+        break;
+      }
+  
+      const upn = text.substring(start+9, end);
+  
+      let user = <Member>null;
+      for (const u of Object.entries(userMap)) {
+        if(<string>(u[1].account.userPrincipalName).toLowerCase() === upn.toLowerCase()) {
+          user = <Member>u[1];
+          break;
+        }
+      }
+  
+      if(user === null) {
+        text = text.substring(end+10);
+        continue;
+      }
+      
+      const mText = text.substring(start, end+10);
+      const rText = `<at> ${i} </at>`;
+      message = message.replace(mText, rText);
+  
+      const mention: Mention = {
+          mentioned: user.account,
+          text: rText,
+          type: 'mention'
+      };
+      mentionArr.push(mention);
+      text = text.substring(end+10);
+    }
+  
+    const messageActivity: Partial<Activity> = {
+      entities: mentionArr,
+      text: message,
+      type: ActivityTypes.Message
+    };
+  
+    return await groupChat.sendMessage(<string>messageActivity);
+  } catch(e) {
+    return {message: "Invalid request"};
   }
-
-  return await groupChat.sendMessage(message);
 }
 
 const SendMentionMessage = async (target: TeamsBotInstallation, username: string, messageText: string) => {
   if(!messageText || !username) {
-    return "Invalid request";
+    return {message: "Invalid request"};
   }
 
   let user = <Member>null;

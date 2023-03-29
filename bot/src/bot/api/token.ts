@@ -1,6 +1,7 @@
 import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
+import axios from 'axios';
 import { insertLog, } from "../common"
   
 export const ValidationToken = async (token: string, path: string): Promise<boolean> => {
@@ -57,4 +58,22 @@ const verifyToken = async (token: string, publicKey: string, audience: string, p
     }
   
     return ret;
+}
+
+export const ValidationTokenGateway = async (token: string): Promise<boolean> => {
+  try {
+    const res = await axios.get(`https://dev.gw.cloudmt.co.kr/token/introspect`,{
+      headers: {
+        authorization: 'Bearer ' + token,
+      },
+    });
+
+    await insertLog('ValidationTokenGateway', JSON.stringify(res.data));
+
+    return res.data.Active;
+  } catch (e) {
+    await insertLog('ValidationTokenGateway', "Error : " + JSON.stringify(e) + ", " + e.message);
+  }
+
+  return false;
 }

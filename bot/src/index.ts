@@ -21,6 +21,7 @@ const adapter = new BotFrameworkAdapter({
 const initialize = async () => {
   try {
     console.log(' Colson initialize Start! ');
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
     await conversationRegister(null);
 
     await getUserList(null);
