@@ -197,11 +197,16 @@ const SendGroupMessage = async (id: string, message: string) => {
         break;
       }
   
-      const upn = text.substring(start+9, end);
+      const userInfo = text.substring(start+9, end);
   
       let user = <Member>null;
       for (const u of Object.entries(userMap)) {
-        if(<string>(u[1].account.userPrincipalName).toLowerCase() === upn.toLowerCase()) {
+        if(<string>(u[1].account.userPrincipalName).toLowerCase() === userInfo.toLowerCase()) {
+          user = <Member>u[1];
+          break;
+        }
+        
+        if(u[1].FullNameKR === userInfo) {
           user = <Member>u[1];
           break;
         }

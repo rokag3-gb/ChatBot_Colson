@@ -115,8 +115,9 @@ export class TeamsBot extends TeamsActivityHandler {
 
     this.onMembersAdded(async (context, next) => {
       const membersAdded = context.activity.membersAdded;
+      const name = context.activity?.channelData?.team?.name?context.activity?.channelData?.team?.name:"";
       
-      await UspSetGroupChat(context.activity.conversation.id, context.activity.conversation.name, "", context.activity.channelData.team.name);
+      await UspSetGroupChat(context.activity.conversation.id, context.activity.conversation.name, "", name);
 
       for (let cnt = 0; cnt < membersAdded.length; cnt++) {
         if (membersAdded[cnt].id) {
