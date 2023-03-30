@@ -1,7 +1,8 @@
 import { TeamsActivityHandler, MessageFactory, ActivityTypes, CardFactory, TurnContext } from "botbuilder";
 import sendCommandTemplate from "./adaptiveCards/sendCommand.json";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
-import { viewCommandList, sendCommand, userMap, sorryMessage } from "./bot/common";
+import { viewCommandList, sendCommand, userMap, sorryMessage, } from "./bot/common";
+import { UspSetGroupChat } from "./bot/common/query";
 import { setWorkplaceForm, setWorkplace } from "./bot/setWorkplace";
 import { getWorkplaceForm, getWorkplace } from "./bot/getWorkplace";
 import { viewSecretMessage, sendSecretMessage, openSecretMessage, sendMessageReaction, empTest } from "./bot/secretMessage";
@@ -114,6 +115,9 @@ export class TeamsBot extends TeamsActivityHandler {
 
     this.onMembersAdded(async (context, next) => {
       const membersAdded = context.activity.membersAdded;
+      
+      await UspSetGroupChat(context.activity.conversation.id, context.activity.conversation.name, "", context.activity.channelData.team.name);
+
       for (let cnt = 0; cnt < membersAdded.length; cnt++) {
         if (membersAdded[cnt].id) {
           await context.sendActivity(`반갑습니다. 콜슨 앱이 설치되었습니다.`);
@@ -125,5 +129,6 @@ export class TeamsBot extends TeamsActivityHandler {
       }
       await next();
     });
+
   }
 }

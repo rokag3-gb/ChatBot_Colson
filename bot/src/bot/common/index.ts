@@ -99,7 +99,7 @@ export const groupRegister = async (installations: TeamsBotInstallation[]) => {
           parent = members[0].parent;
         }
       }
-      await UspSetGroupChat(target.conversationReference.conversation.id, target.conversationReference.conversation.name, JSON.stringify(target));
+      await UspSetGroupChat(target.conversationReference.conversation.id, target.conversationReference.conversation.name, JSON.stringify(target), '');
       groupChatMap[target.conversationReference.conversation.id] = target;
       console.log('userRegister ' + target.conversationReference.conversation.id);
     }
@@ -111,7 +111,7 @@ export const groupRegister = async (installations: TeamsBotInstallation[]) => {
           parent = members[0].parent;
         }
       }
-      await UspSetGroupChat(target.conversationReference.conversation.id, target.conversationReference.conversation.name, JSON.stringify(target));
+      await UspSetGroupChat(target.conversationReference.conversation.id, target.conversationReference.conversation.name, JSON.stringify(target), '');
       groupChatMap[target.conversationReference.conversation.id] = target;
       console.log('userRegister ' + target.conversationReference.conversation.id);
     }
@@ -156,6 +156,7 @@ export const getGroupChatList = async () => {
         const tmpTarget = <TeamsBotInstallation>JSON.parse(row.GroupChatObject);
         const groupTarget = <TeamsBotInstallation>new TeamsBotInstallation(parent.adapter, tmpTarget.conversationReference);
         
+        (<any>(groupTarget)).TeamName = row.TeamName;
         groupChatMap[groupTarget.conversationReference.conversation.id] = groupTarget;
         console.log('getGroupChatList ' + groupTarget.conversationReference.conversation.id);
       }

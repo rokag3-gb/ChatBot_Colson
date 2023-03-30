@@ -36,7 +36,7 @@ export const UspGetGroupChat = async (): Promise<any[]> => {
   return query(request, `EXEC [IAM].[bot].[Usp_Get_GroupChat] @appId`);
 }
 
-export const UspSetGroupChat = async (id: string, name: string, object: string): Promise<any[]> => {
+export const UspSetGroupChat = async (id: string, name: string, object: string, teamName: string): Promise<any[]> => {
   const request = await getRequest();
   if(!name) {
     name = '';
@@ -46,6 +46,7 @@ export const UspSetGroupChat = async (id: string, name: string, object: string):
   request.input('GroupId', sql.VarChar, id);
   request.input('GroupName', sql.VarChar, name);
   request.input('GroupChatObject', sql.VarChar, object);
+  request.input('TeamName', sql.VarChar, teamName);
 
-  return query(request, `EXEC [IAM].[bot].[Usp_Set_App_GroupChat] @AppId, @GroupId, @GroupName, @GroupChatObject`);
+  return query(request, `EXEC [IAM].[bot].[Usp_Set_App_GroupChat] @AppId, @GroupId, @GroupName, @GroupChatObject, @TeamName`);
 }

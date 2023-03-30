@@ -4,7 +4,7 @@ import { ValidationToken, ValidationTokenGateway } from "./token"
 
 import { Router } from "restify-router"
 import { ActivityTypes, Mention, Activity } from "botbuilder";
-import { TeamsBotInstallation, Member } from "@microsoft/teamsfx"
+import { TeamsBotInstallation, Member, TeamsFx } from "@microsoft/teamsfx"
 
 import {
   UspGetWorkplaceTeam,
@@ -113,8 +113,9 @@ routerInstance.get("/getGroupChat", async (req, res) => {
   for(const data of Object.entries(groupChatMap)) {
     arr.push({
       type: data[1]?.conversationReference?.conversation?.conversationType,
-      name: data[1]?.conversationReference?.conversation?.name,
-      id: data[1]?.conversationReference?.conversation?.id
+      name: data[1]?.conversationReference?.conversation?.name?data[1]?.conversationReference?.conversation?.name:'일반',
+      id: data[1]?.conversationReference?.conversation?.id,
+      teamName: data[1]?.TeamName
     });
     console.log(JSON.stringify(data));
   }
