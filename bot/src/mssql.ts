@@ -3,7 +3,7 @@ const sql = require('mssql');
 const config = {
     user: 'user_web',
     password: 'Cm!202012',
-    server: '20.196.217.179',
+    server: '20.249.88.177',
     port: 10099,
     trustServerCertificate: true,
     stream: true
