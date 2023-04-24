@@ -9,7 +9,7 @@ import { getUserList,
          userMap,
          groupChatMap, } from "./bot/common";
 import { TeamsBot } from "./teamsBot";
-import { routerInstance } from "./bot/api";
+import { routerInstance, routerInstanceGateway } from "./bot/api";
 import { initCron } from "./schedule";
 import { BotFrameworkAdapter, TurnContext } from "botbuilder";
 
@@ -113,14 +113,6 @@ async (req, res) => {
   });
 });
 
-server.use(
-  function crossOrigin(req,res,next){
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    return next();
-  }
-);
-
 function unknownMethodHandler(req, res) {
   if (req.method.toLowerCase() === 'options') {
     var allowHeaders = ['Accept', 'Accept-Version', 'Content-Type', 'Api-Version', 'Origin', 'X-Requested-With', 'Authorization']; // added Origin & X-Requested-With & **Authorization**
@@ -129,8 +121,8 @@ function unknownMethodHandler(req, res) {
 
     res.header('Access-Control-Allow-Credentials', true);
     res.header('Access-Control-Allow-Headers', allowHeaders.join(', '));
-    res.header('Access-Control-Allow-Methods', res.methods.join(', '));
-    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header('Access-Control-Allow-Methods', "POST, GET, OPTIONS");
+    res.header('Access-Control-Allow-Origin', "*");
 
     return res.send(200);
  } else {
@@ -139,4 +131,5 @@ function unknownMethodHandler(req, res) {
 
 server.on('MethodNotAllowed', unknownMethodHandler);
 
-routerInstance.applyRoutes(server, '/api');
+routerInstance.applyRoutes(server, '/serviceapi');
+routerInstanceGateway.applyRoutes(server, '/api');

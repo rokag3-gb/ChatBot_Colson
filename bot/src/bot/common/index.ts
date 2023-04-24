@@ -101,7 +101,7 @@ export const groupRegister = async (installations: TeamsBotInstallation[]) => {
       }
       await UspSetGroupChat(target.conversationReference.conversation.id, target.conversationReference.conversation.name, JSON.stringify(target), '');
       groupChatMap[target.conversationReference.conversation.id] = target;
-      console.log('userRegister ' + target.conversationReference.conversation.id);
+      console.log('groupRegister ' + target.conversationReference.conversation.id);
     }
     
     if (target.type === 'Channel') {
@@ -113,7 +113,7 @@ export const groupRegister = async (installations: TeamsBotInstallation[]) => {
       }
       await UspSetGroupChat(target.conversationReference.conversation.id, target.conversationReference.conversation.name, JSON.stringify(target), '');
       groupChatMap[target.conversationReference.conversation.id] = target;
-      console.log('userRegister ' + target.conversationReference.conversation.id);
+      console.log('ChannelRegister ' + target.conversationReference.conversation.id);
     }
   }
   await insertLog('groupRegister', 'groupRegister complete');

@@ -17,14 +17,17 @@ import {
 } from "./query"
 
 export const routerInstance = new Router();
+export const routerInstanceGateway = new Router();
 
 const ValidationTokenFunc = async (req, res, func) => {
   try {
     if (!await ValidationToken(req.authorization.credentials, req.getUrl().path)) {
       await insertLog('', '인증실패');
     }
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
     
-    func();
+    await func();
 
   } catch (e) {
     await insertLog('', "Error : " + JSON.stringify(e) + ", " + e?.message);
@@ -38,7 +41,7 @@ const ValidationGatewayFunc = async (req, res, func) => {
       await insertLog('', '인증실패');
     }
     
-    func();
+    await func();
 
   } catch (e) {
     await insertLog('', "Error : " + JSON.stringify(e) + ", " + e?.message);
@@ -107,7 +110,7 @@ routerInstance.get('/getWorkCode', async (req, res) => {
 
 // Message
 
-routerInstance.get("/getGroupChat", async (req, res) => {  
+routerInstanceGateway.get("/getGroupChat", async (req, res) => {  
   await ValidationGatewayFunc(req, res, async () => {
     const arr = [];
     for(const data of Object.entries(groupChatMap)) {
@@ -124,21 +127,21 @@ routerInstance.get("/getGroupChat", async (req, res) => {
   });
 });
 
-routerInstance.post("/sendUserMessage", async (req, res) => {
+routerInstanceGateway.post("/sendUserMessage", async (req, res) => {
   await ValidationGatewayFunc(req, res, async () => {
     const row = await SendUserMessage(req.body.user, req.body.message);
     res.json(row);
   });
 });
 
-routerInstance.post("/sendGroupMessage", async (req, res) => {  
+routerInstanceGateway.post("/sendGroupMessage", async (req, res) => {  
   await ValidationGatewayFunc(req, res, async () => {
     const row = await SendGroupMessage(req.body.id, req.body.message);
     res.json(row);
   });
 });
 
-routerInstance.post("/sendGroupMentionMessage", async (req, res) => {  
+routerInstanceGateway.post("/sendGroupMentionMessage", async (req, res) => {  
   await ValidationGatewayFunc(req, res, async () => {
     const groupChat = <TeamsBotInstallation>groupChatMap[req.body.id];
     if(!groupChat) {
@@ -155,7 +158,7 @@ const SendUserMessage = async (userInfo: string, message: string) => {
   if(!userInfo || !message) {
     return {message: "Invalid request"};
   }
-  
+
   let user = <Member>null;
   for (const u of Object.entries(userMap)) {
     if(<string>(u[1].account.userPrincipalName).toLowerCase() === userInfo.toLowerCase()) {

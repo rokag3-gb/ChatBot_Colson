@@ -1,38 +1,18 @@
 {
-  "_6d5ac8ee-3862-4452-93e7-a836c2d9742b_a:1P-OyRyEnAhaf6WH9OYYyiTpulqlLJJaw28Y8qNGvjik_jxfjrh0Zd--ohGTyo2mKuU8tC6FwejvIOZogS8uac8W8JDKL9OSWFIDmZjj_AiPSx3uUdJp9eRvFqtwo95QA": {
-    "activityId": "f:f5033be5-db5d-300b-c175-dddf0e000cc3",
+  "_6d5ac8ee-3862-4452-93e7-a836c2d9742b_a:1rb1mh8x4UcWqht0ii4uUxMsD7aEWN1xVP1bX_wDp-JXhiuRmwIQmwhoQLlcJlWwJ2ytaoiAfQzGxBZ6k_eZSVdaoZgnYN79mN_lCNOKWlMe8uh7a91TA89ftRhtl-fXm": {
+    "activityId": "f:83395a99-1ef9-c491-744d-21b561d7de38",
     "user": {
-      "id": "29:1BVc4f4NHmgKKUtmDsQxJGHeaZQdSWpmXPnLQYRj96yHmmSAUcsvPBwuAnRxlcPjIUbnGG_LHqgHnSRdbJHp0XA",
-      "name": "Jinho Kim",
-      "aadObjectId": "081b82a8-3896-4c67-96dc-b65e8a265e3f"
-    },
-    "bot": {
-      "id": "28:311d3bbc-da0b-4949-8c07-57a3d3c7f2cf",
-      "name": "Colson-local-debug"
-    },
-    "conversation": {
-      "conversationType": "personal",
-      "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
-      "id": "a:1P-OyRyEnAhaf6WH9OYYyiTpulqlLJJaw28Y8qNGvjik_jxfjrh0Zd--ohGTyo2mKuU8tC6FwejvIOZogS8uac8W8JDKL9OSWFIDmZjj_AiPSx3uUdJp9eRvFqtwo95QA"
-    },
-    "channelId": "msteams",
-    "locale": "ko-KR",
-    "serviceUrl": "https://smba.trafficmanager.net/apac/"
-  },
-  "_6d5ac8ee-3862-4452-93e7-a836c2d9742b_a:16xlmDqArJQtrLDGthnk99IFOgRTwUt0dg9quGhpW5-egQa1d51hNXSsU5bYP6AaRqN6KW_GQHzVU2IvhwsbLkY4a9BTqvQadPUcYd0w7b9qh7UYorI6t7hSvCgMrM3sP": {
-    "activityId": "f:402dd2c4-2d29-b1fd-3a2e-260d920577de",
-    "user": {
-      "id": "29:19FFoxvg2XrCCXNsnUGRoFjMEx3g1dIQc5KKxb0U3oSPterIeRMGCXsyHwVvdUBsqNRHZ3igTgkBRYJi0RngToA",
+      "id": "29:1fiW1c-gf3hDEhAACe93onMAcXxrySQc3ICXcUuMu2fap5mI5hjeSueWX3a-U4D5-jrAWY671-I6Gl0Yrx4EXag",
       "aadObjectId": "2cdbeed5-9768-47f4-840d-5ac8e7cb2a6d"
     },
     "bot": {
-      "id": "28:311d3bbc-da0b-4949-8c07-57a3d3c7f2cf",
-      "name": "Colson-local-debug"
+      "id": "28:ae61aaa2-dfc4-446e-9515-08cfb4d88d3f",
+      "name": "colson-local-debug"
     },
     "conversation": {
       "conversationType": "personal",
       "tenantId": "6d5ac8ee-3862-4452-93e7-a836c2d9742b",
-      "id": "a:16xlmDqArJQtrLDGthnk99IFOgRTwUt0dg9quGhpW5-egQa1d51hNXSsU5bYP6AaRqN6KW_GQHzVU2IvhwsbLkY4a9BTqvQadPUcYd0w7b9qh7UYorI6t7hSvCgMrM3sP"
+      "id": "a:1rb1mh8x4UcWqht0ii4uUxMsD7aEWN1xVP1bX_wDp-JXhiuRmwIQmwhoQLlcJlWwJ2ytaoiAfQzGxBZ6k_eZSVdaoZgnYN79mN_lCNOKWlMe8uh7a91TA89ftRhtl-fXm"
     },
     "channelId": "msteams",
     "locale": "ko-KR",

@@ -55,7 +55,7 @@ export function Workplace(props: { environment?: string }) {
 
     try {
       teamsfx?.getCredential().getToken('').then(token => {
-        axios.get(`${environment}/api/getTeam?UPN=${UPN}`,{
+        axios.get(`${environment}/serviceapi/getTeam?UPN=${UPN}`,{
           headers: {
             authorization: 'Bearer ' + token?.token,
           },
@@ -80,7 +80,7 @@ export function Workplace(props: { environment?: string }) {
     }
     
     teamsfx?.getCredential().getToken('').then(token => {
-      axios.get(`${environment}/api/getWorkCode`,{
+      axios.get(`${environment}/serviceapi/getWorkCode`,{
         headers: {
           authorization: 'Bearer ' + token?.token,
         },
@@ -101,7 +101,7 @@ export function Workplace(props: { environment?: string }) {
     }
 
     teamsfx?.getCredential().getToken('').then(token => {
-      axios.get(`${environment}/api/getWorkplace?startDate=${startDate}&endDate=${endDate}&team=${team}`,{
+      axios.get(`${environment}/serviceapi/getWorkplace?startDate=${startDate}&endDate=${endDate}&team=${team}`,{
         headers: {
           authorization: 'Bearer ' + token?.token,
         },
@@ -150,7 +150,7 @@ export function Workplace(props: { environment?: string }) {
   return (
     <div className="welcome">
       <div className="page-padding">
-        <h1>팀 근무지 조회{test}</h1>
+        <h1>팀 근무지 조회</h1>
         <div className="workspaceBox">
           <div className="headerBox">
               <div className="virticalBox">

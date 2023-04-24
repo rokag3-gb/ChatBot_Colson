@@ -44,9 +44,9 @@ export const UspSetGroupChat = async (id: string, name: string, object: string, 
 
   request.input('AppId', sql.VarChar, process.env.BOT_ID);
   request.input('GroupId', sql.VarChar, id);
-  request.input('GroupName', sql.VarChar, name);
+  request.input('GroupName', sql.NVarChar, name);
   request.input('GroupChatObject', sql.VarChar, object);
-  request.input('TeamName', sql.VarChar, teamName);
+  request.input('TeamName', sql.NVarChar, teamName);
 
   return query(request, `EXEC [IAM].[bot].[Usp_Set_App_GroupChat] @AppId, @GroupId, @GroupName, @GroupChatObject, @TeamName`);
 }

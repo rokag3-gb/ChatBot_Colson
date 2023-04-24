@@ -39,7 +39,7 @@ export const WorkplaceSelect = ({workplaceData, environment, date, name, UPN, ti
       
       const token = await teamsfx?.getCredential().getToken('');
   
-      await axios.post(`${environment}/api/setWorkplace`, {
+      await axios.post(`${environment}/serviceapi/setWorkplace`, {
         workDate: date.split('(')[0],
         upn: UPN,
         workCodeAM: !amValue?'':amValue,

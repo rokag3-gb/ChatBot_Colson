@@ -25,6 +25,7 @@
         "botPassword": "",
         "objectId": "afff5c80-62fa-4b86-9e2e-f6b39dcbd2c0",
         "skuName": "B1",
+        "gatewayEndpoint": "https://gw.cloudmt.co.kr",
         "siteName": "cloudmtbotdev2ecceebot",
         "validDomain": "cloudmtbotdev2ecceebot.azurewebsites.net",
         "appServicePlanName": "cloudmtbotdev2ecceebot",
