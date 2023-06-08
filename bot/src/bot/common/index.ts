@@ -122,15 +122,18 @@ export const groupRegister = async (installations: TeamsBotInstallation[]) => {
 
 export const getUserList = async (userId) => {
   const rows = await UspGetUsers();
+  console.log(JSON.stringify(rows));
   for(const row of rows) {
     try {
       if(row.AppUserId && (userId === row.AppUserId || userId === null)) {
         const user = userMap[row.AppUserId];
         if(user) {
+          await insertLog('insert user name data', JSON.stringify(row));
           userMap[row.AppUserId].FullNameKR = row.DisplayName;
           userMap[row.AppUserId].LastNameKR = row.LastNameKR;
           userMap[row.AppUserId].FirstNameKR = row.FirstNameKR;
         } else if (row.AppUserObject) {
+          await insertLog('make userlist', JSON.stringify(row));
           const userObj = <Member>JSON.parse(row.AppUserObject);
           const member = <any>new Member(parent, userObj.account);
           member.FullNameKR = row.DisplayName;
@@ -143,6 +146,8 @@ export const getUserList = async (userId) => {
       await insertLog('getUserList ' + row.AppUserId, "Error : " + JSON.stringify(e) + ', ' + e.message);
     }
   }
+
+  await insertLog('UserMap', JSON.stringify(userMap));
   await insertLog('getUserList', 'getUserList complete');
   console.log('getUserList complete');
 }
@@ -178,20 +183,24 @@ const IsJsonString = (str) => {
 }
 
 export const insertLog = async (userId, body) => {
-  let userInfo = '';
-  const user = userMap[userId]
-
-  if(!IsJsonString(body)) {
-    body = JSON.stringify({Message: body});
+  try {
+    let userInfo = '';
+    const user = userMap[userId]
+  
+    if(!IsJsonString(body)) {
+      body = JSON.stringify({Message: body});
+    }
+  
+    if(user) {
+      userInfo = user.account.userPrincipalName;
+    } else {
+      userInfo = userId
+    }
+  
+    await UspSetAppLog(getTodayTime(), userInfo, body);
+  } catch(e)  {
+    console.log('APP Log Insert Fail!! '+e)
   }
-
-  if(user) {
-    userInfo = user.account.userPrincipalName;
-  } else {
-    userInfo = userId
-  }
-
-  await UspSetAppLog(getTodayTime(), userInfo, body);
 }
 
 export const errorMessageForContext = async (context, err) => {

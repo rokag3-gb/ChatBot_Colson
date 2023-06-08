@@ -45,10 +45,8 @@ const verifyToken = async (token: string, publicKey: string, audience: string, p
       await jwt.verify(token, publicKey, { audience }, async (err) => {
         if (err) {
           await insertLog(preferred_username, 'Invalid token '+ path + ' token : ' + JSON.stringify(payload));
-          console.log(preferred_username, 'Invalid token '+ path + ' token : ' + JSON.stringify(payload));
           ret = false;
         } else {
-          console.log(preferred_username, 'Valid token '+ path + ' token : ' + JSON.stringify(payload));
           await insertLog(preferred_username, 'Valid token '+ path + ' token : ' + JSON.stringify(payload));
           ret = true
         }

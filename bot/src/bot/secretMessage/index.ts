@@ -169,20 +169,20 @@ const makeData = async (senderNick, receiver, message, background) => {
   let data: SecretSendCardData;
   let backgroundImage = background;
   if(!backgroundImage) {
-    backgroundImage = "Yellow Alpaca";
+    backgroundImage = "Rainy";
   }
 
   data = {
     Icon1: icon1,
     Icon2: icon2,
     Icon3: icon3,
-    IconName1: "Yellow Alpaca",
-    IconName2: "Animal Friends",
-    IconName3: "Bubble Bubble",
+    IconName1: "Rainy",
+    IconName2: "Sea",
+    IconName3: "Frog",
     backgroundImage: backgroundImage,
-    backgroundImage01: "Yellow Alpaca",
-    backgroundImage02: "Animal Friends",
-    backgroundImage03: "Bubble Bubble",
+    backgroundImage01: "Rainy",
+    backgroundImage02: "Sea",
+    backgroundImage03: "Frog",
     senderNick: senderNick,
     receiver: receiver,
     contents: message,
