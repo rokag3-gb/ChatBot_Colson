@@ -1,22 +1,22 @@
 {
     "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.13/MicrosoftTeams.schema.json",
-    "manifestVersion": "1.14",
+    "manifestVersion": "1.16",
     "version": "1.1.2",
-    "id": "{{state.fx-resource-appstudio.teamsAppId}}",
+    "id": "${{TEAMS_APP_ID}}",
     "packageName": "com.microsoft.teams.extension",
     "developer": {
         "name": "SD Team",
-        "websiteUrl": "{{{state.fx-resource-frontend-hosting.endpoint}}}",
-        "privacyUrl": "{{{state.fx-resource-frontend-hosting.endpoint}}}{{{state.fx-resource-frontend-hosting.indexPath}}}/privacy",
-        "termsOfUseUrl": "{{{state.fx-resource-frontend-hosting.endpoint}}}{{{state.fx-resource-frontend-hosting.indexPath}}}/termsofuse"
+        "websiteUrl": "${{PROVISIONOUTPUT__FRONTENDHOSTINGOUTPUT__ENDPOINT}}",
+        "privacyUrl": "${{PROVISIONOUTPUT__FRONTENDHOSTINGOUTPUT__ENDPOINT}}${{PROVISIONOUTPUT__FRONTENDHOSTINGOUTPUT__INDEXPATH}}/privacy",
+        "termsOfUseUrl": "${{PROVISIONOUTPUT__FRONTENDHOSTINGOUTPUT__ENDPOINT}}${{PROVISIONOUTPUT__FRONTENDHOSTINGOUTPUT__INDEXPATH}}/termsofuse"
     },
     "icons": {
         "color": "resources/color.png",
         "outline": "resources/outline.png"
     },
     "name": {
-        "short": "{{config.manifest.appName.short}}",
-        "full": "{{config.manifest.appName.full}}"
+        "short": "${{APPNAME__SHORT}}",
+        "full": "${{CONFIG__MANIFEST__APPNAME__FULL}}"
     },
     "description": {
         "short": "Colson은 클라우드메이트 임직원 전용 챗봇 서비스의 이름입니다.",
@@ -25,7 +25,7 @@
     "accentColor": "#FFFFFF",
     "bots": [
         {
-            "botId": "{{state.fx-resource-bot.botId}}",
+            "botId": "${{BOT_ID}}",
             "scopes": [
                 "personal",
                 "groupchat",
@@ -53,7 +53,7 @@
     "composeExtensions": [],
     "configurableTabs": [
         {
-            "configurationUrl": "{{{state.fx-resource-frontend-hosting.endpoint}}}{{{state.fx-resource-frontend-hosting.indexPath}}}/config",
+            "configurationUrl": "${{PROVISIONOUTPUT__FRONTENDHOSTINGOUTPUT__ENDPOINT}}${{PROVISIONOUTPUT__FRONTENDHOSTINGOUTPUT__INDEXPATH}}/config",
             "canUpdateConfiguration": true,
             "scopes": [
                 "team",
@@ -65,8 +65,8 @@
         {
             "entityId": "index",
             "name": "팀 근무지 조회",
-            "contentUrl": "{{{state.fx-resource-frontend-hosting.endpoint}}}{{{state.fx-resource-frontend-hosting.indexPath}}}/tab",
-            "websiteUrl": "{{{state.fx-resource-frontend-hosting.endpoint}}}{{{state.fx-resource-frontend-hosting.indexPath}}}/tab",
+            "contentUrl": "${{PROVISIONOUTPUT__FRONTENDHOSTINGOUTPUT__ENDPOINT}}${{PROVISIONOUTPUT__FRONTENDHOSTINGOUTPUT__INDEXPATH}}/tab",
+            "websiteUrl": "${{PROVISIONOUTPUT__FRONTENDHOSTINGOUTPUT__ENDPOINT}}${{PROVISIONOUTPUT__FRONTENDHOSTINGOUTPUT__INDEXPATH}}/tab",
             "scopes": [
                 "personal"
             ]
@@ -76,9 +76,11 @@
         "identity",
         "messageTeamMembers"
     ],
-    "validDomains": [],
+    "validDomains": [
+        "${{PROVISIONOUTPUT__FRONTENDHOSTINGOUTPUT__DOMAIN}}"
+    ],
     "webApplicationInfo": {
-        "id": "{{state.fx-resource-aad-app-for-teams.clientId}}",
-        "resource": "{{{state.fx-resource-aad-app-for-teams.applicationIdUris}}}"
+        "id": "${{AAD_APP_CLIENT_ID}}",
+        "resource": "api://${{PROVISIONOUTPUT__FRONTENDHOSTINGOUTPUT__DOMAIN}}/${{AAD_APP_CLIENT_ID}}"
     }
 }
