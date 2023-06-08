@@ -98,9 +98,9 @@ export const openSecretMessage = async (context, id, messageId) => {
     }
     let background = '';
 
-    if (row.Background === 'Animal Friends' || row.Background === 'White Snow') {
+    if (row.Background === 'Animal Friends' || row.Background === 'Sea') {
       background = secretMessageBackground2;
-    } else if (row.Background === 'Bubble Bubble' || row.Background === 'Twinkle Orange') {
+    } else if (row.Background === 'Bubble Bubble' || row.Background === 'Frog') {
       background = secretMessageBackground3;
     } else {
       background = secretMessageBackground1;
