@@ -121,10 +121,11 @@ export class TeamsBot extends TeamsActivityHandler {
 
       for (let cnt = 0; cnt < membersAdded.length; cnt++) {
         if (membersAdded[cnt].id) {
-          await context.sendActivity(`반갑습니다. 콜슨 앱이 설치되었습니다.`);
-          
-          const card = AdaptiveCards.declare(sendCommandTemplate).render();
-          await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
+          if(context.activity.conversation.conversationType === 'personal') {
+            await context.sendActivity(`반갑습니다. 콜슨 앱이 설치되었습니다.`);          
+            const card = AdaptiveCards.declare(sendCommandTemplate).render();
+            await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
+          }
           break;
         }
       }
