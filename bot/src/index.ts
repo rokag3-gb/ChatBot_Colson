@@ -82,7 +82,27 @@ async (req, res) => {
   }
   
   const user = userMap[req.body.from.id];
-  if(!user) {
+  if(userCount === 0) {
+    try {
+      await bot.requestHandler(req, res);
+      await conversationRegister(null);
+      await getUserList(null);
+      await getGroupChatList();
+    } catch(e) {
+      await insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
+      console.log(e);
+    }
+  } else if(!user && userCount === 0) {
+    try {
+      await bot.requestHandler(req, res);
+      await conversationRegister(null);
+      await getUserList(null);
+      await getGroupChatList();
+    } catch(e) {
+      await insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
+      console.log(e);
+    }
+  } else if(!user) {
     try {
       await bot.requestHandler(req, res);
       await conversationRegister(req.body.from.id)
@@ -92,11 +112,6 @@ async (req, res) => {
       await insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
       console.log(e);
     }
-  } else if(userCount === 0) {
-    await bot.requestHandler(req, res);
-    await conversationRegister(null);
-    await getUserList(null);
-    await getGroupChatList();
   } else if(req.body.conversation && req.body.conversation.isGroup) {
     await bot.requestHandler(req, res);
     const group = groupChatMap[req.body.conversation.id];
