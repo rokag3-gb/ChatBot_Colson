@@ -1,0 +1,39 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "${title}",
+      "size": "Large",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "${subtitle}",
+      "isSubtle": true,
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "${body}",
+      "isSubtle": true,
+      "spacing": "none",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type":"Action.OpenUrl",
+          "title":"팀 근무지 조회",
+          "url":"https://teams.microsoft.com/l/entity/140ee9e7-0efe-4907-9522-2b1eccb5f2c2/_djb2_msteams_prefix_3131623993?context=%7B%22subEntityId%22%3Anull%2C%22channelId%22%3A%2219%3A0e406ada29554f02931afd05e5c00c4f%40thread.skype%22%7D&groupId=14b50a7a-90d5-4e6a-80cc-4f82625aaf76&tenantId=6d5ac8ee-3862-4452-93e7-a836c2d9742b&allowXTenantAccess=false"
+        }
+      ]
+    }
+  ],
+  "actions": [
+  ]
+}

@@ -35,6 +35,12 @@ export interface WorkplaceCardData {
   button: string;
 }
 
+export interface WorkplaceFinishCardData {
+  title: string;
+  subtitle: string;
+  body: string;
+}
+
 export interface BirthCardData {
   background: string;
   title: string;

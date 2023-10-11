@@ -19,6 +19,21 @@ export const GetToday = (day: number) => {
   }
   return date.getFullYear() + "-" + ("00" + (1 + date.getMonth())).slice(-2) + "-" + ("00" + date.getDate()).slice(-2);
 }
+
+export const GetNextFriday = () => {
+  const now = new Date();
+  now.setDate(now.getDate() + 5);
+  const currentDay = now.getDay();
+  const daysUntilFriday = currentDay <= 5 ? 5 - currentDay : 5 + (7 - currentDay); // Calculate days until next Friday
+  const nextFriday = new Date(now.getTime() + daysUntilFriday * 24 * 60 * 60 * 1000);
+
+  const year = nextFriday.getFullYear();
+  const month = String(nextFriday.getMonth() + 1).padStart(2, '0');
+  const day = String(nextFriday.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
 export function Workplace(props: { environment?: string }) {
   const { environment } = {
     environment: window.location.hostname === "localhost" ? "http://localhost:3978" : "https://cloudmtbotdev2ecceebot.azurewebsites.net",
@@ -35,9 +50,8 @@ export function Workplace(props: { environment?: string }) {
   });
 
   const [startDate, setStartDate] = useState(GetToday(-1));
-  const [endDate, setEndDate] = useState(GetToday(7));
+  const [endDate, setEndDate] = useState(GetNextFriday());
   const [team, setTeam] = useState('');
-  const [test, setTest] = useState('1');
   
   const [tableData, setTableData] = useState<Map<string, string>>();
   const [workCode, setWorkCode] = useState<Map<string, string>>();

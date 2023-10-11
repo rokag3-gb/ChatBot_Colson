@@ -35,9 +35,9 @@ export class TeamsBot extends TeamsActivityHandler {
           }
           const text = txt.split(" ");
           if (text[0] === '근무지등록') {
-            await setWorkplaceForm(context, context.activity.from.id, text[1], 'work', null, null);   
+            await setWorkplaceForm(context, context.activity.from.id, text[1], 'work');   
           } else if (text[0] + text[1] === '근무지등록') {
-            await setWorkplaceForm(context, context.activity.from.id, text[2], 'work', null, null);
+            await setWorkplaceForm(context, context.activity.from.id, text[2], 'work');
           } else if (text[0] === '근무지') {
             await getWorkplace(context, text[1], Number(text[2]));
           } else if (text[0] === '홈' || text[0].toLowerCase() === 'home' || text[0] === 'ㅎ' || text[0] === '콜슨' || text[0] === 'colson') {
@@ -57,13 +57,7 @@ export class TeamsBot extends TeamsActivityHandler {
           } else if (text[0] === '/?' || text[0] === '/h' || text[0] === '/help') {
             await viewCommandList(context);
           } else if (text[0] === 'workamsendtest') {
-            await setWorkplaceForm(null, null, null, 'send', '좋은 아침입니다!', 'am');
-          } else if (text[0] === 'workamresendtest') {
-            await setWorkplaceForm(null, null, null, 'resend', '좋은 아침입니다!', 'am');
-          } else if (text[0] === 'workresendtest') {
-            await setWorkplaceForm(null, null, null, 'resend', '점심 식사 맛있게 하셨나요!', null);
-          } else if (text[0] === 'workpmsendtest') {
-            await setWorkplaceForm(null, null, null, 'send', '오늘 하루도 고생많으셨습니다.', 'pm');
+             await setWorkplaceForm(null, null, null, 'send');
           } else if (text[0] === 'birthtest') {
             await sendBirthdayCard();
           } else if (text[0] === 'emptest') {
@@ -87,7 +81,7 @@ export class TeamsBot extends TeamsActivityHandler {
           } else if (context.activity.value.messageType === "setWorkplace") {  
             await setWorkplace(context, context.activity.from.id, context.activity.value.UPN, context.activity.value.WorkDate, context.activity.value.WorkCodeAM, context.activity.value.WorkCodePM);
           } else if (context.activity.value.messageType === "setWorkplaceForm") {
-            await setWorkplaceForm(context, context.activity.from.id, null, 'work', null, null);
+            await setWorkplaceForm(context, context.activity.from.id, null, 'work');
           } else if (context.activity.value.messageType === "viewSecretMessage") {
             await viewSecretMessage(context, context.activity.from.id, null);
           } else if (context.activity.value.messageType === "sendSecretMessage") {  
