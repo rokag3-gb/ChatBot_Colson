@@ -28,12 +28,10 @@ const initialize = async () => {
     await getGroupChatList();
     await initCron();
 
-    await insertLog('initialize', 'Colson initialize Complete!');
   } catch(e) {
-      console.log(e);
       await insertLog('initialize', "Error : " + JSON.stringify(e) + ", " + e.message);
   }
-  console.log(' Colson initialize Complete! ');
+  await insertLog('initialize', 'Colson initialize Complete!');
 }
 
 initialize();
@@ -66,7 +64,6 @@ const teamsBot = new TeamsBot();
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, async () => {
   await insertLog('Bot Started', `${server.name} listening to ${server.url}`);
-  console.log(`\nBot Started, ${server.name} listening to ${server.url}`);
 });
 
 server.use(restify.plugins.bodyParser());
@@ -90,7 +87,6 @@ async (req, res) => {
       await getGroupChatList();
     } catch(e) {
       await insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
-      console.log(e);
     }
   } else if(!user && userCount === 0) {
     try {
@@ -100,7 +96,6 @@ async (req, res) => {
       await getGroupChatList();
     } catch(e) {
       await insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
-      console.log(e);
     }
   } else if(!user) {
     try {
@@ -110,7 +105,6 @@ async (req, res) => {
       await getGroupChatList();
     } catch(e) {
       await insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
-      console.log(e);
     }
   } else if(req.body.conversation && req.body.conversation.isGroup) {
     await bot.requestHandler(req, res);

@@ -34,7 +34,19 @@ export const sendBirthdayCard = async () => {
 
 export const openBirthMessage = async (context, messageId, username, birthDate) => {
   const d = new Date(birthDate);
-  const birthDateKr = ("00" + (d.getMonth() + 1)).slice(-2) + "월 " + ("00" + d.getDate()).slice(-2) + "일"
+
+  await makeAndSendCard(context, d, messageId, username);
+}
+
+export const openBirthdayCardTest = async (context) => {
+  const d = new Date();
+  const username = '테스트';
+
+  await makeAndSendCard(context, d, null, username);
+}
+
+const makeAndSendCard = async (context, d, messageId, username) => {
+  const birthDateKr = ("00" + (d.getMonth() + 1)).slice(-2) + "월 " + ("00" + d.getDate()).slice(-2) + "일";
 
   const link = await getBirthdayLink();
   const tmpTemplate = JSON.parse(JSON.stringify(sendBirthMessageTemplate));
@@ -48,13 +60,17 @@ export const openBirthMessage = async (context, messageId, username, birthDate) 
   }
 
   let background = birth_background;
-  await setOpenBirth(messageId);  
+  if(messageId !== null) {
+    await setOpenBirth(messageId);  
+  }
 
   const card = AdaptiveCards.declare(tmpTemplate).render({
     background: background,
     title: `${birthDateKr}은 ${username} 님의 생일입니다.`,
-    bodyTop: `${username} 님 생일 축하해요!`,
-    bodyBottom: `소중하고 행복한 하루 보내세요 :)`
+    bodyTop: `♥Birthday 유급 휴일 부여♥`,
+    bodyBottom: `${username} 님 생일 축하해요!
+    
+    소중하고 행복한 하루 보내세요 :)`
   });
   await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
 }

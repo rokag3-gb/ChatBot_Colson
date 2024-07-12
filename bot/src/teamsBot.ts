@@ -6,7 +6,7 @@ import { UspSetGroupChat } from "./bot/common/query";
 import { setWorkplaceForm, setWorkplace } from "./bot/setWorkplace";
 import { getWorkplaceForm, getWorkplace } from "./bot/getWorkplace";
 import { viewSecretMessage, sendSecretMessage, openSecretMessage, sendMessageReaction, empTest } from "./bot/secretMessage";
-import { sendBirthdayCard, openBirthMessage } from "./bot/birthMessage";
+import { sendBirthdayCard, openBirthMessage, openBirthdayCardTest } from "./bot/birthMessage";
 import { viewMealStoreSearch, viewMealStoreSearchResult, redirectMealStoreSearchResult } from "./bot/mealStore";
 import { randomStoreSelect, openRandomStore } from "./bot/randomMealStore";
 import { checkConversation } from "./bot/conversation";
@@ -44,22 +44,14 @@ export class TeamsBot extends TeamsActivityHandler {
             await sendCommand(context);
           } else if (text[0] === '메시지' || text[0] === '메세지') {
             await viewSecretMessage(context, context.activity.from.id, text[1]);
-          } else if (txt === '식사 랜덤' || txt === '랜덤 식사' || txt === '식당 랜덤' || txt === '랜덤 식당' || txt === '점심 랜덤' || 
-          text[0] === '랜덤' || text[0] === '식사랜덤' || text[0] === '랜덤식사' || 
-          text[0] === '랜덤식당' || text[0] === '식당랜덤' || text[0] === '점심랜덤') {
-            await randomStoreSelect(context);
-          } else if (text[0] === '비플식권페이' || text[0] === '비식페' || text[0] === '식사' || text[0] === '점심' || text[0] === '식당') {
-            if(text.length === 1) {
-              await viewMealStoreSearch(context);
-            } else {
-              await redirectMealStoreSearchResult(context, text);
-            }
           } else if (text[0] === '/?' || text[0] === '/h' || text[0] === '/help') {
             await viewCommandList(context);
           } else if (text[0] === 'workamsendtest') {
              await setWorkplaceForm(null, null, null, 'send');
-          } else if (text[0] === 'birthtest') {
-            await sendBirthdayCard();
+            } else if (text[0] === 'birthtest') {
+              await sendBirthdayCard();
+            } else if (text[0] === 'birthmessagetest') {
+              await openBirthdayCardTest(context);
           } else if (text[0] === 'emptest') {
             await empTest(context);
           } else {

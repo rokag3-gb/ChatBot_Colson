@@ -11,7 +11,7 @@ export const groupChatMap = new Object();
 export let userCount = 0;
 export let parent:TeamsBotInstallation = null;
 
-export const getToday = (day) => {
+export const getToday = (day: number) => {
   const now = new Date();
   const utcNow = now.getTime() + (now.getTimezoneOffset() * 60 * 1000); 
   const koreaTimeDiff = 9 * 60 * 60 * 1000; 
@@ -76,18 +76,15 @@ export const userRegister = async (userId: string, installations: TeamsBotInstal
               userMap[member.account.id] = member;
             } catch (e) {
               await insertLog('userRegister ' + member.account.id, "Error : " + JSON.stringify(e) + ", " + e.message);
-              console.log('userRegister ERROR!! ' + e);
             }
           }
         }
       } catch (e) {
         await insertLog('userRegister', "Error : " + JSON.stringify(e) + ", " + e.message);
-        console.log('userRegister ERROR2!! ' + e);
       }
     }
   }
   await insertLog('userRegister', 'userRegister complete');
-  console.log('userRegister complete');
 }
 
 export const groupRegister = async (installations: TeamsBotInstallation[]) => {
@@ -101,7 +98,7 @@ export const groupRegister = async (installations: TeamsBotInstallation[]) => {
       }
       await UspSetGroupChat(target.conversationReference.conversation.id, target.conversationReference.conversation.name, JSON.stringify(target), '');
       groupChatMap[target.conversationReference.conversation.id] = target;
-      console.log('groupRegister ' + target.conversationReference.conversation.id);
+      await insertLog('groupRegister', '['+target.conversationReference.conversation.name+']['+target.conversationReference.conversation.id+']');
     }
     
     if (target.type === 'Channel') {
@@ -113,11 +110,10 @@ export const groupRegister = async (installations: TeamsBotInstallation[]) => {
       }
       await UspSetGroupChat(target.conversationReference.conversation.id, target.conversationReference.conversation.name, JSON.stringify(target), '');
       groupChatMap[target.conversationReference.conversation.id] = target;
-      console.log('ChannelRegister ' + target.conversationReference.conversation.id);
+      await insertLog('ChannelRegister', '['+target.conversationReference.conversation.name+']['+target.conversationReference.conversation.id+']');
     }
   }
   await insertLog('groupRegister', 'groupRegister complete');
-  console.log('groupRegister complete');
 }
 
 export const getUserList = async (userId) => {
@@ -128,12 +124,12 @@ export const getUserList = async (userId) => {
       if(row.AppUserId && (userId === row.AppUserId || userId === null)) {
         const user = userMap[row.AppUserId];
         if(user) {
-          await insertLog('insert user name data', JSON.stringify(row));
+          await insertLog('getUserList', 'insert user name data : ' + JSON.stringify(row));
           userMap[row.AppUserId].FullNameKR = row.DisplayName;
           userMap[row.AppUserId].LastNameKR = row.LastNameKR;
           userMap[row.AppUserId].FirstNameKR = row.FirstNameKR;
         } else if (row.AppUserObject) {
-          await insertLog('make userlist', JSON.stringify(row));
+          await insertLog('getUserList', 'make userlist : ' + JSON.stringify(row));
           const userObj = <Member>JSON.parse(row.AppUserObject);
           const member = <any>new Member(parent, userObj.account);
           member.FullNameKR = row.DisplayName;
@@ -149,7 +145,6 @@ export const getUserList = async (userId) => {
 
   await insertLog('UserMap', JSON.stringify(userMap));
   await insertLog('getUserList', 'getUserList complete');
-  console.log('getUserList complete');
 }
 
 export const getGroupChatList = async () => {
@@ -162,15 +157,19 @@ export const getGroupChatList = async () => {
         const groupTarget = <TeamsBotInstallation>new TeamsBotInstallation(parent.adapter, tmpTarget.conversationReference);
         
         (<any>(groupTarget)).TeamName = row.TeamName;
+
+        if(row.GroupName && groupTarget.conversationReference?.conversation?.name !== row.GroupName) {
+          (<any>(groupTarget)).Name = row.GroupName;
+        }
+
         groupChatMap[groupTarget.conversationReference.conversation.id] = groupTarget;
-        console.log('getGroupChatList ' + groupTarget.conversationReference.conversation.id);
+        await insertLog('getGroupChatList', '['+ groupTarget.conversationReference?.conversation?.name +'][' + groupTarget.conversationReference.conversation.id+']');
       }
     } catch(e) {
       await insertLog('getGroupChatList ' + row.AppUserId, "Error : " + JSON.stringify(e) + ', ' + e.message);
     }
   }
   await insertLog('getGroupChatList', 'getGroupChatList complete');
-  console.log('getGroupChatList complete');
 }
 
 const IsJsonString = (str) => {
@@ -184,6 +183,7 @@ const IsJsonString = (str) => {
 
 export const insertLog = async (userId, body) => {
   try {
+    console.log(userId, body)
     let userInfo = '';
     const user = userMap[userId]
   
@@ -214,7 +214,6 @@ export const errorMessageForContext = async (context, err) => {
       resolve(true);
     } catch (e) {
       await insertLog('errorMessageForContext', "Error : " + JSON.stringify(e) + ", " + e.message);
-      console.log('errorMessageForContext ' + e);
       reject(e);
     }
   });
@@ -234,7 +233,6 @@ export const errorMessageForId = async (id, err) => {
       resolve(true);
     } catch (e) {
       await insertLog('errorMessageForId', "Error : " + JSON.stringify(e) + ", " + e.message);
-      console.log('errorMessageForId ' + e);
       reject(e);
     }
   });
@@ -273,14 +271,15 @@ export const query = async (request: any, query: string): Promise<any[]> => {
 }
 
 export const SendGroupChatMessage = async (id: string, message: string) => {
+  await insertLog('SendGroupChatMessage', id);
   if(!id || !message) {
-    console.log(' id = ' + id);
-    console.log(' message = ' + message);
+    console.log('Invalid message id[' + id + '] message[' + message+']');
     return "Invalid message";
   }
 
   const groupChat = <TeamsBotInstallation>groupChatMap[id];
   if(!groupChat) {
+    console.log('Invalid message id [' + id + ']');
     return "Invalid chat Id";
   }
 
@@ -301,12 +300,10 @@ export const memberSend = async(context) => {
 
           } catch (e) {
             await insertLog('memberSend ' + member.account.id, "Error : " + JSON.stringify(e) + ", " + e.message);
-            console.log('memberSend ERROR!! ' + e);
           }
         }
       } catch (e) {
         await insertLog('memberSend', "Error : " + JSON.stringify(e) + "," + e.message);
-        console.log('memberSend ERROR2!! ' + e);
       }
     }
   }

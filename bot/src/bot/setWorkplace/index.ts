@@ -63,7 +63,7 @@ export const userWorkplaceSend = async (choiceList) => {
   for(const row of rows) {
     try {
       curId = row.AppUserId;
-      console.log(row.AppUserId, row.NextWorkingDay, getToday(null));
+      await insertLog('userWorkplaceSend ' + curId, row.NextWorkingDay + ', ' + getToday(null));
       if((row.WorkCodePM !== 'WRK-OFF')) {
         if(row.NextWorkingDay == undefined || row.NextWorkingDay == null) {
           await sendWorkplaceFinishCardUserId(row.AppUserId, '한주를 마무리하며')
@@ -73,7 +73,6 @@ export const userWorkplaceSend = async (choiceList) => {
       }
     } catch(e) {
       await insertLog('userWorkplaceSend ' + curId, "Error : " + JSON.stringify(e) + ", " + e.message);
-      console.log(e);
     }
   }
 }

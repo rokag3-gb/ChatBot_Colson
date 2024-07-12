@@ -49,24 +49,6 @@
       "text": "**메시지 홍길동** -> 받는사람이 홍길동인 상태로 익명 메시지 발송 화면 표시",
       "wrap": true,
       "spacing": "large"
-    },
-    {
-      "type": "TextBlock",
-      "text": "**비플식권페이**, **비식페**, **식사**, **점심**, **식당** -> 비플식권페이 가맹점 조회 화면 표시",
-      "wrap": true,
-      "spacing": "large"
-    },
-    {
-      "type": "TextBlock",
-      "text": "*예시) 점심 순대, 식당 푸르지오, 식사 테크노10층*",
-      "wrap": true,
-      "spacing": "none"
-    },
-    {
-      "type": "TextBlock",
-      "text": "**식사랜덤**, **점심랜덤**, **랜덤식사** -> 식사 랜덤 뽑기 화면 표시",
-      "wrap": true,
-      "spacing": "large"
     }
   ],
   "actions": [
