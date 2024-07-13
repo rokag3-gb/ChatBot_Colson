@@ -4,8 +4,7 @@ import openBirthMessageTemplate from "../../adaptiveCards/openBirthMessage.json"
 import sendBirthMessageTemplate from "../../adaptiveCards/sendBirthMessage.json";
 import { CardFactory } from "botbuilder";
 import { getBirthdayLink, getBirthdayUser, setSendBirth, setOpenBirth } from "./query";
-
-import { userMap } from "../common";
+import { makeUserObject } from "../common";
 
 import { birth_background } from "../../image"
 
@@ -16,7 +15,7 @@ export const sendBirthdayCard = async () => {
   }
 
   for(const userInfo of userList) {
-    const userObject = userMap[userInfo.AppUserId];
+    const userObject = await makeUserObject(userInfo.AppUserId);
     if(!userObject) {
       continue;
     }    

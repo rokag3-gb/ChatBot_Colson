@@ -4,10 +4,10 @@ import viewSecretMessageTemplate from "../../adaptiveCards/viewSecretMessage.jso
 import openSecretMessageTemplate from "../../adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "../../adaptiveCards/sendSecretMessage.json";
 import { CardFactory } from "botbuilder";
-import { errorMessageForContext, memberSend } from "../common"
+import { errorMessageForContext, memberSend, makeUserObject } from "../common"
+import { UspGetUsers, UspGetUsersById } from "../common/query"
 import ACData = require("adaptivecards-templating");
 
-import { userMap } from "../common";
 import { UspSetSendMessage, UspGetSendMessage, UspSetSendMessageOpen, UspGetSendMessageChatid } from "./query";
 
 import { secretMessageIcon1,
@@ -20,8 +20,10 @@ import { secretMessageIcon1,
 export const viewSecretMessage = async (context, id, receiverName) => {
   const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
 
-  for (const user of Object.entries(userMap)) {
-    if(id === user[1].account.id || !user[1].FullNameKR || typeof user[1].FullNameKR !== 'string')
+  const users = await UspGetUsers();
+
+  for (const user of users) {
+    if(id === user.AppUserId || !user.FullNameKR || typeof user.FullNameKR !== 'string')
       continue;
       
     tmpTemplate.body[3].columns[1].items[0].choices.push({
@@ -43,24 +45,26 @@ export const viewSecretMessage = async (context, id, receiverName) => {
 }
 
 export const sendSecretMessage = async (context, id, receiverId, senderNick, message, background) => {
-  const user = userMap[id];
-  const receiver = userMap[receiverId]; 
+  const user = await UspGetUsersById(id);
+  const receiver = await makeUserObject(receiverId); 
+  const users = await UspGetUsers();
+
   const tmpTemplate = JSON.parse(JSON.stringify(sendSecretMessageTemplate));
 
-  for (const user of Object.entries(userMap)) {
-    if(id === user[1].account.id || !user[1].FullNameKR || typeof user[1].FullNameKR !== 'string')
+  for (const u of users) {
+    if(id === u.AppUserId || !u.FullNameKR || typeof u.FullNameKR !== 'string')
       continue;
     tmpTemplate.body[3].columns[1].items[0].choices.push({
-      "title": user[1].FullNameKR,
-      "value": user[1].account.id
+      "title": u.FullNameKR,
+      "value": u.AppUserId
     });
 
     tmpTemplate.body[3].columns[1].items[0].choices.sort((a, b) => {
       return a.title < b.title ? -1 : a.title > b.title ? 1 : 0;
     });
 
-    if(context.activity.value.receiver === user[1].FullNameKR) {
-      tmpTemplate.body[3].columns[1].items[0].value = user[1].account.id;
+    if(context.activity.value.receiver === u.FullNameKR) {
+      tmpTemplate.body[3].columns[1].items[0].value = u.AppUserId;
     }
   }
 
@@ -83,7 +87,7 @@ export const sendSecretMessage = async (context, id, receiverId, senderNick, mes
     const tmpTemplate = JSON.parse(JSON.stringify(openSecretMessageTemplate));
     tmpTemplate.actions[0].data.messageId = row.ID;    
   
-    await receiver.sendAdaptiveCard<SecretOpenCardData>(AdaptiveCards.declare(tmpTemplate).render({
+    await receiver.sendAdaptiveCard(AdaptiveCards.declare(tmpTemplate).render({
       Receiver: receiver.FirstNameKR
     }));
   }
@@ -115,8 +119,8 @@ export const openSecretMessage = async (context, id, messageId) => {
     const openedChatId = await context.sendActivity({ attachments: [CardFactory.adaptiveCard(card)] });
     await UspSetSendMessageOpen(messageId, openedChatId.id);
 
-    const user = userMap[id];
-    const sender = userMap[row.AppUserId];
+    const user = await UspGetUsersById(id);
+    const sender = await makeUserObject(row.AppUserId); 
 
     //어이없네 bit 타입을 insert 할때는 0, 1로 안보내면 에러나더니 select 할때는 true, false 로 받아야 처리가 가능하다
     if(sender) {
@@ -128,8 +132,8 @@ export const openSecretMessage = async (context, id, messageId) => {
 export const sendMessageReaction = async (context, id, activityId, type: string) => {
   const rows = await UspGetSendMessageChatid(activityId);
   for(const row of rows) {
-    const user = userMap[id];
-    const sender = userMap[row.AppUserId];
+    const user = await UspGetUsersById(id);
+    const sender = await makeUserObject(row.AppUserId); 
     if(!sender) {
       return;
     }
@@ -193,7 +197,9 @@ const makeData = async (senderNick, receiver, message, background) => {
 
 export const empTest = async (context) => {
   let userText = "";
-  for (const user of Object.entries(userMap)) {
+  const users = await UspGetUsers();
+
+  for (const user of users) {
     userText += user[1].FullNameKR + ","
   }
   await context.sendActivity(userText);

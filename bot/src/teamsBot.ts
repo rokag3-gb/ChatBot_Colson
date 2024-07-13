@@ -1,7 +1,8 @@
 import { TeamsActivityHandler, MessageFactory, ActivityTypes, CardFactory, TurnContext } from "botbuilder";
 import sendCommandTemplate from "./adaptiveCards/sendCommand.json";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
-import { viewCommandList, sendCommand, userMap, sorryMessage, } from "./bot/common";
+import { viewCommandList, sendCommand, sorryMessage } from "./bot/common";
+import { UspGetUsersById } from "./bot/common/query";
 import { UspSetGroupChat } from "./bot/common/query";
 import { setWorkplaceForm, setWorkplace } from "./bot/setWorkplace";
 import { getWorkplaceForm, getWorkplace } from "./bot/getWorkplace";
@@ -20,7 +21,7 @@ export class TeamsBot extends TeamsActivityHandler {
         message.type = ActivityTypes.Typing;
         await context.sendActivity(message);
   
-        const user = userMap[context.activity.from.id];
+        const user = UspGetUsersById(context.activity.from.id);
         if(!user) {
           await context.sendActivity('유저 정보를 등록중입니다. 다시 한번 요청해 주세요.');
           await next();

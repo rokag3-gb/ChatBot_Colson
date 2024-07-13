@@ -4,12 +4,37 @@ import sendCommandTemplate from "../../adaptiveCards/sendCommand.json";
 import sendCommandListTemplate from "../../adaptiveCards/sendCommandList.json";
 import { CardFactory } from "botbuilder";
 import { Member, TeamsBotInstallation } from "@microsoft/teamsfx"
-import { UspSetAppUser, UspGetUsers, UspSetAppLog, UspSetGroupChat, UspGetGroupChat } from "./query"
+import { UspSetAppUser, UspSetAppLog, UspSetGroupChat, UspGetUsersById, UspGetGroupChatById } from "./query"
 
-export const userMap = new Object();
-export const groupChatMap = new Object();
 export let userCount = 0;
 export let parent:TeamsBotInstallation = null;
+
+export const makeUserObject = async (id: string): Promise<any> => {
+  const row = await UspGetUsersById(id)
+
+  const userObj = <Member>JSON.parse(row.AppUserObject);
+  const member = <any>new Member(parent, userObj.account);
+  member.FullNameKR = row.DisplayName;
+  member.LastNameKR = row.LastNameKR;
+  member.FirstNameKR = row.FirstNameKR;
+  
+  return member;
+}
+
+export const makeGroupObject = async (id: string): Promise<TeamsBotInstallation> => {
+  const row = await UspGetGroupChatById(id)
+  
+  const tmpTarget = <TeamsBotInstallation>JSON.parse(row.GroupChatObject);
+  const groupTarget = <TeamsBotInstallation>new TeamsBotInstallation(parent.adapter, tmpTarget.conversationReference);
+  
+  (<any>(groupTarget)).TeamName = row.TeamName;
+
+  if(row.GroupName && groupTarget.conversationReference?.conversation?.name !== row.GroupName) {
+    (<any>(groupTarget)).Name = row.GroupName;
+  }
+
+  return groupTarget;
+}
 
 export const getToday = (day: number) => {
   const now = new Date();
@@ -54,12 +79,6 @@ export const conversationRegister = async (id: string) => {
 }
 
 export const userRegister = async (userId: string, installations: TeamsBotInstallation[]) => {
-  if(userCount === 0) {
-    Object.keys(userMap).forEach(key => {
-      delete userMap[key];
-    });
-  }
-
   for (const target of installations) {    
     if(target.type === 'Person') {    
       try {
@@ -73,7 +92,6 @@ export const userRegister = async (userId: string, installations: TeamsBotInstal
               }
 
               await UspSetAppUser(member.account.id, member.account.userPrincipalName, JSON.stringify(member));
-              userMap[member.account.id] = member;
             } catch (e) {
               await insertLog('userRegister ' + member.account.id, "Error : " + JSON.stringify(e) + ", " + e.message);
             }
@@ -97,7 +115,6 @@ export const groupRegister = async (installations: TeamsBotInstallation[]) => {
         }
       }
       await UspSetGroupChat(target.conversationReference.conversation.id, target.conversationReference.conversation.name, JSON.stringify(target), '');
-      groupChatMap[target.conversationReference.conversation.id] = target;
       await insertLog('groupRegister', '['+target.conversationReference.conversation.name+']['+target.conversationReference.conversation.id+']');
     }
     
@@ -109,67 +126,10 @@ export const groupRegister = async (installations: TeamsBotInstallation[]) => {
         }
       }
       await UspSetGroupChat(target.conversationReference.conversation.id, target.conversationReference.conversation.name, JSON.stringify(target), '');
-      groupChatMap[target.conversationReference.conversation.id] = target;
       await insertLog('ChannelRegister', '['+target.conversationReference.conversation.name+']['+target.conversationReference.conversation.id+']');
     }
   }
   await insertLog('groupRegister', 'groupRegister complete');
-}
-
-export const getUserList = async (userId) => {
-  const rows = await UspGetUsers();
-  console.log(JSON.stringify(rows));
-  for(const row of rows) {
-    try {
-      if(row.AppUserId && (userId === row.AppUserId || userId === null)) {
-        const user = userMap[row.AppUserId];
-        if(user) {
-          await insertLog('getUserList', 'insert user name data : ' + JSON.stringify(row));
-          userMap[row.AppUserId].FullNameKR = row.DisplayName;
-          userMap[row.AppUserId].LastNameKR = row.LastNameKR;
-          userMap[row.AppUserId].FirstNameKR = row.FirstNameKR;
-        } else if (row.AppUserObject) {
-          await insertLog('getUserList', 'make userlist : ' + JSON.stringify(row));
-          const userObj = <Member>JSON.parse(row.AppUserObject);
-          const member = <any>new Member(parent, userObj.account);
-          member.FullNameKR = row.DisplayName;
-          member.LastNameKR = row.LastNameKR;
-          member.FirstNameKR = row.FirstNameKR;
-          userMap[row.AppUserId] = member;
-        }
-      }
-    } catch (e) {
-      await insertLog('getUserList ' + row.AppUserId, "Error : " + JSON.stringify(e) + ', ' + e.message);
-    }
-  }
-
-  await insertLog('UserMap', JSON.stringify(userMap));
-  await insertLog('getUserList', 'getUserList complete');
-}
-
-export const getGroupChatList = async () => {
-  const rows = await UspGetGroupChat();
-  for(const row of rows) {
-    try {
-      const groupChat = groupChatMap[row.groupChatId];
-      if(!groupChat && row.GroupChatObject && parent) {
-        const tmpTarget = <TeamsBotInstallation>JSON.parse(row.GroupChatObject);
-        const groupTarget = <TeamsBotInstallation>new TeamsBotInstallation(parent.adapter, tmpTarget.conversationReference);
-        
-        (<any>(groupTarget)).TeamName = row.TeamName;
-
-        if(row.GroupName && groupTarget.conversationReference?.conversation?.name !== row.GroupName) {
-          (<any>(groupTarget)).Name = row.GroupName;
-        }
-
-        groupChatMap[groupTarget.conversationReference.conversation.id] = groupTarget;
-        await insertLog('getGroupChatList', '['+ groupTarget.conversationReference?.conversation?.name +'][' + groupTarget.conversationReference.conversation.id+']');
-      }
-    } catch(e) {
-      await insertLog('getGroupChatList ' + row.AppUserId, "Error : " + JSON.stringify(e) + ', ' + e.message);
-    }
-  }
-  await insertLog('getGroupChatList', 'getGroupChatList complete');
 }
 
 const IsJsonString = (str) => {
@@ -185,14 +145,14 @@ export const insertLog = async (userId, body) => {
   try {
     console.log(userId, body)
     let userInfo = '';
-    const user = userMap[userId]
+    const user = await(UspGetUsersById(userId))
   
     if(!IsJsonString(body)) {
       body = JSON.stringify({Message: body});
     }
   
     if(user) {
-      userInfo = user.account.userPrincipalName;
+      userInfo = user.AppUPN;
     } else {
       userInfo = userId
     }
@@ -222,7 +182,7 @@ export const errorMessageForContext = async (context, err) => {
 export const errorMessageForId = async (id, err) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const user = userMap[id];
+      const user = await UspGetUsersById(id)
       if(user && id) {
         user.sendMessage(`에러가 발생했습니다. 다시 시도해주세요.
 
@@ -277,7 +237,7 @@ export const SendGroupChatMessage = async (id: string, message: string) => {
     return "Invalid message";
   }
 
-  const groupChat = <TeamsBotInstallation>groupChatMap[id];
+  const groupChat = await makeUserObject(id);
   if(!groupChat) {
     console.log('Invalid message id [' + id + ']');
     return "Invalid chat Id";

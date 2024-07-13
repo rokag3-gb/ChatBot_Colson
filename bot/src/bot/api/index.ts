@@ -1,10 +1,11 @@
 import {  UspGetWorkCode,} from "../setWorkplace/query"
-import { groupChatMap, userMap, insertLog, } from "../common"
+import { insertLog, makeGroupObject } from "../common"
+import { UspGetGroupChat, UspGetUsersByUPN } from "../common/query"
 import { ValidationToken, ValidationTokenGateway } from "./token"
 
 import { Router } from "restify-router"
 import { ActivityTypes, Mention, Activity } from "botbuilder";
-import { TeamsBotInstallation, Member, TeamsFx } from "@microsoft/teamsfx"
+import { TeamsBotInstallation, Member } from "@microsoft/teamsfx"
 
 import {
   UspGetWorkplaceTeam,
@@ -111,8 +112,9 @@ routerInstance.get('/getWorkCode', async (req, res) => {
 routerInstanceGateway.get("/getGroupChat", async (req, res) => {  
   await ValidationGatewayFunc(req, res, async () => {
     try {
+      const groupChatList = await UspGetGroupChat();
       const arr = [];
-      for(const data of Object.entries(groupChatMap)) {
+      for(const data of Object.entries(groupChatList)) {
         arr.push({
           type: data[1]?.conversationReference?.conversation?.conversationType,
           name: data[1]?.conversationReference?.conversation?.name?data[1]?.conversationReference?.conversation?.name:'일반',
@@ -147,30 +149,14 @@ const SendUserMessage = async (userInfo: string, message: string) => {
   if(!userInfo || !message) {
     throw new Error('Invalid request (user or message)');
   }
-  
-  let user = <Member>null;
-  try {
-    for (const u of Object.entries(userMap)) {
-      if(<string>(u[1].account.userPrincipalName).toLowerCase() === userInfo.toLowerCase()) {
-        user = <Member>u[1];
-        break;
-      }
-      
-      if(u[1].FullNameKR === userInfo) {
-        user = <Member>u[1];
-        break;
-      }
-    }
-  
-    if(user === null) {
-      throw new Error('Invalid request (user is null)');
-    }
-  } catch(e) {
-    return {message: e.message, code: 400};
+
+  const user = <Member>(await UspGetUsersByUPN(userInfo))  
+  if(user === null) {
+    throw new Error('Invalid request (user is null)');
   }
   
   try {
-    const messageActivity = MakeMessage(message);  
+    const messageActivity = await MakeMessage(message);  
     const result = await user.sendMessage(<string>messageActivity);
 
     return {message: result, code: 200};
@@ -185,12 +171,12 @@ const SendGroupMessage = async (id: string, message: string) => {
   }
 
   try {
-    const groupChat = <TeamsBotInstallation>groupChatMap[id];
+    const groupChat = await makeGroupObject(id);
     if(!groupChat) {
       return {message: "Invalid chat Id", code: 400};
     }
 
-    const messageActivity = MakeMessage(message);
+    const messageActivity = await MakeMessage(message);
   
     const result =  await groupChat.sendMessage(<string>messageActivity);
     return {message: result, code: 200};
@@ -199,7 +185,7 @@ const SendGroupMessage = async (id: string, message: string) => {
   }
 }
 
-const MakeMessage = (message: string):Partial<Activity>  => {  
+const MakeMessage = async (message: string):Promise<Partial<Activity>>  => {  
   const mentionArr = [];
   let text = message;
   for(let i = 0;;i++) {
@@ -212,17 +198,9 @@ const MakeMessage = (message: string):Partial<Activity>  => {
 
     const userInfo = text.substring(start+9, end);
 
-    let user = <Member>null;
-    for (const u of Object.entries(userMap)) {
-      if(<string>(u[1].account.userPrincipalName).toLowerCase() === userInfo.toLowerCase()) {
-        user = <Member>u[1];
-        break;
-      }
-      
-      if(u[1].FullNameKR === userInfo) {
-        user = <Member>u[1];
-        break;
-      }
+    const user = <Member>(await UspGetUsersByUPN(userInfo))  
+    if(user === null) {
+      throw new Error('Invalid request (user is null)');
     }
 
     if(user === null) {

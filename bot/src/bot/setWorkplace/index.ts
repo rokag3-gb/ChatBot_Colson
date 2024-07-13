@@ -1,7 +1,8 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { WorkplaceCardData, WorkplaceFinishCardData } from "../../model/cardModels";
 import { CardFactory } from "botbuilder";
-import { getToday, checkWeekday, userMap, insertLog } from "../common";
+import { getToday, checkWeekday, insertLog } from "../common";
+import { UspGetUsersById, UspGetUsersByUPN } from "../common/query";
 import { UspGetWorkCode, UspGetUserWorkplace, UspGetUserWorkplaceSend, UspSetWorkplace } from "./query";
 import workplaceTemplate from "../../adaptiveCards/insertWorkplace.json";
 import workplaceFinishTemplate from "../../adaptiveCards/insertWorkplaceFinish.json";
@@ -29,26 +30,15 @@ export const setWorkplaceForm = async (context, userId, username, type) => {
 
 //특정 유저의 근무지 등록을 위한 함수
 const userWorkplace = async (context, userId, username, choiceList) => {
-  const fromUser = userMap[userId];
-  let user = null;
-  let UPN = '';
+  const fromUser = await UspGetUsersById(userId);
 
-  if(username) {
-    for (const u of Object.entries(userMap)) {
-      if(u[1].FullNameKR === username) {
-        user = u[1];
-        break;
-      }
-    }
-    if(!user) {
-      await context.sendActivity(`'${username}' 님을 찾을 수 없습니다.`);
-      return
-    }
-    await context.sendActivity( `'${username}' 님의 근무지를 등록합니다.`);
-    UPN = user.account.userPrincipalName;
-  } else {
-    UPN = fromUser.account.userPrincipalName;
+  const user = await UspGetUsersByUPN(username)
+  if(!user) {
+    await context.sendActivity(`'${username}' 님을 찾을 수 없습니다.`);
+    return
   }
+
+  const UPN = user.AppUPN;
 
   const rows = await UspGetUserWorkplace(UPN);
   for(const row of rows) {
@@ -78,7 +68,7 @@ export const userWorkplaceSend = async (choiceList) => {
 }
 
 const sendWorkplaceCardContext = async (context, userId, choiceList, WorkCodeAM, WorkCodePM, user) => {
-  const fromUser = userMap[userId];
+  const fromUser = await UspGetUsersById(userId);
   const tmpTemplate = JSON.parse(JSON.stringify(workplaceTemplate));
 
   if(!user) {
@@ -123,7 +113,7 @@ const sendWorkplaceCardContext = async (context, userId, choiceList, WorkCodeAM,
 }
 
 const sendWorkplaceCardUserId = async (userId, choiceList, WorkCodeAM, WorkCodePM, user, message) => {
-  const fromUser = userMap[userId];
+  const fromUser = await UspGetUsersById(userId);
   const tmpTemplate = JSON.parse(JSON.stringify(workplaceTemplate));
 
   if(!user) {
@@ -169,7 +159,7 @@ const sendWorkplaceCardUserId = async (userId, choiceList, WorkCodeAM, WorkCodeP
 }
 
 const sendWorkplaceFinishCardUserId = async (userId, message) => {
-  const fromUser = userMap[userId];
+  const fromUser = await UspGetUsersById(userId);
   const tmpTemplate = JSON.parse(JSON.stringify(workplaceFinishTemplate));
 
   let title = '다음 주 근무지 등록';
@@ -186,7 +176,7 @@ const sendWorkplaceFinishCardUserId = async (userId, message) => {
 
 
 export const setWorkplace = async (context, id, upn, workDate, workCodeAM, workCodePM) => {
-  const user = userMap[id];
+  const user = await UspGetUsersById(id);
   if(!user) {
     await context.sendActivity(`잘못된 정보가 전달되었습니다.`);
     return;

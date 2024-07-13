@@ -4,7 +4,6 @@ import { CardFactory } from "botbuilder";
 import randomMealStore from "../../adaptiveCards/randomMealStore.json";
 import randomMealStoreUpdate from "../../adaptiveCards/randomMealStoreUpdate.json";
 import randomMealStoreOpen from "../../adaptiveCards/randomMealStoreOpen.json";
-import { userMap } from "../common"
 import { icon_normal_1,
         icon_normal_2,
         icon_normal_3,
@@ -16,9 +15,10 @@ import { icon_normal_1,
         icon_gray_3,} from "../../image"
 import { UspSetMealStoreLotsPick, UspLotMealStore } from "./query"
 import ACData = require("adaptivecards-templating");
+import { UspGetUsersById } from "../common/query";
 
 export const randomStoreSelect = async (context: TurnContext) => {
-  const user = userMap[context.activity.from.id];
+  const user = await UspGetUsersById(context.activity.from.id);
   const row = await UspLotMealStore(user.account.userPrincipalName);
   const data = JSON.parse(row[0].LotData);
 

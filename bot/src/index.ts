@@ -1,13 +1,7 @@
 import * as restify from "restify";
 import { bot } from "./internal/initialize";
-import { getUserList,
-         conversationRegister,
-         groupRegister,
-         getGroupChatList,
-         insertLog,
-         userCount,
-         userMap,
-         groupChatMap, } from "./bot/common";
+import { conversationRegister, groupRegister, insertLog, userCount } from "./bot/common";
+import { UspGetUsersById, UspGetGroupChatById } from "./bot/common/query";
 import { TeamsBot } from "./teamsBot";
 import { routerInstance, routerInstanceGateway } from "./bot/api";
 import { initCron } from "./schedule";
@@ -24,8 +18,6 @@ const initialize = async () => {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
     await conversationRegister(null);
 
-    await getUserList(null);
-    await getGroupChatList();
     await initCron();
 
   } catch(e) {
@@ -78,13 +70,11 @@ async (req, res) => {
     return;
   }
   
-  const user = userMap[req.body.from.id];
+  const user = await UspGetUsersById(req.body.from.id);
   if(userCount === 0) {
     try {
       await bot.requestHandler(req, res);
       await conversationRegister(null);
-      await getUserList(null);
-      await getGroupChatList();
     } catch(e) {
       await insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
     }
@@ -92,8 +82,6 @@ async (req, res) => {
     try {
       await bot.requestHandler(req, res);
       await conversationRegister(null);
-      await getUserList(null);
-      await getGroupChatList();
     } catch(e) {
       await insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
     }
@@ -101,18 +89,15 @@ async (req, res) => {
     try {
       await bot.requestHandler(req, res);
       await conversationRegister(req.body.from.id)
-      await getUserList(req.body.from.id);
-      await getGroupChatList();
     } catch(e) {
       await insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
     }
   } else if(req.body.conversation && req.body.conversation.isGroup) {
     await bot.requestHandler(req, res);
-    const group = groupChatMap[req.body.conversation.id];
+    const group = UspGetGroupChatById(req.body.conversation.id);
     if(!group) {
       const installations = await bot.notification.installations();
       await groupRegister(installations);
-      await getGroupChatList();
     }
   }
 
