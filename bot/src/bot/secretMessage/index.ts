@@ -1,5 +1,5 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
-import { SecretSendCardData, SecretCardData, SecretOpenCardData } from "../../model/cardModels";
+import { SecretSendCardData, SecretCardData } from "../../model/cardModels";
 import viewSecretMessageTemplate from "../../adaptiveCards/viewSecretMessage.json";
 import openSecretMessageTemplate from "../../adaptiveCards/openSecretMessage.json";
 import sendSecretMessageTemplate from "../../adaptiveCards/sendSecretMessage.json";
@@ -23,20 +23,20 @@ export const viewSecretMessage = async (context, id, receiverName) => {
   const users = await UspGetUsers();
 
   for (const user of users) {
-    if(id === user.AppUserId || !user.FullNameKR || typeof user.FullNameKR !== 'string')
-      continue;
+   // if(id === user.AppUserId || !user.FullNameKR || typeof user.FullNameKR !== 'string')
+    //  continue;
       
     tmpTemplate.body[3].columns[1].items[0].choices.push({
-      "title": user[1].FullNameKR,
-      "value": user[1].account.id
+      "title": user.FullNameKR,
+      "value": user.AppUserId
     });
 
     tmpTemplate.body[3].columns[1].items[0].choices.sort((a, b) => {
       return a.title < b.title ? -1 : a.title > b.title ? 1 : 0;
     });
 
-    if(receiverName === user[1].FullNameKR) {
-      tmpTemplate.body[3].columns[1].items[0].value = user[1].account.id;
+    if(receiverName === user.FullNameKR) {
+      tmpTemplate.body[3].columns[1].items[0].value = user.AppUserId;
     }
   }
 
@@ -78,7 +78,7 @@ export const sendSecretMessage = async (context, id, receiverId, senderNick, mes
     attachments: [card],
   });
 
-  const rows = await UspSetSendMessage(user.account.userPrincipalName, senderNick, receiver.account.userPrincipalName, message, background);
+  const rows = await UspSetSendMessage(user.UPN, senderNick, receiver.account.userPrincipalName, message, background);
   for(const row of rows) {
     if(row.ID === -1) {
       await errorMessageForContext(context, row.ERROR);
@@ -175,6 +175,9 @@ const makeData = async (senderNick, receiver, message, background) => {
   if(!backgroundImage) {
     backgroundImage = "Rainy";
   }
+  if(message == '') {
+    message = ' '
+  }
 
   data = {
     Icon1: icon1,
@@ -200,7 +203,7 @@ export const empTest = async (context) => {
   const users = await UspGetUsers();
 
   for (const user of users) {
-    userText += user[1].FullNameKR + ","
+    userText += user.FullNameKR + ","
   }
   await context.sendActivity(userText);
   await memberSend(context);

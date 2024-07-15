@@ -72,16 +72,16 @@ const sendWorkplaceCardContext = async (context, userId, choiceList, WorkCodeAM,
   const tmpTemplate = JSON.parse(JSON.stringify(workplaceTemplate));
 
   if(!user) {
-    tmpTemplate.body[3].value = fromUser.account.userPrincipalName;
+    tmpTemplate.body[3].value = fromUser.UPN;
     tmpTemplate.body[3].choices.push({
       "title": fromUser.FullNameKR,
-      "value": fromUser.account.userPrincipalName
+      "value": fromUser.UPN
     });
   } else {
-    tmpTemplate.body[3].value = user.account.userPrincipalName;
+    tmpTemplate.body[3].value = user.UPN;
     tmpTemplate.body[3].choices.push({
       "title": user.FullNameKR,
-      "value": user.account.userPrincipalName
+      "value": user.UPN
     });
   }
 
@@ -117,16 +117,16 @@ const sendWorkplaceCardUserId = async (userId, choiceList, WorkCodeAM, WorkCodeP
   const tmpTemplate = JSON.parse(JSON.stringify(workplaceTemplate));
 
   if(!user) {
-    tmpTemplate.body[3].value = fromUser.account.userPrincipalName;
+    tmpTemplate.body[3].value = fromUser.UPN;
     tmpTemplate.body[3].choices.push({
       "title": fromUser.FullNameKR,
-      "value": fromUser.account.userPrincipalName
+      "value": fromUser.UPN
     });
   } else {
-    tmpTemplate.body[3].value = user.account.userPrincipalName;
+    tmpTemplate.body[3].value = user.UPN;
     tmpTemplate.body[3].choices.push({
       "title": user.FullNameKR,
-      "value": user.account.userPrincipalName
+      "value": user.UPN
     });
   }
 
@@ -182,7 +182,7 @@ export const setWorkplace = async (context, id, upn, workDate, workCodeAM, workC
     return;
   }
 
-  const rows = await UspSetWorkplace(workDate, upn, workCodeAM, workCodePM, user.account.userPrincipalName);
+  const rows = await UspSetWorkplace(workDate, upn, workCodeAM, workCodePM, user.UPN);
   for(const row of rows) {
     await context.sendActivity(`${user.FullNameKR}님의 ${workDate} 일자 근무지가 입력되었습니다. (${row.WorkNameAM}${workCodePM?'/'+row.WorkNamePM:''})`);
   }

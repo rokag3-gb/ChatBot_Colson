@@ -237,7 +237,7 @@ export const SendGroupChatMessage = async (id: string, message: string) => {
     return "Invalid message";
   }
 
-  const groupChat = await makeUserObject(id);
+  const groupChat = await makeGroupObject(id);
   if(!groupChat) {
     console.log('Invalid message id [' + id + ']');
     return "Invalid chat Id";

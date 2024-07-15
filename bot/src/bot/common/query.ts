@@ -55,7 +55,7 @@ export const UspGetUsersById = async (id: string): Promise<any> => {
   const request = await getRequest();
   request.input('appId', sql.VarChar, process.env.BOT_ID);
   request.input('userId', sql.VarChar, id);
-  const users = query(request, `EXEC [IAM].[bot].[Usp_Get_Users_By_Id] @appId, @userId`)
+  const users = await query(request, `EXEC [IAM].[bot].[Usp_Get_Users_By_Id] @appId, @userId`)
   if(users[0] !== null)
     return users[0]
 
@@ -67,7 +67,7 @@ export const UspGetUsersByUPN = async (upn: string): Promise<any> => {
   request.input('appId', sql.VarChar, process.env.BOT_ID);
   request.input('UPN', sql.VarChar, upn);
 
-  const users = query(request, `EXEC [IAM].[bot].[Usp_Get_Users_By_UPN] @appId, @UPN`);
+  const users = await query(request, `EXEC [IAM].[bot].[Usp_Get_Users_By_UPN] @appId, @UPN`);
   if(users[0] !== null)
     return users[0]
 
@@ -79,7 +79,7 @@ export const UspGetGroupChatById = async (id: string): Promise<any> => {
   request.input('appId', sql.VarChar, process.env.BOT_ID);
   request.input('groupId', sql.VarChar, id);
 
-  const groups = query(request, `EXEC [IAM].[bot].[Usp_Get_GroupChat_By_Id] @appId, @groupId`);
+  const groups = await query(request, `EXEC [IAM].[bot].[Usp_Get_GroupChat_By_Id] @appId, @groupId`);
   if(groups[0] !== null)
     return groups[0]
 

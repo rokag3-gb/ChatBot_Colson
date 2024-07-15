@@ -19,7 +19,7 @@ import { UspGetUsersById } from "../common/query";
 
 export const randomStoreSelect = async (context: TurnContext) => {
   const user = await UspGetUsersById(context.activity.from.id);
-  const row = await UspLotMealStore(user.account.userPrincipalName);
+  const row = await UspLotMealStore(user.UPN);
   const data = JSON.parse(row[0].LotData);
 
   const tmpTemplate = JSON.parse(JSON.stringify(randomMealStore));
