@@ -66,7 +66,7 @@ const makeAndSendCard = async (context, d, messageId, username) => {
   const card = AdaptiveCards.declare(tmpTemplate).render({
     background: background,
     title: `${birthDateKr}은 ${username} 님의 생일입니다.`,
-    bodyTop: `♥Birthday 유급 휴일 부여♥`,
+  //  bodyTop: `♥Birthday 유급 휴일 부여♥`,
     bodyBottom: `${username} 님 생일 축하해요!
     
     소중하고 행복한 하루 보내세요 :)`

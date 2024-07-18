@@ -116,10 +116,10 @@ routerInstanceGateway.get("/getGroupChat", async (req, res) => {
       const arr = [];
       for(const data of Object.entries(groupChatList)) {
         arr.push({
-          type: data[1]?.conversationReference?.conversation?.conversationType,
-          name: data[1]?.conversationReference?.conversation?.name?data[1]?.conversationReference?.conversation?.name:'일반',
-          id: data[1]?.conversationReference?.conversation?.id,
-          teamName: data[1]?.TeamName
+          name: data[1]?.GroupName,
+          id: data[1]?.GroupId,
+          teamName: data[1]?.TeamName,
+          GroupChatObject: data[1]?.GroupChatObject,
         });
         console.log(JSON.stringify(data));
       }

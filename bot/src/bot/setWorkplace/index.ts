@@ -1,7 +1,7 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { WorkplaceCardData, WorkplaceFinishCardData } from "../../model/cardModels";
 import { CardFactory } from "botbuilder";
-import { getToday, checkWeekday, insertLog } from "../common";
+import { getToday, checkWeekday, insertLog, makeUserObject } from "../common";
 import { UspGetUsersById, UspGetUsersByUPN } from "../common/query";
 import { UspGetWorkCode, UspGetUserWorkplace, UspGetUserWorkplaceSend, UspSetWorkplace } from "./query";
 import workplaceTemplate from "../../adaptiveCards/insertWorkplace.json";
@@ -30,9 +30,13 @@ export const setWorkplaceForm = async (context, userId, username, type) => {
 
 //특정 유저의 근무지 등록을 위한 함수
 const userWorkplace = async (context, userId, username, choiceList) => {
-  const fromUser = await UspGetUsersById(userId);
+  let user = null;
+  if(username === null) {
+    user = await UspGetUsersById(userId);
+  } else {
+    user = await UspGetUsersByUPN(username)
+  }
 
-  const user = await UspGetUsersByUPN(username)
   if(!user) {
     await context.sendActivity(`'${username}' 님을 찾을 수 없습니다.`);
     return
@@ -113,14 +117,14 @@ const sendWorkplaceCardContext = async (context, userId, choiceList, WorkCodeAM,
 }
 
 const sendWorkplaceCardUserId = async (userId, choiceList, WorkCodeAM, WorkCodePM, user, message) => {
-  const fromUser = await UspGetUsersById(userId);
+  const fromUser = await makeUserObject(userId);
   const tmpTemplate = JSON.parse(JSON.stringify(workplaceTemplate));
 
   if(!user) {
-    tmpTemplate.body[3].value = fromUser.UPN;
+    tmpTemplate.body[3].value = fromUser.account.userPrincipalName;
     tmpTemplate.body[3].choices.push({
       "title": fromUser.FullNameKR,
-      "value": fromUser.UPN
+      "value": fromUser.account.userPrincipalName
     });
   } else {
     tmpTemplate.body[3].value = user.UPN;

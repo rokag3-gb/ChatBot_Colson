@@ -27,7 +27,7 @@
     {
       "type": "TextBlock",
       "color": "dark",
-      "text": "${bodyTop}",
+      "text": "  ",
       "horizontalAlignment": "center"
     },
     {
