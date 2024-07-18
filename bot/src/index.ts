@@ -1,13 +1,7 @@
 import * as restify from "restify";
 import { bot } from "./internal/initialize";
-import { getUserList,
-         conversationRegister,
-         groupRegister,
-         getGroupChatList,
-         insertLog,
-         userCount,
-         userMap,
-         groupChatMap, } from "./bot/common";
+import { conversationRegister, groupRegister, insertLog, userCount } from "./bot/common";
+import { UspGetUsersById, UspGetGroupChatById } from "./bot/common/query";
 import { TeamsBot } from "./teamsBot";
 import { routerInstance, routerInstanceGateway } from "./bot/api";
 import { initCron } from "./schedule";
@@ -24,16 +18,12 @@ const initialize = async () => {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
     await conversationRegister(null);
 
-    await getUserList(null);
-    await getGroupChatList();
     await initCron();
 
-    await insertLog('initialize', 'Colson initialize Complete!');
   } catch(e) {
-      console.log(e);
       await insertLog('initialize', "Error : " + JSON.stringify(e) + ", " + e.message);
   }
-  console.log(' Colson initialize Complete! ');
+  await insertLog('initialize', 'Colson initialize Complete!');
 }
 
 initialize();
@@ -66,7 +56,6 @@ const teamsBot = new TeamsBot();
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, async () => {
   await insertLog('Bot Started', `${server.name} listening to ${server.url}`);
-  console.log(`\nBot Started, ${server.name} listening to ${server.url}`);
 });
 
 server.use(restify.plugins.bodyParser());
@@ -81,44 +70,34 @@ async (req, res) => {
     return;
   }
   
-  const user = userMap[req.body.from.id];
+  const user = await UspGetUsersById(req.body.from.id);
   if(userCount === 0) {
     try {
       await bot.requestHandler(req, res);
       await conversationRegister(null);
-      await getUserList(null);
-      await getGroupChatList();
     } catch(e) {
       await insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
-      console.log(e);
     }
   } else if(!user && userCount === 0) {
     try {
       await bot.requestHandler(req, res);
       await conversationRegister(null);
-      await getUserList(null);
-      await getGroupChatList();
     } catch(e) {
       await insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
-      console.log(e);
     }
   } else if(!user) {
     try {
       await bot.requestHandler(req, res);
       await conversationRegister(req.body.from.id)
-      await getUserList(req.body.from.id);
-      await getGroupChatList();
     } catch(e) {
       await insertLog(req.body.from.id, "Error : " + JSON.stringify(e) + ", " + e.message);
-      console.log(e);
     }
   } else if(req.body.conversation && req.body.conversation.isGroup) {
     await bot.requestHandler(req, res);
-    const group = groupChatMap[req.body.conversation.id];
+    const group = UspGetGroupChatById(req.body.conversation.id);
     if(!group) {
       const installations = await bot.notification.installations();
       await groupRegister(installations);
-      await getGroupChatList();
     }
   }
 

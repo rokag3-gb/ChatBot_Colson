@@ -1,7 +1,8 @@
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { WorkplaceCardData, WorkplaceFinishCardData } from "../../model/cardModels";
 import { CardFactory } from "botbuilder";
-import { getToday, checkWeekday, userMap, insertLog } from "../common";
+import { getToday, checkWeekday, insertLog, makeUserObject } from "../common";
+import { UspGetUsersById, UspGetUsersByUPN } from "../common/query";
 import { UspGetWorkCode, UspGetUserWorkplace, UspGetUserWorkplaceSend, UspSetWorkplace } from "./query";
 import workplaceTemplate from "../../adaptiveCards/insertWorkplace.json";
 import workplaceFinishTemplate from "../../adaptiveCards/insertWorkplaceFinish.json";
@@ -29,26 +30,19 @@ export const setWorkplaceForm = async (context, userId, username, type) => {
 
 //특정 유저의 근무지 등록을 위한 함수
 const userWorkplace = async (context, userId, username, choiceList) => {
-  const fromUser = userMap[userId];
   let user = null;
-  let UPN = '';
-
-  if(username) {
-    for (const u of Object.entries(userMap)) {
-      if(u[1].FullNameKR === username) {
-        user = u[1];
-        break;
-      }
-    }
-    if(!user) {
-      await context.sendActivity(`'${username}' 님을 찾을 수 없습니다.`);
-      return
-    }
-    await context.sendActivity( `'${username}' 님의 근무지를 등록합니다.`);
-    UPN = user.account.userPrincipalName;
+  if(username === null) {
+    user = await UspGetUsersById(userId);
   } else {
-    UPN = fromUser.account.userPrincipalName;
+    user = await UspGetUsersByUPN(username)
   }
+
+  if(!user) {
+    await context.sendActivity(`'${username}' 님을 찾을 수 없습니다.`);
+    return
+  }
+
+  const UPN = user.AppUPN;
 
   const rows = await UspGetUserWorkplace(UPN);
   for(const row of rows) {
@@ -63,7 +57,7 @@ export const userWorkplaceSend = async (choiceList) => {
   for(const row of rows) {
     try {
       curId = row.AppUserId;
-      console.log(row.AppUserId, row.NextWorkingDay, getToday(null));
+      await insertLog('userWorkplaceSend ' + curId, row.NextWorkingDay + ', ' + getToday(null));
       if((row.WorkCodePM !== 'WRK-OFF')) {
         if(row.NextWorkingDay == undefined || row.NextWorkingDay == null) {
           await sendWorkplaceFinishCardUserId(row.AppUserId, '한주를 마무리하며')
@@ -73,26 +67,25 @@ export const userWorkplaceSend = async (choiceList) => {
       }
     } catch(e) {
       await insertLog('userWorkplaceSend ' + curId, "Error : " + JSON.stringify(e) + ", " + e.message);
-      console.log(e);
     }
   }
 }
 
 const sendWorkplaceCardContext = async (context, userId, choiceList, WorkCodeAM, WorkCodePM, user) => {
-  const fromUser = userMap[userId];
+  const fromUser = await UspGetUsersById(userId);
   const tmpTemplate = JSON.parse(JSON.stringify(workplaceTemplate));
 
   if(!user) {
-    tmpTemplate.body[3].value = fromUser.account.userPrincipalName;
+    tmpTemplate.body[3].value = fromUser.UPN;
     tmpTemplate.body[3].choices.push({
       "title": fromUser.FullNameKR,
-      "value": fromUser.account.userPrincipalName
+      "value": fromUser.UPN
     });
   } else {
-    tmpTemplate.body[3].value = user.account.userPrincipalName;
+    tmpTemplate.body[3].value = user.UPN;
     tmpTemplate.body[3].choices.push({
       "title": user.FullNameKR,
-      "value": user.account.userPrincipalName
+      "value": user.UPN
     });
   }
 
@@ -124,7 +117,7 @@ const sendWorkplaceCardContext = async (context, userId, choiceList, WorkCodeAM,
 }
 
 const sendWorkplaceCardUserId = async (userId, choiceList, WorkCodeAM, WorkCodePM, user, message) => {
-  const fromUser = userMap[userId];
+  const fromUser = await makeUserObject(userId);
   const tmpTemplate = JSON.parse(JSON.stringify(workplaceTemplate));
 
   if(!user) {
@@ -134,10 +127,10 @@ const sendWorkplaceCardUserId = async (userId, choiceList, WorkCodeAM, WorkCodeP
       "value": fromUser.account.userPrincipalName
     });
   } else {
-    tmpTemplate.body[3].value = user.account.userPrincipalName;
+    tmpTemplate.body[3].value = user.UPN;
     tmpTemplate.body[3].choices.push({
       "title": user.FullNameKR,
-      "value": user.account.userPrincipalName
+      "value": user.UPN
     });
   }
 
@@ -170,7 +163,7 @@ const sendWorkplaceCardUserId = async (userId, choiceList, WorkCodeAM, WorkCodeP
 }
 
 const sendWorkplaceFinishCardUserId = async (userId, message) => {
-  const fromUser = userMap[userId];
+  const fromUser = await UspGetUsersById(userId);
   const tmpTemplate = JSON.parse(JSON.stringify(workplaceFinishTemplate));
 
   let title = '다음 주 근무지 등록';
@@ -187,13 +180,13 @@ const sendWorkplaceFinishCardUserId = async (userId, message) => {
 
 
 export const setWorkplace = async (context, id, upn, workDate, workCodeAM, workCodePM) => {
-  const user = userMap[id];
+  const user = await UspGetUsersById(id);
   if(!user) {
     await context.sendActivity(`잘못된 정보가 전달되었습니다.`);
     return;
   }
 
-  const rows = await UspSetWorkplace(workDate, upn, workCodeAM, workCodePM, user.account.userPrincipalName);
+  const rows = await UspSetWorkplace(workDate, upn, workCodeAM, workCodePM, user.UPN);
   for(const row of rows) {
     await context.sendActivity(`${user.FullNameKR}님의 ${workDate} 일자 근무지가 입력되었습니다. (${row.WorkNameAM}${workCodePM?'/'+row.WorkNamePM:''})`);
   }

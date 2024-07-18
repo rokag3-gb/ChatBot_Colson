@@ -3,8 +3,8 @@ import workplaceMessage from "../../adaptiveCards/workplaceMessage.json";
 import workplaceUserListTemplate from "../../adaptiveCards/workplaceUserList.json";
 import { CardFactory, TurnContext } from "botbuilder";
 import ACData = require("adaptivecards-templating");
-import { UspGetUsers, UspGetWorkplace, } from "./query";
-import { userMap } from "../common";
+import { UspGetWorkplace, } from "./query";
+import { UspGetUsers, UspGetUsersById } from "../common/query";
 
 export const getWorkplaceForm = async (context: TurnContext) => {
   await context.sendActivity(`근무지 조회를 선택하셨습니다.`);
@@ -18,7 +18,7 @@ export const getWorkplaceForm = async (context: TurnContext) => {
     });    
   }
 
-  const user = userMap[context.activity.from.id];
+  const user = await UspGetUsersById(context.activity.from.id);
   if(user && user.FullNameKR) {
     tmpTemplate.body[1].value = user.FullNameKR
   }
