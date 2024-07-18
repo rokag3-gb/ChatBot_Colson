@@ -2,13 +2,12 @@ import { TeamsActivityHandler, MessageFactory, ActivityTypes, CardFactory, TurnC
 import sendCommandTemplate from "./adaptiveCards/sendCommand.json";
 import { AdaptiveCards } from "@microsoft/adaptivecards-tools";
 import { viewCommandList, sendCommand, sorryMessage } from "./bot/common";
-import { UspGetUsersById } from "./bot/common/query";
-import { UspSetGroupChat } from "./bot/common/query";
+import { UspGetUsersById, UspSetGroupChat } from "./bot/common/query";
 import { setWorkplaceForm, setWorkplace } from "./bot/setWorkplace";
 import { getWorkplaceForm, getWorkplace } from "./bot/getWorkplace";
 import { viewSecretMessage, sendSecretMessage, openSecretMessage, sendMessageReaction, empTest } from "./bot/secretMessage";
 import { sendBirthdayCard, openBirthMessage, openBirthdayCardTest } from "./bot/birthMessage";
-import { viewMealStoreSearch, viewMealStoreSearchResult, redirectMealStoreSearchResult } from "./bot/mealStore";
+import { viewMealStoreSearch, viewMealStoreSearchResult } from "./bot/mealStore";
 import { randomStoreSelect, openRandomStore } from "./bot/randomMealStore";
 import { checkConversation } from "./bot/conversation";
 

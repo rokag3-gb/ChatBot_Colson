@@ -1,11 +1,11 @@
 import {  UspGetWorkCode,} from "../setWorkplace/query"
-import { insertLog, makeGroupObject } from "../common"
+import { insertLog, makeGroupObject, makeUserObject } from "../common"
 import { UspGetGroupChat, UspGetUsersByUPN } from "../common/query"
 import { ValidationToken, ValidationTokenGateway } from "./token"
 
 import { Router } from "restify-router"
 import { ActivityTypes, Mention, Activity } from "botbuilder";
-import { TeamsBotInstallation, Member } from "@microsoft/teamsfx"
+import { Member } from "@microsoft/teamsfx"
 
 import {
   UspGetWorkplaceTeam,
@@ -187,7 +187,7 @@ const SendGroupMessage = async (id: string, message: string) => {
 
 const MakeMessage = async (message: string):Promise<Partial<Activity>>  => {  
   const mentionArr = [];
-  let text = message;
+  let text = message.toLowerCase();
   for(let i = 0;;i++) {
     const start = text.indexOf('<mention>');
     const end = text.indexOf('</mention>');
@@ -198,7 +198,8 @@ const MakeMessage = async (message: string):Promise<Partial<Activity>>  => {
 
     const userInfo = text.substring(start+9, end);
 
-    const user = <Member>(await UspGetUsersByUPN(userInfo))  
+    const userData = await await UspGetUsersByUPN(userInfo)
+    const user = <Member>(await makeUserObject(userData.AppUserId))  
     if(user === null) {
       throw new Error('Invalid request (user is null)');
     }
@@ -208,7 +209,7 @@ const MakeMessage = async (message: string):Promise<Partial<Activity>>  => {
       continue;
     }
     
-    const mText = text.substring(start, end+10);
+    const mText = message.substring(start, end+10);
     const rText = `<at> ${i} </at>`;
     message = message.replace(mText, rText);
 

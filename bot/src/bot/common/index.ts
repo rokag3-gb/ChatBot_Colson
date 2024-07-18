@@ -22,7 +22,12 @@ export const makeUserObject = async (id: string): Promise<any> => {
 }
 
 export const makeGroupObject = async (id: string): Promise<TeamsBotInstallation> => {
-  const row = await UspGetGroupChatById(id)
+  let row = await UspGetGroupChatById(id);
+
+  if(!row.GroupChatObject || row.GroupChatObject === '') {
+    await conversationGroupRegister();
+    return await getGroupObject(id);
+  }
   
   const tmpTarget = <TeamsBotInstallation>JSON.parse(row.GroupChatObject);
   const groupTarget = <TeamsBotInstallation>new TeamsBotInstallation(parent.adapter, tmpTarget.conversationReference);
@@ -78,6 +83,18 @@ export const conversationRegister = async (id: string) => {
   await groupRegister(installations);
 }
 
+export const conversationGroupRegister = async () => {
+  const installations = await bot.notification.installations();
+
+  await groupRegister(installations);
+}
+
+export const getGroupObject = async (id: string): Promise<TeamsBotInstallation> => {
+  const installations = await bot.notification.installations();
+
+  return await getGroupData(installations, id);
+}
+
 export const userRegister = async (userId: string, installations: TeamsBotInstallation[]) => {
   for (const target of installations) {    
     if(target.type === 'Person') {    
@@ -130,6 +147,16 @@ export const groupRegister = async (installations: TeamsBotInstallation[]) => {
     }
   }
   await insertLog('groupRegister', 'groupRegister complete');
+}
+
+export const getGroupData = async (installations: TeamsBotInstallation[], id: string): Promise<TeamsBotInstallation> => {
+  for (const target of installations) {    
+    if(id === target.conversationReference.conversation.id) {
+      return target;
+    }
+  }
+
+  return null;
 }
 
 const IsJsonString = (str) => {
