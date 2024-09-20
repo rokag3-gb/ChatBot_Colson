@@ -60,7 +60,7 @@ const verifyToken = async (token: string, publicKey: string, audience: string, p
 
 export const ValidationTokenGateway = async (token: string): Promise<boolean> => {
   try {
-    const res = await axios.get(`https://gw.cloudmt.co.kr/token/introspect`,{
+    const res = await axios.get(`https://gw.ahnlabcloudmate.com/token/introspect`,{
       headers: {
         authorization: 'Bearer ' + token,
       },

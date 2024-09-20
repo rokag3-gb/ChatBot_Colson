@@ -181,7 +181,7 @@ const SendGroupMessage = async (id: string, message: string) => {
     const result =  await groupChat.sendMessage(<string>messageActivity);
     return {message: result, code: 200};
   } catch(e) {
-    return {message: "Invalid request (" + e.message+")", code: 500};
+    return {message: "Invalid request (" + e.message+")" + " id = [" + id +"]", code: 500};
   }
 }
 
