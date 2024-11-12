@@ -187,8 +187,8 @@ const SendGroupMessage = async (id: string, message: string) => {
 
 const MakeMessage = async (message: string):Promise<Partial<Activity>>  => {  
   const mentionArr = [];
-  let text = message.toLowerCase();
   for(let i = 0;;i++) {
+    let text = message.toLowerCase();
     const start = text.indexOf('<mention>');
     const end = text.indexOf('</mention>');
 
@@ -199,14 +199,19 @@ const MakeMessage = async (message: string):Promise<Partial<Activity>>  => {
     const userInfo = text.substring(start+9, end);
 
     const userData = await await UspGetUsersByUPN(userInfo)
-    const user = <Member>(await makeUserObject(userData.AppUserId))  
-    if(user === null) {
-      throw new Error('Invalid request (user is null)');
+    if (userData == null) {
+      const mText = message.substring(start, end+10);
+      const rText = userInfo;
+      message = message.replace(mText, rText);
+      continue
     }
 
+    const user = <Member>(await makeUserObject(userData.AppUserId))  
     if(user === null) {
-      text = text.substring(end+10);
-      continue;
+      const mText = message.substring(start, end+10);
+      const rText = userInfo;
+      message = message.replace(mText, rText);
+      continue
     }
     
     const mText = message.substring(start, end+10);
@@ -219,7 +224,6 @@ const MakeMessage = async (message: string):Promise<Partial<Activity>>  => {
         type: 'mention'
     };
     mentionArr.push(mention);
-    text = text.substring(end+10);
   }
 
   const messageActivity: Partial<Activity> = {
